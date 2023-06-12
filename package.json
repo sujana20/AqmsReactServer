@@ -1,0 +1,62 @@
+{
+  "name": "aqms",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "ag-grid-community": "^29.0.0",
+    "bootstrap": "^5.2.3",
+    "chart.js": "^4.3.0",
+    "chartjs-adapter-moment": "^1.0.1",
+    "chartjs-plugin-dragdata": "^2.2.5",
+    "dotenv": "^16.0.3",
+    "env-cmd": "^10.1.0",
+    "font-awesome": "^4.7.0",
+    "js-cookie": "^3.0.5",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.29",
+    "jspreadsheet-ce": "^4.11.5",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.7.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^4.10.0",
+    "react-datetime-picker": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1",
+    "react-toastify": "^9.1.1",
+    "sweetalert2": "^11.7.3",
+    "sweetalert2-react-content": "^5.0.7",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "env-cmd -f .env set INLINE_RUNTIME_CHUNK=false && react-scripts build && copy Web.config build && copy public/Config.js build",
+    "build:staging": "env-cmd -f .env.staging react-scripts build && copy Web.config build && copy public/Config.js build",
+    "build:production": "env-cmd -f .env.production react-scripts build && copy Web.config build && copy public/Config.js build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
