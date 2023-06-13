@@ -251,13 +251,10 @@ function AddParameter() {
         { name: "avgInterval", title: "Average Interval", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
-          itemTemplate: function (value, item) {
-            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
-
+          /* itemTemplate: function (value, item) {
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
                 Editparameter(item);
-                /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
@@ -268,8 +265,7 @@ function AddParameter() {
               });
 
             return $("<div>").append($customEditButton).append($customDeleteButton);
-            //return $result.add($customButton);
-          }
+          } */
         },
       ]
     });
@@ -293,26 +289,13 @@ function AddParameter() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!parameterList && parameterId == 0 && (
-            <h1>Add parameter</h1>
-          )}
-          {!parameterList && parameterId != 0 && (
-            <h1>Update parameter</h1>
-          )}
           {parameterList && (
-            <h1>parameters List</h1>
+            <h1>Parameters List</h1>
           )}
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {parameterList && (
-                <span className="operation_class mx-2" onClick={() => Addparameterchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
-              )}
-              {!parameterList && (
-                <span className="operation_class mx-2" onClick={() => Addparameterchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
-              )}
-            </div>
+          <div className="container mt-3">
+            
             {!parameterList && (
               <form id="AddParametersform" className="row" noValidate>
                 <div className="col-md-12 mb-3">

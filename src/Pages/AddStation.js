@@ -171,13 +171,10 @@ function AddStation() {
         { name: "description", title: "Description", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
-          itemTemplate: function (value, item) {
-            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
-
+          /* itemTemplate: function (value, item) {
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
                 EditStation(item);
-                /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
@@ -188,8 +185,7 @@ function AddStation() {
               });
 
             return $("<div>").append($customEditButton).append($customDeleteButton);
-            //return $result.add($customButton);
-          }
+          } */
         },
       ]
     });
@@ -206,26 +202,12 @@ function AddStation() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!StationList && StationId == 0 && (
-            <h1>Add Station</h1>
-          )}
-          {!StationList && StationId != 0 && (
-            <h1>Update Station</h1>
-          )}
           {StationList && (
             <h1>Stations List</h1>
           )}
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {StationList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
-              )}
-              {!StationList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
-              )}
-            </div>
+          <div className="container mt-3">
             {!StationList && (
               <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">

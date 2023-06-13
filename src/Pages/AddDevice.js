@@ -264,13 +264,10 @@ function AddDevice() {
         { name: "type", title: "Type", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
-          itemTemplate: function (value, item) {
-            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
-
+         /*  itemTemplate: function (value, item) {
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
                 EditDevice(item);
-                /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
@@ -281,8 +278,7 @@ function AddDevice() {
               });
 
             return $("<div>").append($customEditButton).append($customDeleteButton);
-            //return $result.add($customButton);
-          }
+          } */
         },
       ]
     });
@@ -299,26 +295,12 @@ function AddDevice() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!DeviceList && Deviceid == 0 && (
-            <h1>Add Device</h1>
-          )}
-          {!DeviceList && Deviceid != 0 && (
-            <h1>Update Device</h1>
-          )}
           {DeviceList && (
             <h1>Devices List</h1>
           )}
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {DeviceList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
-              )}
-              {!DeviceList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
-              )}
-            </div>
+          <div className="container mt-3">
             {!DeviceList && (
               <form id="AddDeviceform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
