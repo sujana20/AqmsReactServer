@@ -290,11 +290,36 @@ function DataProcessing() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
+    // var layout = [];
+    // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
+    // for (var i = 0; i < SelectedPollutents.length; i++) {
+    //   layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric" });
+    // }
+
     var layout = [];
-    layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
+    var gridheadertitle;
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric" });
+      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+      gridheadertitle = SelectedPollutents[i] + "-" + unitname[0].unitName
+      layout.push({
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+
+          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+
+          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF"
+
+          return $("<td>").css("background-color", bgcolor).append(item);
+        }
+      });
     }
+    if (SelectedPollutents.length < 10) {
+      for (var p = SelectedPollutents.length; p < 10; p++) {
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false });
+      }
+    }
+
 
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
