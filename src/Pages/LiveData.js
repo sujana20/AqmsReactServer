@@ -176,16 +176,35 @@ function LiveData() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
+    // var layout = [];
+    // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
+    
+    
+    //   for (var i = 0; i < SelectedPollutents.length; i++) {
+    //     let paramName = ListReportData.filter(obj => obj.parameterID == SelectedPollutents[i].id);
+    //     if(paramName.length>0){
+    //       layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - ppb", type: "numeric", readOnly: true });
+    //     }
+    //   }
     var layout = [];
-    layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
-    
-    
-      for (var i = 0; i < SelectedPollutents.length; i++) {
-        let paramName = ListReportData.filter(obj => obj.parameterID == SelectedPollutents[i].id);
-        if(paramName.length>0){
-          layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - ppb", type: "numeric", readOnly: true });
+    var gridheadertitle;
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, });
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
+      gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
+      layout.push({
+        name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
+          return $("<td>").css("background-color", bgcolor).append(item);
         }
+      });
+    }
+    if (SelectedPollutents.length < 10) {
+      for (var p = SelectedPollutents.length; p < 10; p++) {
+        layout.push({ name: "", title: "", type: "text", width: "100px", sorting: false });
       }
+    }
     
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
