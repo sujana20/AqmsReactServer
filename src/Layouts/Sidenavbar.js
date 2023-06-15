@@ -506,12 +506,12 @@ function Sidenavbar() {
             <span>Data Processing</span>
           </NavLink >
         </li>
-        <li className="nav-item">
+       {/*  <li className="nav-item">
           <NavLink to="/DataProcessingClient" className="nav-link animation-forwards animate-delay-5" >
             <i className="bi bi-grid"></i>
             <span>Logger Channel Data Processing</span>
           </NavLink >
-        </li>
+        </li> */}
         <li className="nav-item">
           <NavLink to="/LiveData" className="nav-link animation-forwards animate-delay-6" >
             <i className="bi bi-grid"></i>
