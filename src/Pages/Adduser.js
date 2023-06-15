@@ -170,25 +170,25 @@ function Adduser() {
         { name: "role", title: "Role", type: "text", },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
-          // itemTemplate: function (value, item) {
-          //   // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
+          itemTemplate: function (value, item) {
+            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
 
-          //   var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
-          //     .click(function (e) {
-          //       EditUser(item);
-          //       /* alert("ID: " + item.id); */
-          //       e.stopPropagation();
-          //     });
+            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
+              .click(function (e) {
+                EditUser(item);
+                /* alert("ID: " + item.id); */
+                e.stopPropagation();
+              });
 
-          //   var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
-          //     .click(function (e) {
-          //       DeleteUser(item);
-          //       e.stopPropagation();
-          //     });
+            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
+              .click(function (e) {
+                DeleteUser(item);
+                e.stopPropagation();
+              });
 
-          //   return $("<div>").append($customEditButton).append($customDeleteButton);
-          //   //return $result.add($customButton);
-          // }
+            return $("<div>").append($customEditButton).append($customDeleteButton);
+            //return $result.add($customButton);
+          }
         },
       ]
     });
@@ -205,26 +205,26 @@ function Adduser() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {/* {!UserList && UserId==0 && (
+          {!UserList && UserId==0 && (
             <h1>Add User</h1>
           )}
            {!UserList && UserId!=0 && (
             <h1>Update User</h1>
-          )} */}
+          )}
           {UserList && (
             <h1>Users List</h1>
           )}
         </div>
         <section className="section">
           <div className="container">
-            {/* <div className="me-2 mb-2 float-end">
+            <div className="me-2 mb-2 float-end">
               {UserList && (
                 <span className="operation_class mx-2" onClick={() => Adduserchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
               )}
               {!UserList && (
                 <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
               )}
-            </div> */}
+            </div>
             {!UserList && (
               <form id="AddUserform" className="row">
                 <div className="col-md-12 mb-3">
@@ -259,14 +259,14 @@ function Adduser() {
                     )}
                   </div>
                 </div>
-                {/* <div className="col-md-12 text-center">
+                <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
                   <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
                   )}
                   {!UserList && UserId!=0 && (
                       <button className="btn btn-primary" onClick={UpdateUser} type="button">Update User</button>
                   )}
-                </div> */}
+                </div>
               </form>
             )}
             {UserList && (
