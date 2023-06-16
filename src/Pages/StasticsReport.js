@@ -219,7 +219,7 @@ function StasticsReport() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].avgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           let intervalsplitarr = intervalarr[i].split('-');
           let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);

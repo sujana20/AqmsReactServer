@@ -44,6 +44,7 @@ function DataProcessing() {
   const [ListReportData, setListReportData] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
+  const [Groups, setGroups] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [selectedgrid, setselectedgrid] = useState([]);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
@@ -72,7 +73,12 @@ function DataProcessing() {
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
+        setGroups(data.listStationGroups)
         setTimeout(function () {
+          $('#groupid').SumoSelect({
+            triggerChangeCombined: true, placeholder: 'Select Group', floatWidth: 200, selectAll: true,
+            search: true
+          });
           $('#stationid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
             search: true
@@ -528,6 +534,11 @@ function DataProcessing() {
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
     setPollutents(finaldata);
   }
+  const ChangeGroupName = function (e) {
+    setPollutents([]);
+    setcriteria([]);
+    setStations([]);
+  }
   $('#stationid').change(function (event) {
     setPollutents([]);
     setcriteria([]);
@@ -587,7 +598,7 @@ function DataProcessing() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].avgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           let intervalsplitarr = intervalarr[i].split('-');
           let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
@@ -734,6 +745,14 @@ function DataProcessing() {
         <div>
           <div>
             <div className="row">
+            <div className="col-md-2">
+                <label className="form-label">Group Name</label>
+                <select className="form-select" id="groupid" multiple="multiple" onChange={ChangeGroupName}>
+                  {Groups.map((x, y) =>
+                    <option value={x.id} key={y} >{x.groupName}</option>
+                  )}
+                </select>
+              </div>
               <div className="col-md-2">
                 <label className="form-label">Station Name</label>
                 <select className="form-select stationid" id="stationid" multiple="multiple" onChange={ChangeStation}>

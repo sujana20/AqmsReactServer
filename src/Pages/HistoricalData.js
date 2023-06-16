@@ -483,7 +483,7 @@ function HistoricalData() {
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     if (finaldata.length > 0) {
       let finalinterval = [];
-      let intervalarr = finaldata[0].avgInterval.split(',');
+      let intervalarr = finaldata[0].serverAvgInterval.split(',');
       for (let i = 0; i < intervalarr.length; i++) {
         let intervalsplitarr = intervalarr[i].split('-');
         finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
