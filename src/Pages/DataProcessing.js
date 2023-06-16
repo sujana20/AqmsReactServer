@@ -7,6 +7,7 @@ import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -243,12 +244,17 @@ function DataProcessing() {
   }
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.flagStatus == 'E');
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
-          cell.classList.add('updated');
+          if (filnallist[j].loggerFlags != null) {
+            let classname = CommonFunctions.SetFlagColor(filnallist[j].loggerFlags, AllLookpdata.listFlagCodes);
+            cell.style.backgroundColor = classname;
+            //cell.classList.add(classname);
+          }
+          // cell.classList.add('updated');
         }
       }
     }
@@ -324,12 +330,26 @@ function DataProcessing() {
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
-      var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval)
+      var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
+
+      let roundedNumber = 0;
+
+      let digit = window.decimalDigit
+
+      if (window.TruncateorRound == "RoundOff") {
+
+        let num = ListReportData[k].parametervalue;
+        roundedNumber = num==null?num:num.toFixed(digit);
+      }
+
+      else {
+        roundedNumber = ListReportData[k].parametervalue==null?ListReportData[k].parametervalue:CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
+      }
       if (temp >= 0) {
-        dataForGrid[temp][ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+        dataForGrid[temp][ListReportData[k].parameterName] = roundedNumber;
       } else {
         obj["Date"] = ListReportData[k].interval;
-        obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+        obj[ListReportData[k].parameterName] = roundedNumber;
         dataForGrid.push(obj);
       }
     }
@@ -338,9 +358,12 @@ function DataProcessing() {
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
-      //  columnDrag: true,
+      tableWidth: '100%',
       tableOverflow: true,
+      freezeColumns: 1,
       columns: layout,
+      lazyLoading: true,
+      loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable,
@@ -761,8 +784,10 @@ function DataProcessing() {
               <div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Correct" >A</button>
-                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Estimated" >R</button>
+                    {AllLookpdata.listFlagCodes.map((x, y) =>
+                      <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
+                    )}
+                    {/*  <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Estimated" >R</button>
                     <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Corrected" >O</button>
                     <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Drift" >P</button>
                     <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Failure" >D</button>
@@ -777,7 +802,7 @@ function DataProcessing() {
                     <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Substitute" >S</button>
                     <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of range" >G</button>
                     <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of field" >H</button>
-                  </div>
+                  */} </div>
                 </div>
                 <div className="row">
                   <div className="col-md-12 mb-3">

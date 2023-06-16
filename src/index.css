@@ -757,5 +757,9 @@ table.jexcel colgroup col:nth-child(1) {
   font-size: 0.855rem !important;
   font-weight: 600;
 }
+.jexcel_container{
+  width:100%;
+  overflow: auto;
+}
 
 
