@@ -45,6 +45,7 @@ function DataProcessing() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Groups, setGroups] = useState([]);
+  const [StationGroups, setStationGroups] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [selectedgrid, setselectedgrid] = useState([]);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
@@ -73,7 +74,10 @@ function DataProcessing() {
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
-        setGroups(data.listStationGroups)
+        setStationGroups(data.listStationGroups);
+        let groupNamearray= data.listStationGroups;
+        let groupnames = groupNamearray.filter( (ele, ind) => ind === groupNamearray.findIndex( elem => elem.groupID === ele.groupID))
+        setGroups(groupnames);
         setTimeout(function () {
           $('#groupid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Group', floatWidth: 200, selectAll: true,
@@ -103,6 +107,7 @@ function DataProcessing() {
     initializeTooltip();
     // }
   }, [ListReportData]);
+
 
   const initializeTooltip = function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -399,15 +404,24 @@ function DataProcessing() {
     // if (chartRef.current != null) {
     //     chartRef.current.data = {};
     //   }
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
+    let Station="";
+    let Pollutent="";
+    let GroupId = $("#groupid").val();
+    if(GroupId==0){
+
     }
-    let Pollutent = $("#pollutentid").val();
-    setSelectedPollutents(Pollutent);
-    if (Pollutent.length > 0) {
-      Pollutent.join(',')
+    else{
+      Station = $("#stationid").val();
+      if (Station.length > 0) {
+        Station.join(',')
+      }
+      Pollutent = $("#pollutentid").val();
+      setSelectedPollutents(Pollutent);
+      if (Pollutent.length > 0) {
+        Pollutent.join(',')
+      }
     }
+    
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
@@ -415,8 +429,8 @@ function DataProcessing() {
     if (!valid) {
       return false;
     }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let params = new URLSearchParams({Group:1, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+    let url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
     fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
@@ -535,10 +549,23 @@ function DataProcessing() {
     setPollutents(finaldata);
   }
   const ChangeGroupName = function (e) {
+    let stationParamaters;
+    let selectedGroup = document.getElementById("groupid").val();
+    for(var i=0; i<StationGroups.length;i++){
+        stationParamaters.push({"Station": StationGroups[i].stationID,"ParameterName":StationGroups[i].parameterID});
+    }
     setPollutents([]);
     setcriteria([]);
     setStations([]);
   }
+  $('#groupid').change(function (event) {
+    if($(this).val()==0){
+      $('#stationid').style.removeClass("disable");
+    }
+    else{
+      $('#stationid').style.addClass("disable");
+    }
+  })
   $('#stationid').change(function (event) {
     setPollutents([]);
     setcriteria([]);
@@ -747,9 +774,10 @@ function DataProcessing() {
             <div className="row">
             <div className="col-md-2">
                 <label className="form-label">Group Name</label>
-                <select className="form-select" id="groupid" multiple="multiple" onChange={ChangeGroupName}>
+                <select className="form-select" id="groupid" onChange={ChangeGroupName}>
+                <option value="0">None</option>
                   {Groups.map((x, y) =>
-                    <option value={x.id} key={y} >{x.groupName}</option>
+                    <option value={x.groupID} key={y} >{x.groupName}</option>
                   )}
                 </select>
               </div>
