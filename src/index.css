@@ -761,5 +761,15 @@ table.jexcel colgroup col:nth-child(1) {
   width:100%;
   overflow: auto;
 }
-
-
+.jexcel > thead > tr > td{
+  font-size: calc(0.8rem);
+  font-weight: 600;
+  padding: 0.5em
+}
+.jexcel > tbody > tr > td{
+  font-size: calc(0.75rem);
+  font-weight: 600;
+  padding: 0.5em !important;
+  border-top: 1px solid #ddd !important;
+    border-left: 1px solid #ddd !important;
+}
