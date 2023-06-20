@@ -128,7 +128,7 @@ function Grouping() {
       setparentvalues(parent);
     }
 
-    const Groupingaddvalidation = function (groupname) {
+    const Groupingaddvalidation = function (groupname,checked) {
       let isvalid = true;
       let form = document.querySelectorAll('#Groupingform')[0];
       if (groupname == "") {
@@ -136,11 +136,12 @@ function Grouping() {
         form.classList.add('was-validated');
         isvalid = false;
       } 
-      //else if (stationvalue == "") {
-      //   //toast.warning('Please enter Descriptin');
-      //   form.classList.add('was-validated');
-      //   isvalid = false;
-      // }
+      else if (checked.length == 0) {
+        //toast.warning('Please enter Descriptin');
+        toast.error('Please Select at least one Parameter');
+        form.classList.add('was-validated');
+        isvalid = false;
+      }
       return isvalid;
     }
 
@@ -154,7 +155,7 @@ function Grouping() {
         parameterArray.push({GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
       }
       console.log(parameterArray);      
-      let validation = Groupingaddvalidation(groupname);
+      let validation = Groupingaddvalidation(groupname,checked);
       if (!validation) {
         return false;
       }
