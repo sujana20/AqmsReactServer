@@ -58,6 +58,12 @@ function Sidenavbar() {
                 <span>Parameters</span>
               </NavLink >
             </li>
+            <li>
+              <NavLink to="/GroupingParameter" className="animation-forwards animate-delay-4" >
+                <i className="bi bi-circle"></i>
+                <span>Grouping</span>
+              </NavLink >
+            </li>
               </ul>
             </li>       
         <li className="nav-item" id="Admin-Pannel">

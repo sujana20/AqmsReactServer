@@ -32,6 +32,7 @@ const LiveData=lazy(()=> import("./Pages/LiveData"));
 const DataProcessingClient=lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData=lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports=lazy(() => import("./Pages/LiveDataReports"));
+const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
@@ -68,6 +69,7 @@ function App() {
       <Route   path="/DataProcessingClient" exact element={<DataProcessingClient />} />
       <Route   path="/HistoricalData"  exact element={<HistoricalData />}/>
       <Route   path="/LiveDataReports" exact element={<LiveDataReports />} />
+      <Route   path="/GroupingParameter" exact element={<GroupingParameter />} />
       </Routes>
       </Suspense>
   </BrowserRouter>
