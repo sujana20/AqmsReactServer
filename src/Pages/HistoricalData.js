@@ -246,35 +246,6 @@ function HistoricalData() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
-    // var layout = [];
-    // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
-    // for (var i = 0; i < SelectedPollutents.length; i++) {
-    //   layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric",readOnly:true });
-    // }
-    // var layout = [];
-    // var gridheadertitle;
-    // layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
-    // for (var i = 0; i < SelectedPollutents.length; i++) {
-    //   let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
-    //   let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
-    //   gridheadertitle = SelectedPollutents[i] + "-" + unitname[0].unitName
-    //   layout.push({
-    //     name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-
-    //       let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-
-    //       let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF"
-
-    //       return $("<td>").css("background-color", bgcolor).append(item);
-    //     }
-    //   });
-    // }
-    // if (SelectedPollutents.length < 10) {
-    //   for (var p = SelectedPollutents.length; p < 10; p++) {
-    //     layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false });
-    //   }
-    // }
-
     var layout = [];
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
@@ -336,8 +307,7 @@ function HistoricalData() {
         } 
       }
     }
-    // setdataForGridcopy(dataForGrid);
-    // if (!jspreadRef) {
+    
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -348,7 +318,7 @@ function HistoricalData() {
       onchange: changed,
       onload: loadtable,
     });
-    // }
+    
   }
   const hexToRgbA = function (hex) {
     var c;
@@ -403,22 +373,24 @@ function HistoricalData() {
     } else {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    if (GroupId != "") {
+      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+    }
     fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
           console.log(new Date());
-          //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
-          // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
           getchartdata(data1, Pollutent, "line", "Raw");
           document.getElementById('loader').style.display = "none";
         }
-        document.getElementById('loader').style.display = "none";
+        //document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
 
 
