@@ -85,8 +85,8 @@ function LiveData() {
             triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
           });
-          ChangeGroupName();
-          getdatareport();
+          // ChangeGroupName();
+          // getdatareport();
         }, 100);
         
       })
@@ -99,12 +99,12 @@ function LiveData() {
     initializeJsGrid();
   }, [RefreshGrid,ListReportData]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getdatareport('refresh');
-    }, getDuration);
-    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  })
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getdatareport('refresh');
+  //   }, getDuration);
+  //   return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  // })
 
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
@@ -291,7 +291,7 @@ function LiveData() {
     }
     throw new Error('Bad Hex');
   }
-  const getdatareport = function (param) {
+  const getdatareport = function () {
     setListReportData([]);
     
     console.log(new Date());
@@ -309,15 +309,15 @@ function LiveData() {
       }else{
         Pollutent=SelectedPollutents;
       }
-      if (param == 'reset' || Pollutent.length == 0) {
-        if(GroupId==""){
-          setSelectedPollutents(Pollutent);
-        }else{
-          Pollutent=SelectedPollutents;
-        }
-      } else {
-         //setSelectedPollutents(finalpollutent);
-      }
+      // if (param == 'reset' || Pollutent.length == 0) {
+      //   if(GroupId==""){
+      //     setSelectedPollutents(Pollutent);
+      //   }else{
+      //     Pollutent=SelectedPollutents;
+      //   }
+      // } else {
+      //    //setSelectedPollutents(finalpollutent);
+      // }
       setRefreshGrid(RefreshGrid?false:true);
     let Interval = document.getElementById("criteriaid").value;
     let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
@@ -698,7 +698,8 @@ function LiveData() {
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                     <option value="">None</option>
                     {Groups.map((x, y) =>
-                      <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
+                       <option value={x.groupID} key={y} >{x.groupName}</option>
+                      // <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
                     )}
                 </select>
               </div>
