@@ -787,11 +787,17 @@ function DataProcessing() {
         xAxes: {
           type: 'time',
           time: {
-            unit: 'second',
             displayFormats: {
-              second: 'D MMM YYYY - HH:mm:ss'
-            },
-            tooltipFormat: 'D MMM YYYY - HH:mm:ss'
+                millisecond: 'MMM DD YYYY',
+                second: 'MMM DD YYYY',
+                minute: 'MMM DD YYYY',
+                hour: 'MMM DD YYYY',
+                day: 'MMM DD YYYY',
+                week: 'MMM DD YYYY',
+                month: 'MMM DD YYYY',
+                quarter: 'MMM DD YYYY',
+                year: 'MMM DD YYYY',
+            }
           }
         }
 
