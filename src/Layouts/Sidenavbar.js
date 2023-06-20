@@ -114,7 +114,7 @@ function Sidenavbar() {
             <span>Data Validations</span>
           </NavLink >
         </li>
-        {/* <li>
+        <li>
           <NavLink to="/LiveData" className="nav-item animation-forwards animate-delay-5" >
             <i className="bi bi-circle"></i>
             <span>Live Data</span>
@@ -125,7 +125,7 @@ function Sidenavbar() {
             <i className="bi bi-circle"></i>
             <span>Data Browsing</span>
           </NavLink >
-        </li> */}
+        </li>
           </ul>
         </li>
       </ul>
