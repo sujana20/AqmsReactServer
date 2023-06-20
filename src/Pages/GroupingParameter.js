@@ -211,7 +211,7 @@ function Grouping() {
         var parameter= checked[u].split("-");
         parameterArray.push({GroupID:GroupId, GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
       }
-      let validation = Groupingaddvalidation(groupname);
+      let validation = Groupingaddvalidation(groupname,checked);
       if (!validation) {
         return false;
       }
