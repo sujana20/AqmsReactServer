@@ -317,16 +317,19 @@ table.table .avatar {
 
 .disable {
   pointer-events: none;
-  color: #dddddd87 !important;
+ /*  color: #dddddd87 !important; */
+ opacity: 0.7;
 }
 
 .sequencedisable {
   pointer-events: none;
-  background-color: #dddddd24;
+ /*  background-color: #dddddd24; */
+ opacity: 0.7;
 }
 
 .disable i {
-  color: #dddddd87 !important;
+ /*  color: #dddddd87 !important; */
+ opacity: 0.7;
 }
 
 h6 {
@@ -761,5 +764,15 @@ table.jexcel colgroup col:nth-child(1) {
   width:100%;
   overflow: auto;
 }
-
-
+.jexcel > thead > tr > td{
+  font-size: calc(0.8rem);
+  font-weight: 600;
+  padding: 0.5em
+}
+.jexcel > tbody > tr > td{
+  font-size: calc(0.75rem);
+  font-weight: 600;
+  padding: 0.5em !important;
+  border-top: 1px solid #ddd !important;
+    border-left: 1px solid #ddd !important;
+}

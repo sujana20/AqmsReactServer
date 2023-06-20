@@ -49,20 +49,11 @@ function StasticsReport() {
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
-        let finaldata = data.listPollutents.filter(x=>x.stationID==data.listStations[0].id);
-        var finaldata1 = [];
-          finaldata1 = finaldata.reduce((unique, o) => {
-            if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
-              unique.push(o);
-            }
-            return unique;
-          }, []);
-          setPollutents(data.listPollutents);
         setTimeout(function () {
-          /* $('#stationid').SumoSelect({
+          $('#stationid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
             search: true
-          }); */
+          });
           $('#pollutentid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
@@ -210,6 +201,35 @@ function StasticsReport() {
   }
   /* reported data end */
  
+  $('#stationid').change(function (event) {
+    setPollutents([]);
+    setcriteria([]);
+    let filter = $(this).val();
+    setselectedStations(filter);
+    let finaldata = AllLookpdata.listPollutents.filter(function (item) {
+      for (var i = 0; i < filter.length; i++) {
+        if (item['stationID'] == filter[i])
+          return true;
+      }
+    });
+    var finaldata1 = [];
+  /*   if (filter.length >= 2) { */
+      finaldata1 = finaldata.reduce((unique, o) => {
+        if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
+          unique.push(o);
+        }
+        return unique;
+      }, []);
+    /* } else {
+      finaldata1 = finaldata;
+    } */
+    setPollutents(finaldata1);
+    setTimeout(function () {
+     // $('.pollutentid')[0].sumo.unSelectAll(); 
+      $('.pollutentid')[0].sumo.reload();
+    }, 10);
+  })
+
   $('#pollutentid').change(function (e) {
     setcriteria([]);
     let stationID = $("#stationid").val();
@@ -388,9 +408,9 @@ function StasticsReport() {
         <div>
           <div>
             <div className="row filtergroup">
-              <div style={{visibility:'hidden',height:'0px'}}>
+              <div className="col">
                 <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid">
+                <select className="form-select stationid" id="stationid" multiple="multiple">
 
                   {Stations.map((x, y) =>
                     <option value={x.id} key={y} selected={y==1}>{x.stationName}</option>
