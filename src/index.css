@@ -776,3 +776,6 @@ table.jexcel colgroup col:nth-child(1) {
   border-top: 1px solid #ddd !important;
     border-left: 1px solid #ddd !important;
 }
+.rct-node-icon{
+  display: none;
+}
