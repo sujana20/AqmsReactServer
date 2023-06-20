@@ -516,21 +516,8 @@ function DataProcessing() {
     /* if (GroupId != "") {
       return isvalid
     } */
-    if (Station == "" && GroupId == "") {
-      toast.error('Please select Group', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      isvalid = false;
-    } 
     if (GroupId == "" && Station == "") {
-      toast.error('Please select station', {
+      toast.error('Please select group or station', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -541,7 +528,7 @@ function DataProcessing() {
         theme: "colored",
       });
       isvalid = false;
-    } else if (GroupId == "" && Pollutent == "") {
+    } else if (Station != "" && Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
