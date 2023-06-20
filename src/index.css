@@ -317,16 +317,19 @@ table.table .avatar {
 
 .disable {
   pointer-events: none;
-  color: #dddddd87 !important;
+ /*  color: #dddddd87 !important; */
+ opacity: 0.7;
 }
 
 .sequencedisable {
   pointer-events: none;
-  background-color: #dddddd24;
+ /*  background-color: #dddddd24; */
+ opacity: 0.7;
 }
 
 .disable i {
-  color: #dddddd87 !important;
+ /*  color: #dddddd87 !important; */
+ opacity: 0.7;
 }
 
 h6 {

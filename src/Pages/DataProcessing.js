@@ -513,10 +513,23 @@ function DataProcessing() {
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval, GroupId) {
     let isvalid = true;
-    if (GroupId != "") {
+    /* if (GroupId != "") {
       return isvalid
-    }
-    if (Station == "") {
+    } */
+    if (Station == "" && GroupId == "") {
+      toast.error('Please select Group', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      isvalid = false;
+    } 
+    if (GroupId == "" && Station == "") {
       toast.error('Please select station', {
         position: "top-right",
         autoClose: 5000,
@@ -528,7 +541,7 @@ function DataProcessing() {
         theme: "colored",
       });
       isvalid = false;
-    } else if (Pollutent == "") {
+    } else if (GroupId == "" && Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
@@ -584,6 +597,12 @@ function DataProcessing() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
+    document.getElementById("groupid").value="";
+    if(e.target.value !=""){
+      $('#groupid').addClass("disable");
+    }else{
+      $('#groupid').removeClass("disable");
+    }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
     setPollutents(finaldata);
     setTimeout(function () {
@@ -600,10 +619,10 @@ function DataProcessing() {
     $('#stationid').val("");
     if (selectedGroup != "") {
       $('#stationid').addClass("disable");
-      $('.SumoSelect .CaptionCont')[0].addClass("disable");
+      $('.pollutentid')[0].sumo.disable();
     } else {
       $('#stationid').removeClass("disable");
-      $('.pollutentid')[0].removeClass("disable");
+      $('.pollutentid')[0].sumo.enable();
     }
     setGroupSelected(selectedGroup);
     // setPollutents([]);
