@@ -373,8 +373,14 @@ function HistoricalData() {
     } else {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
-
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype });
+    let isAvgData=false;
+    if(Interval=='15-M'){
+      isAvgData=false;
+    }
+    else{
+      isAvgData=true;
+    }
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -656,13 +662,24 @@ function HistoricalData() {
     let MaxVal = 0;
     let pointRadius = [];
     let xAxislabel = [];
+    let Scaleslist = {};
     for (let i = 0; i < pollutent.length; i++) {
       chartdata = [];
       pointRadius = [];
       NinetyEightPercentile = [];
       FiftyPercentile = [];
       // let pollutentdata = data[pollutent[i]];
-      let pollutentdata = data.filter(val => val.parameterName.toLowerCase() == pollutent[i].toLowerCase());
+      //let pollutentdata = data.filter(val => val.parameterName.toLowerCase() == pollutent[i].toLowerCase());
+      let Parametersplit = pollutent[i].split("_")
+      let Groupid = document.getElementById("groupid").value;
+      let pollutentdata = [];
+      let Stationlist = Stations.filter(x => x.id == Parametersplit[1]);
+      let Stationname = Stationlist.length > 0 ? Stationlist[0].stationName : "";
+      if (Groupid != "") {
+        pollutentdata = data.filter(val => val.parameterName.toLowerCase() == Parametersplit[0].toLowerCase() && val.stationID == Parametersplit[1]);
+      } else {
+        pollutentdata = pollutentdata = data.filter(val => val.parameterName.toLowerCase() == Parametersplit[0].toLowerCase());
+      }
 
       for (let k = 0; k < pollutentdata.length; k++) {
         let index = labels.indexOf(pollutentdata[k].interval);
@@ -673,9 +690,36 @@ function HistoricalData() {
         pointRadius.push(2);
       }
       if (charttype == 'line') {
-        datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
+        Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          title: {
+            display: true,
+            text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
+          }
+        }
+        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
+      
+        //datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
+    Scaleslist["xAxes"] = {
+      type: 'time',
+      time: {
+        displayFormats: {
+          millisecond: 'MMM DD YYYY',
+          second: 'MMM DD YYYY',
+          minute: 'MMM DD YYYY',
+          hour: 'MMM DD YYYY',
+          day: 'MMM DD YYYY',
+          week: 'MMM DD YYYY',
+          month: 'MMM DD YYYY',
+          quarter: 'MMM DD YYYY',
+          year: 'MMM DD YYYY',
+        }
+      }
+    };
     setChartOptions({
       responsive: true,
       dragData: true,
@@ -800,6 +844,7 @@ function HistoricalData() {
                 <label className="form-label">Interval</label>
                 <select className="form-select" id="criteriaid">
                   <option value="" selected>Select Interval</option>
+                  <option value="15-M" selected>15-M</option>
                   {Criteria.map((x, y) =>
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
