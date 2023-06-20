@@ -52,6 +52,7 @@ function HistoricalData() {
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
+  const [Nestedheaders, setNestedheaders] = useState([]);
   const [Flagcodelist,SetFlagcodelist]=useState([]);
   const [revert, setrevert] = useState(false);
   const [Groups, setGroups] = useState([]);
@@ -246,7 +247,12 @@ function HistoricalData() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
+    let Groupid = document.getElementById("groupid").value;
     var layout = [];
+    let headers = [];
+    if (Groupid != "") {
+      headers = Nestedheaders;
+    }
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
@@ -256,11 +262,8 @@ function HistoricalData() {
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
       layout.push({
         name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-
-          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF"
-
+          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           return $("<td>").css("background-color", bgcolor).append(item);
         }
       });
@@ -311,9 +314,11 @@ function HistoricalData() {
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
-      //  columnDrag: true,
+      tableWidth: '100%',
       tableOverflow: true,
+      freezeColumns: 1,
       columns: layout,
+      nestedHeaders: headers,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable,
@@ -429,11 +434,8 @@ function HistoricalData() {
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval,GroupId) {
     let isvalid = true;
-    if(GroupId !=""){
-      return isvalid
-    }
-    if (Station == "") {
-      toast.error('Please select station', {
+    if (GroupId == "" && Station == "") {
+      toast.error('Please select group or station', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -444,7 +446,7 @@ function HistoricalData() {
         theme: "colored",
       });
       isvalid = false;
-    } else if (Pollutent == "") {
+    } else if (Station != "" && Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
@@ -499,25 +501,44 @@ function HistoricalData() {
   const ChangeGroupName = function (e) {
     let stationParamaters=[];
     let selectedGroup = document.getElementById("groupid").value;
+    let headers = [];
+    $('.pollutentid')[0].sumo.reload();
+    $('.pollutentid')[0].sumo.unSelectAll();
+    $('#stationid').val("");
+    if (selectedGroup != "") {
+      $('#stationid').addClass("disable");
+      $('.pollutentid')[0].sumo.disable();
+    } else {
+      $('#stationid').removeClass("disable");
+      $('.pollutentid')[0].sumo.enable();
+    }
     setGroupSelected(selectedGroup);
    // setPollutents([]);
     setcriteria([]);
    // setStations([]);
-    let stationID = StationGroups.filter(x=>x.groupID==selectedGroup).map(a => a.stationID);
-    var finalstationID = stationID.filter(function(item, pos){
-      return stationID.indexOf(item)== pos; 
-    });
-    let filter1 = StationGroups.filter(x=>x.groupID==selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
-    let filter2=[];
-    for(let i=0;i<finalstationID.length;i++){
-      let parameters=StationGroups.filter(x=>x.stationID==finalstationID[i]).map(a => a.parameterID);
-    for(let j=0;j<parameters.length;j++){
-      let value=AllLookpdata.listPollutents.filter(x=>x.stationID==finalstationID[i] && x.parameterID==parameters[j])[0].parameterName
-      filter2.push(value+"_"+finalstationID[i]);
-    }
-    }
-  //  console.log(filter2);
-  setSelectedPollutents(filter2);
+   let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+   var finalstationID = stationID.filter(function (item, pos) {
+     return stationID.indexOf(item) == pos;
+   });
+   let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+   let filter2 = [];
+   for (let i = 0; i < finalstationID.length; i++) {
+     let parameters = StationGroups.filter(x => x.stationID == finalstationID[i]).map(a => a.parameterID);
+     let station = Stations.filter(x => x.id == finalstationID[i]);
+     let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+     headers.push(obj);
+     for (let j = 0; j < parameters.length; j++) {
+       let value = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j])[0].parameterName
+       filter2.push(value + "_" + finalstationID[i]);
+     }
+   }
+   if (filter2.length < 10) {
+     let obj = { title: "", colspan: 10 - filter2.length };
+     headers.push(obj);
+   }
+   //  console.log(filter2);
+   setSelectedPollutents(filter2);
+   setNestedheaders(headers);
    // let filter2 = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) && filter1.includes(obj.parameterID)).map(a => a.parameterName);
    // setSelectedPollutents(filter2);
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
@@ -542,6 +563,12 @@ function HistoricalData() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
+    document.getElementById("groupid").value="";
+    if(e.target.value !=""){
+      $('#groupid').addClass("disable");
+    }else{
+      $('#groupid').removeClass("disable");
+    }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
     setPollutents(finaldata);
     setTimeout(function () {

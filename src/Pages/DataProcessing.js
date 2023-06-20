@@ -461,8 +461,14 @@ function DataProcessing() {
     } else {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
-
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype });
+    let isAvgData=false;
+    if(Interval=='15-M'){
+      isAvgData=false;
+    }
+    else{
+      isAvgData=true;
+    }
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData  });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -956,6 +962,7 @@ function DataProcessing() {
                 <label className="form-label">Interval</label>
                 <select className="form-select" id="criteriaid">
                   <option value="" selected>Select Interval</option>
+                  <option value="15-M" selected>15-M</option>
                   {Criteria.map((x, y) =>
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}

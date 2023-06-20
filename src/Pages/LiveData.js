@@ -315,7 +315,7 @@ function LiveData() {
   }
   const getdatareport = function () {
     setListReportData([]);
-    document.getElementById('loader').style.display = "block";
+    
     console.log(new Date());
     
     let Station="";
@@ -392,11 +392,8 @@ function LiveData() {
 
   const ReportValidations = function (Station, Pollutent, Interval,GroupId) {
     let isvalid = true;
-    if(GroupId !=""){
-      return isvalid
-    }
-    if (Station == "") {
-      toast.error('Please select station', {
+    if (GroupId == "" && Station == "") {
+      toast.error('Please select group or station', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -407,7 +404,7 @@ function LiveData() {
         theme: "colored",
       });
       isvalid = false;
-    } else if (Pollutent == "") {
+    } else if (Station != "" && Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
@@ -419,8 +416,20 @@ function LiveData() {
         theme: "colored",
       });
       isvalid = false;
+    } else if (Interval == "") {
+      toast.error('Please select interval', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      isvalid = false;
     }
-   
+
     return isvalid;
   }
   /* reported data end */
@@ -494,6 +503,12 @@ function LiveData() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
+    document.getElementById("groupid").value="";
+    if(e.target.value !=""){
+      $('#groupid').addClass("disable");
+    }else{
+      $('#groupid').removeClass("disable");
+    }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
     setPollutents(finaldata);
     setTimeout(function () {
