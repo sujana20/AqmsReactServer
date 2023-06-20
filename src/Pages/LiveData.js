@@ -75,6 +75,7 @@ function LiveData() {
         let groupnames = groupNamearray.filter( (ele, ind) => ind === groupNamearray.findIndex( elem => elem.groupID === ele.groupID))
         setGroups(groupnames);
         setRefreshGrid(true);
+        //getdatareport();
         setTimeout(function () {
           // $('#stationid').SumoSelect({
           //   triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
@@ -84,6 +85,8 @@ function LiveData() {
             triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
           });
+          ChangeGroupName();
+          getdatareport();
         }, 100);
         
       })
@@ -693,9 +696,9 @@ function LiveData() {
             <div className="col-md-2">
                 <label className="form-label">Group Name</label>
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
-                    <option value="" selected>None</option>
+                    <option value="">None</option>
                     {Groups.map((x, y) =>
-                      <option value={x.groupID} key={y} >{x.groupName}</option>
+                      <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
                     )}
                 </select>
               </div>
