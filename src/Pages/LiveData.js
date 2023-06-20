@@ -296,7 +296,7 @@ function LiveData() {
     }
     throw new Error('Bad Hex');
   }
-  const getdatareport = function (param) {
+  const getdatareport = function () {
     setListReportData([]);
     
     console.log(new Date());
@@ -314,15 +314,15 @@ function LiveData() {
       }else{
         Pollutent=SelectedPollutents;
       }
-      if (param == 'reset' || Pollutent.length == 0) {
-        if(GroupId==""){
-          setSelectedPollutents(Pollutent);
-        }else{
-          Pollutent=SelectedPollutents;
-        }
-      } else {
-         //setSelectedPollutents(finalpollutent);
-      }
+      // if (param == 'reset' || Pollutent.length == 0) {
+      //   if(GroupId==""){
+      //     setSelectedPollutents(Pollutent);
+      //   }else{
+      //     Pollutent=SelectedPollutents;
+      //   }
+      // } else {
+      //    //setSelectedPollutents(finalpollutent);
+      // }
       setRefreshGrid(RefreshGrid?false:true);
     let Interval = document.getElementById("criteriaid").value;
     let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
@@ -715,7 +715,8 @@ function LiveData() {
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                     <option value="">None</option>
                     {Groups.map((x, y) =>
-                      <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
+                       <option value={x.groupID} key={y} >{x.groupName}</option>
+                      // <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
                     )}
                 </select>
               </div>
