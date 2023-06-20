@@ -85,9 +85,7 @@ function LiveData() {
             triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
           });
-          ChangeGroupName();
-          getdatareport();
-        }, 100);
+        }, 10);
         
       })
       .catch((error) => console.log(error));
@@ -98,6 +96,13 @@ function LiveData() {
     }
     initializeJsGrid();
   }, [RefreshGrid,ListReportData]);
+
+  useEffect(() => {
+    if(AllLookpdata !=null){
+    ChangeGroupName('load');
+    getdatareport();
+  }
+  }, [AllLookpdata]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -455,13 +460,10 @@ function LiveData() {
   })
   
   const Resetfilters = function () {
-   
-    $('.stationid')[0].sumo.reload();
-    $('.stationid')[0].sumo.unSelectAll();
-    setcriteria([]);
-    
-    setListReportData([]);
-    
+    $('.pollutentid')[0].sumo.reload();
+    $('.pollutentid')[0].sumo.unSelectAll();
+    $('#stationid').val("");
+    getdatareport();
   }
   const Changepollutent = function (e) {
     setcriteria([]);
@@ -504,6 +506,7 @@ function LiveData() {
     let stationParamaters=[];
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
+    if(e !="load"){
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
     $('#stationid').val("");
@@ -514,6 +517,20 @@ function LiveData() {
       $('#stationid').removeClass("disable");
       $('.pollutentid')[0].sumo.enable();
     }
+  }else{
+    setTimeout(function () {
+      $('.pollutentid')[0].sumo.reload();
+      $('.pollutentid')[0].sumo.unSelectAll();
+      $('#stationid').val("");
+      if (selectedGroup != "") {
+        $('#stationid').addClass("disable");
+        $('.pollutentid')[0].sumo.disable();
+      } else {
+        $('#stationid').removeClass("disable");
+        $('.pollutentid')[0].sumo.enable();
+      }
+    }, 10);
+  }
     setGroupSelected(selectedGroup);
     setcriteria([]);
     let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
@@ -743,11 +760,11 @@ function LiveData() {
             </div>
             {ListReportData.length > 0 && (
               <div>
-                <div className="row">
+                {/* <div className="row">
                   <div className="col-md-12 mb-3">
                     <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
                   </div>
-                </div>
+                </div> */}
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     {AllLookpdata.listFlagCodes.map((i) =>
