@@ -595,6 +595,16 @@ function DataProcessing() {
     let stationParamaters = [];
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
+    $('.pollutentid')[0].sumo.reload();
+    $('.pollutentid')[0].sumo.unSelectAll();
+    $('#stationid').val("");
+    if (selectedGroup != "") {
+      $('#stationid').addClass("disable");
+      $('.pollutentid')[0].addClass("disable");
+    } else {
+      $('#stationid').removeClass("disable");
+      $('.pollutentid')[0].removeClass("disable");
+    }
     setGroupSelected(selectedGroup);
     // setPollutents([]);
     setcriteria([]);
@@ -608,7 +618,7 @@ function DataProcessing() {
     for (let i = 0; i < finalstationID.length; i++) {
       let parameters = StationGroups.filter(x => x.stationID == finalstationID[i]).map(a => a.parameterID);
       let station = Stations.filter(x => x.id == finalstationID[i]);
-      let obj = { title: station.length>0?station[0].stationName:"", colspan: parameters.length };
+      let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
         let value = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j])[0].parameterName
@@ -750,7 +760,7 @@ function DataProcessing() {
     let MaxVal = 0;
     let pointRadius = [];
     let xAxislabel = [];
-    let Scaleslist={};
+    let Scaleslist = {};
     for (let i = 0; i < pollutent.length; i++) {
       chartdata = [];
       pointRadius = [];
@@ -760,8 +770,8 @@ function DataProcessing() {
       let Parametersplit = pollutent[i].split("_")
       let Groupid = document.getElementById("groupid").value;
       let pollutentdata = [];
-      let Stationlist=Stations.filter(x=>x.id==Parametersplit[1]);
-      let Stationname=Stationlist.length>0?Stationlist[0].stationName:"";
+      let Stationlist = Stations.filter(x => x.id == Parametersplit[1]);
+      let Stationname = Stationlist.length > 0 ? Stationlist[0].stationName : "";
       if (Groupid != "") {
         pollutentdata = data.filter(val => val.parameterName.toLowerCase() == Parametersplit[0].toLowerCase() && val.stationID == Parametersplit[1]);
       } else {
@@ -777,19 +787,19 @@ function DataProcessing() {
         pointRadius.push(2);
       }
       if (charttype == 'line') {
-        Scaleslist[Parametersplit[1]+"_"+Parametersplit[0]]={
+        Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
           display: true,
           position: 'left',
           title: {
             display: true,
-            text: Stationname+" - "+Parametersplit[0]
+            text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
           }
         }
-        datasets.push({ label: Stationname+" - "+Parametersplit[0],yAxisID: Parametersplit[1]+"_"+Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
+        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
-    Scaleslist["xAxes"]= {
+    Scaleslist["xAxes"] = {
       type: 'time',
       time: {
         displayFormats: {
