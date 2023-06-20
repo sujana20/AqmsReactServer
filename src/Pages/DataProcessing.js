@@ -722,8 +722,9 @@ function DataProcessing() {
   const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
-    $('.stationid')[0].sumo.reload();
-    $('.stationid')[0].sumo.unSelectAll();
+    $('#stationid').val("");
+    $('#groupid').val("");
+    //$('.stationid')[0].sumo.unSelectAll();
     setcriteria([]);
     setToDate(new Date());
     setFromDate(new Date());
@@ -991,7 +992,7 @@ function DataProcessing() {
               </div>
             )}
             {ListReportData.length > 0 && ChartData && (
-              <div >
+              <div className="chartmaindiv">
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
               </div>
             )}
