@@ -611,7 +611,7 @@ function HistoricalData() {
   
         for (let j = 0; j < finaldata.length; j++) {
   
-          let intervalarr = finaldata[j].avgInterval.split(',');
+          let intervalarr = finaldata[j].serverAvgInterval.split(',');
   
           for (let i = 0; i < intervalarr.length; i++) {
   
