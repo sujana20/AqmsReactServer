@@ -46,10 +46,13 @@ function LiveData() {
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
   const [Flagcodelist,SetFlagcodelist]=useState([]);
+  const [Nestedheaders, setNestedheaders] = useState([]);
   const [revert, setrevert] = useState(false);
   const [Groups, setGroups] = useState([]);
   const [StationGroups, setStationGroups] = useState([]);
   const [GroupSelected, setGroupSelected] = useState("");
+  const [RefreshGrid, setRefreshGrid] = useState(false);
+  const getDuration = window.LiveDataDuration;
   const revertRef = useRef();
   revertRef.current = revert;
   let jsptable = null;
@@ -71,6 +74,7 @@ function LiveData() {
         let groupNamearray= data.listStationGroups;
         let groupnames = groupNamearray.filter( (ele, ind) => ind === groupNamearray.findIndex( elem => elem.groupID === ele.groupID))
         setGroups(groupnames);
+        setRefreshGrid(true);
         setTimeout(function () {
           // $('#stationid').SumoSelect({
           //   triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
@@ -90,7 +94,14 @@ function LiveData() {
       jsptable.refresh();
     }
     initializeJsGrid();
-  }, [ListReportData]);
+  }, [RefreshGrid,ListReportData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getdatareport('refresh');
+    }, getDuration);
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  })
 
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
@@ -187,51 +198,23 @@ function LiveData() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
-    // var layout = [];
-    // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
-    
-    
-    //   for (var i = 0; i < SelectedPollutents.length; i++) {
-    //     let paramName = ListReportData.filter(obj => obj.parameterID == SelectedPollutents[i].id);
-    //     if(paramName.length>0){
-    //       layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - ppb", type: "numeric", readOnly: true });
-    //     }
-    //   }
-    // var layout = [];
-    // var gridheadertitle;
-    // layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, });
-    // for (var i = 0; i < SelectedPollutents.length; i++) {
-    //   let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
-    //   gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
-    //   layout.push({
-    //     name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-    //       let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-    //       let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
-    //       return $("<td>").css("background-color", bgcolor).append(item);
-    //     }
-    //   });
-    // }
-    // if (SelectedPollutents.length < 10) {
-    //   for (var p = SelectedPollutents.length; p < 10; p++) {
-    //     layout.push({ name: "", title: "", type: "text", width: "100px", sorting: false });
-    //   }
-    // }
-
+    let Groupid = document.getElementById("groupid").value;
     var layout = [];
+    let headers = [];
+    if (Groupid != "") {
+      headers = Nestedheaders;
+    }
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit=SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
       layout.push({
         name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-
-          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF"
-
+          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           return $("<td>").css("background-color", bgcolor).append(item);
         }
       });
@@ -242,19 +225,6 @@ function LiveData() {
       }
     }
     
-    //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
-    // for (var k = 0; k < ListReportData.length; k++) {
-    //   var obj = {};
-    //   var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
-    //   let paramName = SelectedPollutents.filter(obj => obj.id == ListReportData[k].parameterID);
-    //   if (temp >= 0) {
-    //     dataForGrid[temp][paramName[0].parameterName] = ListReportData[k].parametervalue;
-    //   } else {
-    //     obj["Date"] = ListReportData[k].interval;
-    //     obj[paramName[0].parameterName] = ListReportData[k].parametervalue;
-    //     dataForGrid.push(obj);
-    //   }
-    // }
     for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
@@ -294,8 +264,13 @@ function LiveData() {
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
+      tableWidth: '100%',
       tableOverflow: true,
+      freezeColumns: 1,
       columns: layout,
+      nestedHeaders: headers,
+      lazyLoading: true,
+      loadingSpin: true,
       onselection: selectionActive,
       onload: loadtable,
     });
@@ -313,7 +288,7 @@ function LiveData() {
     }
     throw new Error('Bad Hex');
   }
-  const getdatareport = function () {
+  const getdatareport = function (param) {
     setListReportData([]);
     
     console.log(new Date());
@@ -331,10 +306,16 @@ function LiveData() {
       }else{
         Pollutent=SelectedPollutents;
       }
-    // if (Station.length > 0) {
-    //   Station.join(',')
-    // }
-    
+      if (param == 'reset' || Pollutent.length == 0) {
+        if(GroupId==""){
+          setSelectedPollutents(Pollutent);
+        }else{
+          Pollutent=SelectedPollutents;
+        }
+      } else {
+         //setSelectedPollutents(finalpollutent);
+      }
+      setRefreshGrid(RefreshGrid?false:true);
     let Interval = document.getElementById("criteriaid").value;
     let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
     if (!valid) {
@@ -519,28 +500,42 @@ function LiveData() {
   const ChangeGroupName = function (e) {
     let stationParamaters=[];
     let selectedGroup = document.getElementById("groupid").value;
+    let headers = [];
+    $('.pollutentid')[0].sumo.reload();
+    $('.pollutentid')[0].sumo.unSelectAll();
+    $('#stationid').val("");
+    if (selectedGroup != "") {
+      $('#stationid').addClass("disable");
+      $('.pollutentid')[0].sumo.disable();
+    } else {
+      $('#stationid').removeClass("disable");
+      $('.pollutentid')[0].sumo.enable();
+    }
     setGroupSelected(selectedGroup);
-   // setPollutents([]);
     setcriteria([]);
-   // setStations([]);
-    let stationID = StationGroups.filter(x=>x.groupID==selectedGroup).map(a => a.stationID);
-    var finalstationID = stationID.filter(function(item, pos){
-      return stationID.indexOf(item)== pos; 
+    let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+    var finalstationID = stationID.filter(function (item, pos) {
+      return stationID.indexOf(item) == pos;
     });
-    let filter1 = StationGroups.filter(x=>x.groupID==selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
-    let filter2=[];
-    for(let i=0;i<finalstationID.length;i++){
-      let parameters=StationGroups.filter(x=>x.stationID==finalstationID[i]).map(a => a.parameterID);
-    for(let j=0;j<parameters.length;j++){
-      let value=AllLookpdata.listPollutents.filter(x=>x.stationID==finalstationID[i] && x.parameterID==parameters[j])[0].parameterName
-      filter2.push(value+"_"+finalstationID[i]);
+    let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+    let filter2 = [];
+    for (let i = 0; i < finalstationID.length; i++) {
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i]).map(a => a.parameterID);
+      let station = Stations.filter(x => x.id == finalstationID[i]);
+      let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+      headers.push(obj);
+      for (let j = 0; j < parameters.length; j++) {
+        let value = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j])[0].parameterName
+        filter2.push(value + "_" + finalstationID[i]);
+      }
     }
+    if (filter2.length < 10) {
+      let obj = { title: "", colspan: 10 - filter2.length };
+      headers.push(obj);
     }
-  //  console.log(filter2);
-  setSelectedPollutents(filter2);
-   // let filter2 = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) && filter1.includes(obj.parameterID)).map(a => a.parameterName);
-   // setSelectedPollutents(filter2);
-    // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
+    setSelectedPollutents(filter2);
+    setNestedheaders(headers);
+
     let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterID));
     if (finaldata.length > 0) {
       let finalinterval = [];
