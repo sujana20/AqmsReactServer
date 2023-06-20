@@ -600,7 +600,7 @@ function DataProcessing() {
     $('#stationid').val("");
     if (selectedGroup != "") {
       $('#stationid').addClass("disable");
-      $('.pollutentid')[0].addClass("disable");
+      $('.SumoSelect .CaptionCont')[0].addClass("disable");
     } else {
       $('#stationid').removeClass("disable");
       $('.pollutentid')[0].removeClass("disable");
