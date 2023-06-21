@@ -645,7 +645,7 @@ table.jexcel colgroup col:nth-child(1) {
 } */
 
 .btn.flag {
-  width: 5%;
+  width: 3rem;
   color: #000 !important;
   cursor: default !important;
   margin-bottom: 0.5rem;
@@ -776,10 +776,13 @@ table.jexcel colgroup col:nth-child(1) {
   border-top: 1px solid #ddd !important;
     border-left: 1px solid #ddd !important;
 }
-.jexcel .jexcel_nested>thead>tr>td{
+.jexcel >thead>tr.jexcel_nested>td{
   position: sticky;
-  top: 0;
+  top: 0 !important;
   z-index: 2;
+}
+.jexcel >thead>tr>td{
+  top: 25px !important;
 }
 .jexcel > tbody > tr > td.readonly{
   color:#444444 !important;

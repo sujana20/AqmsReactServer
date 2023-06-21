@@ -157,7 +157,8 @@ function HistoricalData() {
     }
     for (let k = startcolindex; k < endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
-        const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
+       // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
+       const index = finalarr.findIndex(data => data.Date == chartdata.datasets[k-1].data[i].x);
         if (index > -1) {
           chartdata.datasets[k - 1].pointRadius[i] = 10;
         } else {
