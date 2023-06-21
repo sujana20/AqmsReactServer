@@ -776,6 +776,11 @@ table.jexcel colgroup col:nth-child(1) {
   border-top: 1px solid #ddd !important;
     border-left: 1px solid #ddd !important;
 }
+.jexcel .jexcel_nested>thead>tr>td{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
 .jexcel > tbody > tr > td.readonly{
   color:#444444 !important;
 }
