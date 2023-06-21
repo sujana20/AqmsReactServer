@@ -79,6 +79,7 @@ function HistoricalData() {
         setStations(data.listStations);
         SetFlagcodelist(data.listFlagCodes);
         setStationGroups(data.listStationGroups);
+        
         let groupNamearray= data.listStationGroups;
         let groupnames = groupNamearray.filter( (ele, ind) => ind === groupNamearray.findIndex( elem => elem.groupID === ele.groupID))
         setGroups(groupnames);
@@ -287,10 +288,7 @@ function HistoricalData() {
   const getdatareport = function () {
     setListReportData([]);
     document.getElementById('loader').style.display = "block";
-    console.log(new Date());
-    // if (chartRef.current != null) {
-    //     chartRef.current.data = {};
-    //   }
+    
     let Station="";
     let Pollutent="";
     let GroupId = $("#groupid").val();
@@ -355,23 +353,87 @@ function HistoricalData() {
   }
 
   const DownloadExcel = function () {
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
-    }
-    let Pollutent = $("#pollutentid").val();
+    document.getElementById('loader').style.display = "block";
+    
+    let Station="";
+    let Pollutent="";
+    let GroupId = $("#groupid").val();
+    Station = $("#stationid").val();
+    Pollutent = $("#pollutentid").val();
+      if (Pollutent.length > 0) {
+        Pollutent.join(',')
+      }
+      if(GroupId==""){
+        setSelectedPollutents(Pollutent);
+      }else{
+        Pollutent=SelectedPollutents;
+      }
+   
+    
+    setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
+    
+    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval,GroupId);
     if (!valid) {
       return false;
     }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params, "_blank");
+    document.getElementById('loader').style.display = "block";
+    let type = Interval.substr(Interval.length - 1);
+    let Intervaltype;
+    if (type == 'H') {
+      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+    } else {
+      Intervaltype = Interval.substr(0, Interval.length - 1);
+    }
+    let isAvgData=false;
+    if(Interval=='15-M'){
+      isAvgData=false;
+    }
+    else{
+      isAvgData=true;
+    }
+    let paramUnitnames;
+
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let filter;
+      let unitname;
+      if (GroupId != "") {
+         let Parameterssplit=SelectedPollutents[i].split("_");
+         let stationName=AllLookpdata.listStations.filter(x=>x.id==Parameterssplit[1]);
+         filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
+         unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+         if (paramUnitnames == undefined) {
+            paramUnitnames = stationName[0].stationName + "-" + filter[0].parameterName + "-" + unitname[0].unitName + ",";
+         }
+         else {
+            paramUnitnames += stationName[0].stationName  + "-" + filter[0].parameterName + "-" + unitname[0].unitName + ",";
+         }
+      }
+      else{
+         filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+         unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+         if (paramUnitnames == undefined) {
+           paramUnitnames = filter[0].parameterName + "-" + unitname[0].unitName + ",";
+         }
+         else {
+           paramUnitnames += filter[0].parameterName + "-" + unitname[0].unitName + ",";
+         }
+      }
+       
+      
+    }
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData,Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
+    let url = process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?"
+    if (GroupId != "") {
+      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingDataExportExcel?"
+    }
+    window.open(url + params, "_blank");
+    document.getElementById('loader').style.display = "none";
     /*  fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())
@@ -822,6 +884,11 @@ function HistoricalData() {
               <div className="col-md-2 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                {ListReportData != 0 && (
+                    <span>
+                      <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                    </span>
+                )}
               </div>
               <div className="col-md-4">
                 <div className="row">
