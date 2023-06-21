@@ -258,7 +258,7 @@ function HistoricalData() {
       headers = Nestedheaders;
     }
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", columnSorting: true,readOnly:true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit=SelectedPollutents[i].split("_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
@@ -321,6 +321,7 @@ function HistoricalData() {
       tableWidth: '100%',
       tableOverflow: true,
       freezeColumns: 1,
+      columnSorting: false,
       columns: layout,
       nestedHeaders: headers,
       onselection: selectionActive,
@@ -527,7 +528,7 @@ function HistoricalData() {
    let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
    let filter2 = [];
    for (let i = 0; i < finalstationID.length; i++) {
-     let parameters = StationGroups.filter(x => x.stationID == finalstationID[i]).map(a => a.parameterID);
+     let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
      let station = Stations.filter(x => x.id == finalstationID[i]);
      let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
      headers.push(obj);
@@ -718,7 +719,7 @@ function HistoricalData() {
         if (index == -1) {
           labels.push(pollutentdata[k].interval)
         }
-        chartdata.push(pollutentdata[k].parametervalue)
+        chartdata.push({ x: pollutentdata[k].interval, y: pollutentdata[k].parametervalue });
         pointRadius.push(2);
       }
       if (charttype == 'line') {
@@ -775,7 +776,7 @@ function HistoricalData() {
     }
     setTimeout(() => {
       setChartData({
-        labels,
+     //   labels,
         datasets: datasets
       })
     }, 10);

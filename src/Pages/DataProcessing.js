@@ -628,7 +628,7 @@ function DataProcessing() {
     let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     let filter2 = [];
     for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i]).map(a => a.parameterID);
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
       let station = Stations.filter(x => x.id == finalstationID[i]);
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
@@ -796,7 +796,7 @@ function DataProcessing() {
         if (index == -1) {
           labels.push(pollutentdata[k].interval)
         }
-        chartdata.push({ x: pollutentdata[k].interval, y: pollutentdata[k].parametervalue })
+        chartdata.push({ x: pollutentdata[k].interval, y: pollutentdata[k].parametervalue });
         pointRadius.push(2);
       }
       if (charttype == 'line') {
