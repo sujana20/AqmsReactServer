@@ -36,17 +36,19 @@ const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
-    
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+   
   return (
+    
   <div>
   <BrowserRouter basename={process.env.REACT_APP_BASE_URL}> 
-    <ToastContainer />
-    {location!="/"?<Header />:""}
-    {location!="/"?<Sidenavbar />:""}
+  <ToastContainer />
+  {currentUser!=null?<Header />:""}
+  {currentUser!=null?<Sidenavbar />:""}
   <Suspense fallback={<div>Loading...</div>}>
       <Routes>
-      <Route   path="/" exact element={<Login />} />
-      <Route   path="/Dashboard" exact element={<Dashboard />} />
+      <Route   path="/"   element={<Login />} />
+      <Route   path="/Dashboard"  element={<Dashboard />} />
       <Route   path="/Profile" exact element={<Profile />} />
       <Route   path="/Parameters" exact element={<Parameters />} />
       <Route   path="/AirQuality" exact element={<AirQuality />} />

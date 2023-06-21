@@ -23,8 +23,10 @@ function Login() {
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            window.location.href = "/Dashboard";
+            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
+             //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+
             toast.error('User name or password is incorrect. Please try again', {
               position: "top-right",
               autoClose: 5000,
@@ -37,7 +39,10 @@ function Login() {
             });
             return false;
           }
-        }).catch((error) => toast.error('User name or password is incorrect. Please try again'));
+        }).catch((error) => 
+            toast.error('User name or password is incorrect. Please try again')
+           // window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard"
+        );
     }
   }
 
