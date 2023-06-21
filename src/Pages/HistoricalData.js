@@ -155,7 +155,7 @@ function HistoricalData() {
     for (let j = 0; j < SelectedPollutents.length; j++) {
       chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 2; return x });
     }
-    for (let k = startcolindex; k < endcolindex; k++) {
+    for (let k = startcolindex; k <= endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
        // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
        const index = finalarr.findIndex(x => x.Date == chartdata.datasets[k-1].data[i].x);
