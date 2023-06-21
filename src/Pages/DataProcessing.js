@@ -166,7 +166,7 @@ function DataProcessing() {
     for (let k = startcolindex; k <= endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
         // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
-        const index = finalarr.findIndex(data => data.Date == chartdata.datasets[k - 1].data[i].x);
+        const index = finalarr.findIndex(x => x.Date == chartdata.datasets[k - 1].data[i].x);
         if (index > -1) {
           chartdata.datasets[k - 1].pointRadius[i] = 10;
         } else {
@@ -193,8 +193,8 @@ function DataProcessing() {
       }
       olddata.push({ Parametervalue: filtered.length>0?filtered[0].parametervalue:null, col: x, row: y });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-      let ModifiedBy = currentUser.userName;
-      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifiedBy: ModifiedBy, loggerFlags: window.Editflag });
+      let ModifyBy = currentUser.id;
+      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
       setOldData(olddata);
       setNewData(newdata);
     }
@@ -279,7 +279,13 @@ function DataProcessing() {
 
   const gethistory = function () {
     let changearr = dataForGridcopy[selectedgrid[1]];
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
+    let filtered = null;
+    if (Parametersplit.length > 1) {
+      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+    } else {
+     filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    }
     let params = new URLSearchParams({ id: filtered[0].id });
 
     fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
@@ -296,14 +302,28 @@ function DataProcessing() {
   const reverttoprevious = function () {
     revertRef.current = true;
     let changearr = dataForGridcopy[selectedgrid[1]];
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
+   // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    let filtered = null;
+      if (Parametersplit.length > 1) {
+        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+      } else {
+        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      }
     let params = new URLSearchParams({ id: filtered[0].id });
     fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((originaldata) => {
         if (originaldata) {
-          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], originaldata.parameterValueOld, true);
+          let value=0;
+            if (window.TruncateorRound == "RoundOff") {
+              value = originaldata.oldValue==null?originaldata.oldValue: originaldata.oldValue.toFixed(digit);
+            }
+            else {
+              value=originaldata.oldValue==null?originaldata.oldValue:CommonFunctions.truncateNumber(originaldata.oldValue, digit)
+            }
+          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], originaldata.oldValue, true);
         }
       });
   }
@@ -886,7 +906,7 @@ function DataProcessing() {
                       <th>Parameter Name</th>
                       <th>Old Value </th>
                       <th>New Value</th>
-                      <th>Modified By</th>
+                      {/* <th>Modified By</th> */}
                       <th>Modified On</th>
                     </tr>
                   </thead>
@@ -895,10 +915,10 @@ function DataProcessing() {
                       ListHistory.map((x, y) =>
                         <tr className="body_active">
                           <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0].parameterName}</td>
-                          <td>{x.parameterValueOld}</td>
-                          <td>{x.parameterValueNew}</td>
-                          <td>{x.modifiedBy}</td>
-                          <td>{x.modifiedOn != null ? generateDatabaseDateTime(x.modifiedOn) : x.modifiedOn}</td>
+                          <td>{x.oldValue}</td>
+                          <td>{x.newValue}</td>
+                          {/* <td>{x.ModifyBy}</td> */}
+                          <td>{x.ModifyBy != null ? generateDatabaseDateTime(x.modifiedOn) : x.modifiedOn}</td>
                         </tr>
                       )
                     )}
