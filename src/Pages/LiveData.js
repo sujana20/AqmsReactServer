@@ -167,15 +167,16 @@ function LiveData() {
  
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let filnallist = ListReportData.filter(x => x.parameterID === SelectedPollutents[i].id);
+      let Parameterssplit = SelectedPollutents[i].split("_");
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
-          let cell = instance.jexcel.getCellFromCoords(i+ 1, index);
-          if(filnallist[j].flagStatus!=null){
-            let classname=CommonFunctions.SetFlagColor(filnallist[j].flagStatus,Flagcodelist);
-            if(cell!= undefined){
-              cell.style.backgroundColor=classname;
+          let cell = instance.jexcel.getCellFromCoords(i + 1, index);
+          if (filnallist[j].loggerFlags != null) {
+            let classname = CommonFunctions.SetFlagColor(filnallist[j].loggerFlags, Flagcodelist);
+            if (cell != undefined) {
+              cell.style.backgroundColor = classname;
               //cell.classList.add(classname);
             }
           }
@@ -213,14 +214,14 @@ function LiveData() {
       headers = Nestedheaders;
     }
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false,readOnly:true, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           return $("<td>").css("background-color", bgcolor).append(item);
@@ -229,7 +230,7 @@ function LiveData() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false });
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false,readOnly:true, });
       }
     }
     
@@ -428,7 +429,7 @@ function LiveData() {
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID);
     if (finaldata.length > 0) {
       let finalinterval = [];
-      let intervalarr = finaldata[0].serverAvgInterval.split(',');
+      let intervalarr = finaldata[0].serverAvgInterval==null?[]:finaldata[0].serverAvgInterval.split(',');
       for (let i = 0; i < intervalarr.length; i++) {
         let intervalsplitarr = intervalarr[i].split('-');
         finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
@@ -545,7 +546,8 @@ function LiveData() {
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j])[0].parameterName
+        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value = value1.length>0?value1[0].parameterName:"";
         filter2.push(value + "_" + finalstationID[i]);
       }
     }
@@ -560,7 +562,7 @@ function LiveData() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if(intervalarr[i] !=null){
           let intervalsplitarr = intervalarr[i].split('-');
@@ -587,7 +589,7 @@ function LiveData() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if(intervalarr[i] !=null){
           let intervalsplitarr = intervalarr[i].split('-');

@@ -343,7 +343,7 @@ function DataProcessing() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false });
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false,readOnly:true, });
       }
     }
 
@@ -633,7 +633,8 @@ function DataProcessing() {
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j])[0].parameterName
+        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value = value1.length>0?value1[0].parameterName:"";
         filter2.push(value + "_" + finalstationID[i]);
       }
     }
@@ -651,7 +652,7 @@ function DataProcessing() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if (intervalarr[i] != null) {
             let intervalsplitarr = intervalarr[i].split('-');
@@ -727,7 +728,7 @@ function DataProcessing() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if (intervalarr[i] != null) {
             let intervalsplitarr = intervalarr[i].split('-');
