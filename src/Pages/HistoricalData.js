@@ -167,35 +167,7 @@ function HistoricalData() {
     }
     chart.update();
   }
-  const changed = function (instance, cell, x, y, value) {
-    let changearr = dataForGrid[y];
-    if (revertRef.current) {
-      cell.classList.remove('updated');
-    } else {
-      cell.classList.add('updated');
-    }
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
-    let chart = chartRef.current;
-    let chartdata = chart != null ? chart.data : [];
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    let ModifiedBy = currentUser.userName;
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson == 1) {
-          chartdata.datasets[x - 1].data[y] = value;
-          chart.update();
-          revertRef.current = false;
-        }
-      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
-  }
-  
+
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("_");
@@ -216,36 +188,6 @@ function HistoricalData() {
     }
   }
 
-  const gethistory = function () {
-    let changearr = dataForGridcopy[selectedgrid[1]];
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-    let params = new URLSearchParams({ id: filtered[0].id });
-
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((historydata) => {
-        if (historydata) {
-          setListHistory(historydata);
-        }
-      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
-    $('#historymodal').modal('show');
-  }
-
-  const reverttoprevious = function () {
-    revertRef.current = true;
-    let changearr = dataForGridcopy[selectedgrid[1]];
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-    let params = new URLSearchParams({ id: filtered[0].id });
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((originaldata) => {
-        if (originaldata) {
-          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], originaldata.parameterValueOld, true);
-        }
-      });
-  }
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
@@ -326,7 +268,6 @@ function HistoricalData() {
       columns: layout,
       nestedHeaders: headers,
       onselection: selectionActive,
-      onchange: changed,
       onload: loadtable,
     });
     

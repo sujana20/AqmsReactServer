@@ -73,7 +73,7 @@ function DataProcessing() {
   let dataForGrid = [];
   let olddata = [];
   let newdata = [];
-
+  let digit = window.decimalDigit
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
@@ -165,8 +165,8 @@ function DataProcessing() {
     }
     for (let k = startcolindex; k <= endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
-       // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
-       const index = finalarr.findIndex(data => data.Date == chartdata.datasets[k-1].data[i].x);
+        // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
+        const index = finalarr.findIndex(data => data.Date == chartdata.datasets[k - 1].data[i].x);
         if (index > -1) {
           chartdata.datasets[k - 1].pointRadius[i] = 10;
         } else {
@@ -184,11 +184,17 @@ function DataProcessing() {
       cell.classList.add('updated');
     }
     if (!revertRef.current) {
-      let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
-      olddata.push({ Parametervalue: filtered[0].parametervalue, col: x, row: y });
+      let Parametersplit = SelectedPollutents[x - 1].split("_");
+      let filtered = null;
+      if (Parametersplit.length > 1) {
+        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+      } else {
+        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
+      }
+      olddata.push({ Parametervalue: filtered.length>0?filtered[0].parametervalue:null, col: x, row: y });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifiedBy = currentUser.userName;
-      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifiedBy: ModifiedBy, loggerFlags: 'E' });
+      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifiedBy: ModifiedBy, loggerFlags: window.Editflag });
       setOldData(olddata);
       setNewData(newdata);
     }
@@ -197,22 +203,6 @@ function DataProcessing() {
     chartdata.datasets[x - 1].data[y] = value;
     chart.update();
     revertRef.current = false;
-    /*          revertRef.current = false;
-       fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
-         method: 'PUT',
-         headers: {
-           'Accept': 'application/json',
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
-       }).then((response) => response.json())
-         .then((responseJson) => {
-           if (responseJson == 1) {
-             chartdata.datasets[x - 1].data[y] = value;
-             chart.update();
-             revertRef.current = false;
-           }
-         }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator')); */
   }
 
   const SaveEditedData = function () {
@@ -248,7 +238,14 @@ function DataProcessing() {
         } else {
           for (let i = 0; i < OldData.length; i++) {
             revertRef.current = true;
-            jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, OldData[i].Parametervalue, true);
+            let value=0;
+            if (window.TruncateorRound == "RoundOff") {
+              value = OldData[i].Parametervalue==null?OldData[i].Parametervalue: OldData[i].Parametervalue.toFixed(digit);
+            }
+            else {
+              value=OldData[i].Parametervalue==null?OldData[i].Parametervalue:CommonFunctions.truncateNumber(OldData[i].Parametervalue, digit)
+            }
+            jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, value, true);
             if (i == (OldData.length - 1)) {
               olddata = [];
               newdata = [];
@@ -344,7 +341,7 @@ function DataProcessing() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false,readOnly:true, });
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false, readOnly: true, });
       }
     }
 
@@ -353,11 +350,7 @@ function DataProcessing() {
     for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
-
       let roundedNumber = 0;
-
-      let digit = window.decimalDigit
-
       if (window.TruncateorRound == "RoundOff") {
 
         let num = ListReportData[k].parametervalue;
@@ -462,14 +455,14 @@ function DataProcessing() {
     } else {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
-    let isAvgData=false;
-    if(Interval=='15-M'){
-      isAvgData=false;
+    let isAvgData = false;
+    if (Interval == '15-M') {
+      isAvgData = false;
     }
-    else{
-      isAvgData=true;
+    else {
+      isAvgData = true;
     }
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData  });
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -591,10 +584,10 @@ function DataProcessing() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
-    document.getElementById("groupid").value="";
-    if(e.target.value !=""){
+    document.getElementById("groupid").value = "";
+    if (e.target.value != "") {
       $('#groupid').addClass("disable");
-    }else{
+    } else {
       $('#groupid').removeClass("disable");
     }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
@@ -634,8 +627,8 @@ function DataProcessing() {
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
-        let value = value1.length>0?value1[0].parameterName:"";
+        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value = value1.length > 0 ? value1[0].parameterName : "";
         filter2.push(value + "_" + finalstationID[i]);
       }
     }
@@ -653,7 +646,7 @@ function DataProcessing() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval == null ? [] : finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if (intervalarr[i] != null) {
             let intervalsplitarr = intervalarr[i].split('-');
@@ -729,7 +722,7 @@ function DataProcessing() {
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval == null ? [] : finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
           if (intervalarr[i] != null) {
             let intervalsplitarr = intervalarr[i].split('-');
