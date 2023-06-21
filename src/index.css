@@ -645,7 +645,7 @@ table.jexcel colgroup col:nth-child(1) {
 } */
 
 .btn.flag {
-  width: 5%;
+  width: 3rem;
   color: #000 !important;
   cursor: default !important;
   margin-bottom: 0.5rem;
