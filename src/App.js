@@ -35,7 +35,7 @@ const LiveDataReports=lazy(() => import("./Pages/LiveDataReports"));
 const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
 
 function App() {
-    const [location, setlocation] = useState(window.location.pathname);
+   // const [location, setlocation] = useState(window.location.pathname);
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
    
   return (
