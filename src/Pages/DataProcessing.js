@@ -63,6 +63,7 @@ function DataProcessing() {
   const [OldData, setOldData] = useState([]);
   const [NewData, setNewData] = useState([]);
   const [revert, setrevert] = useState(false);
+  const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
@@ -112,7 +113,7 @@ function DataProcessing() {
     initializeJsGrid();
     initializeTooltip();
     // }
-  }, [ListReportData]);
+  }, [ListReportData,LoadjsGridData]);
 
 
   const initializeTooltip = function () {
@@ -511,6 +512,7 @@ function DataProcessing() {
           //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
+          setLoadjsGridData(true);
           // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
           getchartdata(data1, Pollutent, "line", "Raw");
           //document.getElementById('loader').style.display = "none";
@@ -782,6 +784,7 @@ function DataProcessing() {
     setFromDate(new Date());
     setListReportData([]);
     setSelectedPollutents([]);
+    setLoadjsGridData(false);
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
@@ -1043,6 +1046,9 @@ function DataProcessing() {
 
                 <div className="jsGrid" ref={jspreadRef} />
               </div>
+            )}
+            {ListReportData.length == 0 && LoadjsGridData &&(
+              <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && (
               <div className="chartmaindiv">
