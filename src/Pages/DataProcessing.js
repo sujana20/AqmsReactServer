@@ -178,10 +178,13 @@ function DataProcessing() {
   }
   const changed = function (instance, cell, x, y, value) {
     let changearr = dataForGrid[y];
-    if (revertRef.current) {
-      cell.classList.remove('updated');
-    } else {
-      cell.classList.add('updated');
+    if (!revertRef.current) {
+      //cell.classList.add('updated');
+      let classname = CommonFunctions.SetFlagColor(window.Editflag, Flagcodelist);
+    if (cell != undefined) {
+      cell.style.backgroundColor = classname;
+      //cell.classList.add(classname);
+    }
     }
     if (!revertRef.current) {
       let Parametersplit = SelectedPollutents[x - 1].split("_");
@@ -191,7 +194,7 @@ function DataProcessing() {
       } else {
         filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
       }
-      olddata.push({ Parametervalue: filtered.length>0?filtered[0].parametervalue:null, col: x, row: y });
+      olddata.push({ Parametervalue: filtered.length>0?filtered[0].parametervalue:null, col: x, row: y, loggerFlags:filtered.length>0?filtered[0].loggerFlags:null  });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
@@ -246,6 +249,13 @@ function DataProcessing() {
               value=OldData[i].Parametervalue==null?OldData[i].Parametervalue:CommonFunctions.truncateNumber(OldData[i].Parametervalue, digit)
             }
             jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, value, true);
+            let cell = jspreadRef.current.jexcel.getCellFromCoords(OldData[i].col, OldData[i].row);
+              let classname = CommonFunctions.SetFlagColor(OldData[i].loggerFlags==null?window.Okflag:OldData[i].loggerFlags, Flagcodelist);
+              if (cell != undefined) {
+                cell.style.backgroundColor = classname;
+                //cell.classList.add(classname);
+              }
+
             if (i == (OldData.length - 1)) {
               olddata = [];
               newdata = [];
@@ -323,7 +333,12 @@ function DataProcessing() {
             else {
               value=originaldata.oldValue==null?originaldata.oldValue:CommonFunctions.truncateNumber(originaldata.oldValue, digit)
             }
-          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], originaldata.oldValue, true);
+          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
+          let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
+            let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags==null?window.Okflag:originaldata.loggerFlags, Flagcodelist);
+            if (cell != undefined) {
+              cell.style.backgroundColor = classname;
+            }
         }
       });
   }
@@ -918,7 +933,7 @@ function DataProcessing() {
                           <td>{x.oldValue}</td>
                           <td>{x.newValue}</td>
                           {/* <td>{x.ModifyBy}</td> */}
-                          <td>{x.ModifyBy != null ? generateDatabaseDateTime(x.modifiedOn) : x.modifiedOn}</td>
+                          <td>{x.modifyOn != null ? generateDatabaseDateTime(x.modifyOn) : x.modifyOn}</td>
                         </tr>
                       )
                     )}
