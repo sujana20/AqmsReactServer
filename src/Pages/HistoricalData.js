@@ -61,6 +61,7 @@ function HistoricalData() {
   const [Groups, setGroups] = useState([]);
   const [StationGroups, setStationGroups] = useState([]);
   const [GroupSelected, setGroupSelected] = useState("");
+  const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const revertRef = useRef();
   revertRef.current = revert;
   let jsptable = null;
@@ -106,6 +107,7 @@ function HistoricalData() {
     initializeTooltip();
     // }
   }, [ListReportData]);
+
 
   const initializeTooltip=function(){
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -256,9 +258,9 @@ function HistoricalData() {
           obj[ListReportData[k].parameterName] = roundedNumber;
           dataForGrid.push(obj);
         } 
-      }
+      }      
     }
-    
+
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -287,8 +289,6 @@ function HistoricalData() {
   }
   const getdatareport = function () {
     setListReportData([]);
-    document.getElementById('loader').style.display = "block";
-    
     let Station="";
     let Pollutent="";
     let GroupId = $("#groupid").val();
@@ -343,6 +343,7 @@ function HistoricalData() {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
+          setLoadjsGridData(true);
           getchartdata(data1, Pollutent, "line", "Raw");
           document.getElementById('loader').style.display = "none";
         }
@@ -898,18 +899,24 @@ function HistoricalData() {
 
             </div>
             {ListReportData.length > 0 && (
-              <div>
-                <div className="row">
-                  <div className="col-md-12 mb-3">
-                    {AllLookpdata.listFlagCodes.map((i) =>
-                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
-                    )}                    
-                  </div>
+              <div>                
+                  <div className="row">
+                    <div className="col-md-12 mb-3">
+                      {AllLookpdata.listFlagCodes.map((i) =>
+                        <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                      )}                    
+                    </div>
                 </div>
+                
 
-                <div className="jsGrid" ref={jspreadRef} />
+                {/* {ListReportData.length >= 0 ? (<div className="no-data-message">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)} */}
+                {/* <div className="jsGrid" ref={jspreadRef} data={ListReportData} /> */}
               </div>
             )}
+            {ListReportData.length >= 0 ? (<div className="no-data-message">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)}
+            
+
+
             {ListReportData.length > 0 && ChartData && (
               <div >
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />

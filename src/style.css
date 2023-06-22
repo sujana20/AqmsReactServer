@@ -1426,3 +1426,9 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
 .form-check-label{
   font-size: 0.75rem;
 }
+
+.nodatamessage{
+  position: absolute;
+  left: 50%;
+  font-size: xx-large;
+}
