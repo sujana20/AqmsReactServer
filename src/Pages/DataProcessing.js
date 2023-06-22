@@ -9,6 +9,7 @@ import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -63,6 +64,8 @@ function DataProcessing() {
   const [OldData, setOldData] = useState([]);
   const [NewData, setNewData] = useState([]);
   const [revert, setrevert] = useState(false);
+  const [DataCount, setDataCount] = useState(0);
+  const [ReportDataList, setReportDataList] = useState([]);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
@@ -74,6 +77,10 @@ function DataProcessing() {
   let olddata = [];
   let newdata = [];
   let digit = window.decimalDigit
+  const spreadsheetcontainer = document.querySelector(".jexcel_content");
+  const pageLimit = 10; // Number of records per page
+  let currentPage = 1; // Current page
+  let isLoading = false;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
@@ -114,7 +121,10 @@ function DataProcessing() {
     // }
   }, [ListReportData]);
 
-
+  useEffect(() => {
+    // Code that relies on the latest state
+    // console.log(counter);
+  }, [ReportDataList]);
   const initializeTooltip = function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -181,10 +191,10 @@ function DataProcessing() {
     if (!revertRef.current) {
       //cell.classList.add('updated');
       let classname = CommonFunctions.SetFlagColor(window.Editflag, Flagcodelist);
-    if (cell != undefined) {
-      cell.style.backgroundColor = classname;
-      //cell.classList.add(classname);
-    }
+      if (cell != undefined) {
+        cell.style.backgroundColor = classname;
+        //cell.classList.add(classname);
+      }
     }
     if (!revertRef.current) {
       let Parametersplit = SelectedPollutents[x - 1].split("_");
@@ -194,7 +204,7 @@ function DataProcessing() {
       } else {
         filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
       }
-      olddata.push({ Parametervalue: filtered.length>0?filtered[0].parametervalue:null, col: x, row: y, loggerFlags:filtered.length>0?filtered[0].loggerFlags:null  });
+      olddata.push({ Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
@@ -241,20 +251,20 @@ function DataProcessing() {
         } else {
           for (let i = 0; i < OldData.length; i++) {
             revertRef.current = true;
-            let value=0;
+            let value = 0;
             if (window.TruncateorRound == "RoundOff") {
-              value = OldData[i].Parametervalue==null?OldData[i].Parametervalue: OldData[i].Parametervalue.toFixed(digit);
+              value = OldData[i].Parametervalue == null ? OldData[i].Parametervalue : OldData[i].Parametervalue.toFixed(digit);
             }
             else {
-              value=OldData[i].Parametervalue==null?OldData[i].Parametervalue:CommonFunctions.truncateNumber(OldData[i].Parametervalue, digit)
+              value = OldData[i].Parametervalue == null ? OldData[i].Parametervalue : CommonFunctions.truncateNumber(OldData[i].Parametervalue, digit)
             }
             jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, value, true);
             let cell = jspreadRef.current.jexcel.getCellFromCoords(OldData[i].col, OldData[i].row);
-              let classname = CommonFunctions.SetFlagColor(OldData[i].loggerFlags==null?window.Okflag:OldData[i].loggerFlags, Flagcodelist);
-              if (cell != undefined) {
-                cell.style.backgroundColor = classname;
-                //cell.classList.add(classname);
-              }
+            let classname = CommonFunctions.SetFlagColor(OldData[i].loggerFlags == null ? window.Okflag : OldData[i].loggerFlags, Flagcodelist);
+            if (cell != undefined) {
+              cell.style.backgroundColor = classname;
+              //cell.classList.add(classname);
+            }
 
             if (i == (OldData.length - 1)) {
               olddata = [];
@@ -270,7 +280,7 @@ function DataProcessing() {
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("_");
-      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      let filnallist = ReportDataList.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
@@ -294,7 +304,7 @@ function DataProcessing() {
     if (Parametersplit.length > 1) {
       filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
     } else {
-     filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     }
     let params = new URLSearchParams({ id: filtered[0].id });
 
@@ -313,32 +323,32 @@ function DataProcessing() {
     revertRef.current = true;
     let changearr = dataForGridcopy[selectedgrid[1]];
     let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
-   // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let filtered = null;
-      if (Parametersplit.length > 1) {
-        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
-      } else {
-        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-      }
+    if (Parametersplit.length > 1) {
+      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+    } else {
+      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    }
     let params = new URLSearchParams({ id: filtered[0].id });
     fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((originaldata) => {
         if (originaldata) {
-          let value=0;
-            if (window.TruncateorRound == "RoundOff") {
-              value = originaldata.oldValue==null?originaldata.oldValue: originaldata.oldValue.toFixed(digit);
-            }
-            else {
-              value=originaldata.oldValue==null?originaldata.oldValue:CommonFunctions.truncateNumber(originaldata.oldValue, digit)
-            }
+          let value = 0;
+          if (window.TruncateorRound == "RoundOff") {
+            value = originaldata.oldValue == null ? originaldata.oldValue : originaldata.oldValue.toFixed(digit);
+          }
+          else {
+            value = originaldata.oldValue == null ? originaldata.oldValue : CommonFunctions.truncateNumber(originaldata.oldValue, digit)
+          }
           jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
           let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
-            let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags==null?window.Okflag:originaldata.loggerFlags, Flagcodelist);
-            if (cell != undefined) {
-              cell.style.backgroundColor = classname;
-            }
+          let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags == null ? window.Okflag : originaldata.loggerFlags, Flagcodelist);
+          if (cell != undefined) {
+            cell.style.backgroundColor = classname;
+          }
         }
       });
   }
@@ -379,40 +389,8 @@ function DataProcessing() {
         layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false, readOnly: true, });
       }
     }
-
-
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
-    for (var k = 0; k < ListReportData.length; k++) {
-      var obj = {};
-      var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
-      let roundedNumber = 0;
-      if (window.TruncateorRound == "RoundOff") {
-
-        let num = ListReportData[k].parametervalue;
-        roundedNumber = num == null ? num : num.toFixed(digit);
-      }
-
-      else {
-        roundedNumber = ListReportData[k].parametervalue == null ? ListReportData[k].parametervalue : CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
-      }
-      if (Groupid != "") {
-        if (temp >= 0) {
-          dataForGrid[temp][ListReportData[k].parameterName + "_" + ListReportData[k].stationID] = roundedNumber;
-        } else {
-          obj["Date"] = ListReportData[k].interval;
-          obj[ListReportData[k].parameterName + "_" + ListReportData[k].stationID] = roundedNumber;
-          dataForGrid.push(obj);
-        }
-      } else {
-        if (temp >= 0) {
-          dataForGrid[temp][ListReportData[k].parameterName] = roundedNumber;
-        } else {
-          obj["Date"] = ListReportData[k].interval;
-          obj[ListReportData[k].parameterName] = roundedNumber;
-          dataForGrid.push(obj);
-        }
-      }
-    }
+    dataForGrid = GridData(ListReportData, Groupid);
     // setdataForGridcopy(dataForGrid);
     // if (!jspreadRef) {
     jsptable = jspreadsheet(jspreadRef.current, {
@@ -423,14 +401,163 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-      lazyLoading: true,
-      loadingSpin: true,
+      // lazyLoading: true,
+      // loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable,
+      afterChange: function (instance, cell, value) {
+        // Handle data changes, if needed
+      }
     });
     // }
   }
+
+  const GridData = function (ReportData, Groupid) {
+    for (var k = 0; k < ReportData.length; k++) {
+      var obj = {};
+      var temp = dataForGrid.findIndex(x => x.Date === ReportData[k].interval);
+      let roundedNumber = 0;
+      if (window.TruncateorRound == "RoundOff") {
+
+        let num = ReportData[k].parametervalue;
+        roundedNumber = num == null ? num : num.toFixed(digit);
+      }
+      else {
+        roundedNumber = ReportData[k].parametervalue == null ? ReportData[k].parametervalue : CommonFunctions.truncateNumber(ReportData[k].parametervalue, digit);
+      }
+      if (Groupid != "") {
+        if (temp >= 0) {
+          dataForGrid[temp][ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+        } else {
+          obj["Date"] = ReportData[k].interval;
+          obj[ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+          dataForGrid.push(obj);
+        }
+      } else {
+        if (temp >= 0) {
+          dataForGrid[temp][ReportData[k].parameterName] = roundedNumber;
+        } else {
+          obj["Date"] = ReportData[k].interval;
+          obj[ReportData[k].parameterName] = roundedNumber;
+          dataForGrid.push(obj);
+        }
+      }
+    }
+    return dataForGrid;
+  }
+  /* Scroll with pageing start */
+
+  // Function to fetch data for a specific page
+  const fetchDataonscroll = function (currentpage, limit) {
+    let Station = "";
+    let Pollutent = "";
+    let GroupId = $("#groupid").val();
+    /* if(GroupId==0){
+
+    }
+    else{ */
+    Station = $("#stationid").val();
+    /*  if (Station.length > 0) {
+       Station.join(',')
+     } */
+    Pollutent = $("#pollutentid").val();
+    if (Pollutent.length > 0) {
+      Pollutent.join(',')
+    }
+    if (GroupId == "") {
+      setSelectedPollutents(Pollutent);
+    } else {
+      Pollutent = SelectedPollutents;
+    }
+    //}
+
+    let Fromdate = document.getElementById("fromdateid").value;
+    let Todate = document.getElementById("todateid").value;
+    let Interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval, GroupId);
+    if (!valid) {
+      return false;
+    }
+    //  document.getElementById('loader').style.display = "block";
+    let type = Interval.substr(Interval.length - 1);
+    let Intervaltype;
+    if (type == 'H') {
+      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+    } else {
+      Intervaltype = Interval.substr(0, Interval.length - 1);
+    }
+    let isAvgData = false;
+    if (Interval == '15-M') {
+      isAvgData = false;
+    }
+    else {
+      isAvgData = true;
+    }
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: currentpage });
+    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    if (GroupId != "") {
+      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+    }
+    fetch(url + params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          console.log(new Date());
+          //let Chart_data = JSON.parse(data);
+          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+          appendDataToSpreadsheet(data1, GroupId);
+          isLoading = false;
+        }
+        //  document.getElementById('loader').style.display = "none";
+      }).catch((error) => {
+        console.log(error)
+        return [];
+      });
+
+  }
+
+  // Function to append new data to the jSpreadsheet-CE instance
+  const appendDataToSpreadsheet = function (data, GroupId) {
+    const spreadsheet = jspreadRef.current.jexcel;
+    const currentData = spreadsheet.getData();
+    let finaldata = GridData(data, GroupId);
+    const newData = ReportDataList.concat(data);
+    setReportDataList(newData);
+    spreadsheet.setData(finaldata);
+  }
+
+  // Function to check if scroll reaches the bottom of the container
+  const isScrollAtBottom = function () {
+    const scrollTop = spreadsheetcontainer.scrollTop;
+    const scrollHeight = spreadsheetcontainer.scrollHeight;
+    const containerHeight = spreadsheetcontainer.clientHeight;
+    return (Math.round(scrollTop) + containerHeight) > (scrollHeight - 20);
+  }
+
+  // Event listener for the scroll event on the container
+  window.addEventListener("mousemove", (event) => {
+    if (spreadsheetcontainer != null) {
+      if (DataCount == currentPage) {
+        return false;
+      }
+      spreadsheetcontainer.addEventListener('scroll', (event) => { //debounce((event) => {
+        if (!isLoading && isScrollAtBottom()) {
+          isLoading = true;
+          currentPage++; // Increment the current page
+          fetchDataonscroll(currentPage, pageLimit)
+        }
+        //}, 200))
+      })
+    }
+  });
+
+  // Fetch initial data for the first page
+  /*  fetchData(currentPage, pageLimit)
+     .then(data => appendDataToSpreadsheet(data)); */
+
+  /*Scroll with pageing end  */
   const hexToRgbA = function (hex) {
     var c;
     if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
@@ -444,7 +571,9 @@ function DataProcessing() {
     throw new Error('Bad Hex');
   }
   const getdatareport = function () {
+    currentPage = 1;
     setListReportData([]);
+    setReportDataList([]);
     olddata = [];
     newdata = [];
     setNewData([]);
@@ -497,7 +626,8 @@ function DataProcessing() {
     else {
       isAvgData = true;
     }
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData });
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: currentPage });
+    currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -511,6 +641,8 @@ function DataProcessing() {
           //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
+          setReportDataList(data1);
+          setDataCount(data1.length > 0 ? data1[0].count : 0)
           // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
           getchartdata(data1, Pollutent, "line", "Raw");
           //document.getElementById('loader').style.display = "none";
@@ -1041,7 +1173,7 @@ function DataProcessing() {
                   </div>
                 </div>
 
-                <div className="jsGrid" ref={jspreadRef} />
+                <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
               </div>
             )}
             {ListReportData.length > 0 && ChartData && (
