@@ -889,23 +889,30 @@ function HistoricalData() {
                   )}
                 </select>
               </div>
-              <div className="col-md-2 my-4">
-                <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+              <div className="row my-4">
+                <div class="col-md-2">   
+                  <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
+                  <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                </div>
                 {ListReportData != 0 && (
-                    <div>
+                    <div class="col-md-6">     
                       
+                      <div class="form-check form-check-inline">
                       <label className="form-check-label" htmlFor="ValidCheck">
                        Valid Records
                       </label>
                       <input className="form-check-input" type="checkbox" id="ValidCheck" />
+                      </div>
+                      <div class="form-check form-check-inline">
                       <label className="form-check-label" htmlFor="invalidCheck">
                        Invalid Records
                       </label>
-                      <input className="form-check-input" type="checkbox" id="invalidCheck" />
-                      <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                      <input className="form-check-input" type="checkbox" id="invalidCheck" />     
+                      </div>   
+                      <button type="button" className="btn btn-primary datashow me-4" onClick={DownloadExcel}>Download Excel</button>                               
                     </div>
                 )}
+                
               </div>
               <div className="col-md-4">
                 <div className="row">
