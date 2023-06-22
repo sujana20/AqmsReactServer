@@ -483,10 +483,16 @@ function HistoricalData() {
            paramUnitnames += filter[0].parameterName + "-" + unitname[0].unitName + ",";
          }
       }
-       
-      
     }
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData,Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
+    let validRecord="";
+    if(document.getElementById("ValidCheck").checked==true){
+      validRecord="Valid";
+    }
+    else if (document.getElementById("invalidCheck").checked==true){
+      validRecord="Invalid";
+    }
+    
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype,isAvgData: isAvgData,Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound,validRecord:validRecord });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingDataExportExcel?"
@@ -944,9 +950,18 @@ function HistoricalData() {
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
                 {ListReportData != 0 && (
-                    <span>
+                    <div>
+                      
+                      <label className="form-check-label" htmlFor="ValidCheck">
+                       Valid Records
+                      </label>
+                      <input className="form-check-input" type="checkbox" id="ValidCheck" />
+                      <label className="form-check-label" htmlFor="invalidCheck">
+                       Invalid Records
+                      </label>
+                      <input className="form-check-input" type="checkbox" id="invalidCheck" />
                       <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
-                    </span>
+                    </div>
                 )}
               </div>
               <div className="col-md-4">
