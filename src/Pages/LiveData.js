@@ -52,6 +52,7 @@ function LiveData() {
   const [StationGroups, setStationGroups] = useState([]);
   const [GroupSelected, setGroupSelected] = useState("");
   const [RefreshGrid, setRefreshGrid] = useState(false);
+  const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const getDuration = window.LiveDataDuration;
   const revertRef = useRef();
   revertRef.current = revert;
@@ -95,7 +96,7 @@ function LiveData() {
       jsptable.refresh();
     }
     initializeJsGrid();
-  }, [RefreshGrid,ListReportData]);
+  }, [RefreshGrid,ListReportData,LoadjsGridData]);
 
   useEffect(() => {
     if(AllLookpdata !=null){
@@ -359,6 +360,7 @@ function LiveData() {
         if (data) {
             let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
             setListReportData(data1);
+            setLoadjsGridData(true);
             getchartdata(data1, "line", "Raw");
         }
         document.getElementById('loader').style.display = "none";
@@ -465,6 +467,7 @@ function LiveData() {
     $('.pollutentid')[0].sumo.unSelectAll();
     $('#stationid').val("");
     getdatareport();
+    setLoadjsGridData(false);
   }
   const Changepollutent = function (e) {
     setcriteria([]);
@@ -778,6 +781,11 @@ function LiveData() {
                 <div className="jsGrid" ref={jspreadRef} />
               </div>
             )}
+
+            {ListReportData.length == 0 && LoadjsGridData &&(
+              <div class="nodatamessage" id="nodatamessage">No data found</div>
+            )}
+
             {ListReportData.length > 0 && ChartData && (
               <div >
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />

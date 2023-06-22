@@ -119,7 +119,7 @@ function Grouping() {
         children=[];
         for(var j=0;j<Listparameters.length;j++){               
           if(ListStations[i].id==Listparameters[j].stationID){
-            children.push({ value: ListStations[i].id +"-"+ Listparameters[j].id, label: Listparameters[j].parameterName});
+            children.push({ value: ListStations[i].id +"-"+ Listparameters[j].parameterID, label: Listparameters[j].parameterName});
           }                
         }
         parent.push({ value: ListStations[i].id, label: ListStations[i].stationName, children: children });

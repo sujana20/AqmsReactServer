@@ -66,6 +66,7 @@ function DataProcessing() {
   const [revert, setrevert] = useState(false);
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
+  const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
@@ -119,7 +120,7 @@ function DataProcessing() {
     initializeJsGrid();
     initializeTooltip();
     // }
-  }, [ListReportData]);
+  }, [ListReportData,LoadjsGridData]);
 
   useEffect(() => {
     // Code that relies on the latest state
@@ -643,6 +644,7 @@ function DataProcessing() {
           setListReportData(data1);
           setReportDataList(data1);
           setDataCount(data1.length > 0 ? data1[0].count : 0)
+          setLoadjsGridData(true);
           // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
           getchartdata(data1, Pollutent, "line", "Raw");
           //document.getElementById('loader').style.display = "none";
@@ -914,6 +916,7 @@ function DataProcessing() {
     setFromDate(new Date());
     setListReportData([]);
     setSelectedPollutents([]);
+    setLoadjsGridData(false);
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
@@ -1175,6 +1178,9 @@ function DataProcessing() {
 
                 <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
               </div>
+            )}
+            {ListReportData.length == 0 && LoadjsGridData &&(
+              <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && (
               <div className="chartmaindiv">

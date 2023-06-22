@@ -106,7 +106,7 @@ function HistoricalData() {
     initializeJsGrid();
     initializeTooltip();
     // }
-  }, [ListReportData]);
+  }, [ListReportData,LoadjsGridData]);
 
 
   const initializeTooltip=function(){
@@ -289,7 +289,6 @@ function HistoricalData() {
   }
   const getdatareport = function () {
     setListReportData([]);
-    document.getElementById('nodatamessage').style.display = "none";
     let Station="";
     let Pollutent="";
     let GroupId = $("#groupid").val();
@@ -342,10 +341,7 @@ function HistoricalData() {
       .then((data) => {
         if (data) {
           console.log(new Date());
-          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-          if(data1.length==0){
-            document.getElementById('nodatamessage').style.display = "block";
-          }
+          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });          
           setListReportData(data1);
           setLoadjsGridData(true);
           getchartdata(data1, Pollutent, "line", "Raw");
@@ -520,7 +516,6 @@ function HistoricalData() {
   /* reported data end */
   const ChangeGroupName = function (e) {
     let stationParamaters=[];
-    document.getElementById('nodatamessage').style.display = "none";
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
     $('.pollutentid')[0].sumo.reload();
@@ -585,7 +580,6 @@ function HistoricalData() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
-    document.getElementById('nodatamessage').style.display = "none";
     document.getElementById("groupid").value="";
     if(e.target.value !=""){
       $('#groupid').addClass("disable");
@@ -628,7 +622,6 @@ function HistoricalData() {
   })
   const Changepollutent = function (e) {
     setcriteria([]);
-    document.getElementById('nodatamessage').style.display = "none";
     console.log(selectedStations);
     let stationID = document.getElementById("stationid").val();
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
@@ -684,16 +677,16 @@ function HistoricalData() {
     }
   })
   const Resetfilters = function () {
-    document.getElementById('nodatamessage').style.display = "none";
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
-    $('.stationid')[0].sumo.reload();
-    $('.stationid')[0].sumo.unSelectAll();
+    // $('.stationid')[0].sumo.reload();
+    // $('.stationid')[0].sumo.unSelectAll();
     setcriteria([]);
     setToDate(new Date());
     setFromDate(new Date());
     setListReportData([]);
     setSelectedPollutents([]);
+    setLoadjsGridData(false);
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
@@ -896,23 +889,30 @@ function HistoricalData() {
                   )}
                 </select>
               </div>
-              <div className="col-md-2 my-4">
-                <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+              <div className="row my-4">
+                <div class="col-md-2">   
+                  <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
+                  <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                </div>
                 {ListReportData != 0 && (
-                    <div>
+                    <div class="col-md-6">     
                       
+                      <div class="form-check form-check-inline">
                       <label className="form-check-label" htmlFor="ValidCheck">
                        Valid Records
                       </label>
                       <input className="form-check-input" type="checkbox" id="ValidCheck" />
+                      </div>
+                      <div class="form-check form-check-inline">
                       <label className="form-check-label" htmlFor="invalidCheck">
                        Invalid Records
                       </label>
-                      <input className="form-check-input" type="checkbox" id="invalidCheck" />
-                      <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                      <input className="form-check-input" type="checkbox" id="invalidCheck" />     
+                      </div>   
+                      <button type="button" className="btn btn-primary datashow me-4" onClick={DownloadExcel}>Download Excel</button>                               
                     </div>
                 )}
+                
               </div>
               <div className="col-md-4">
                 <div className="row">
@@ -931,18 +931,14 @@ function HistoricalData() {
                     </div>
                   </div>                            
 
-                {/* {ListReportData.length >= 0 ? (<div class="nodatamessage" id="nodatamessage">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)} */}
-                {/* <div className="jsGrid" ref={jspreadRef} data={ListReportData} /> */}
+                
+                <div className="jsGrid" ref={jspreadRef} data={ListReportData} />
               </div>
             )}
 
-            {ListReportData.length == 0 ? (<div class="nodatamessage" id="nodatamessage">No data found</div>) : (<div className="jsGrid" style={{display:"block"}} ref={jspreadRef} />)}
-
-            
-            
-            
-
-
+            {ListReportData.length == 0 && LoadjsGridData &&(
+              <div class="nodatamessage" id="nodatamessage">No data found</div>
+            )}
             {ListReportData.length > 0 && ChartData && (
               <div >
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
