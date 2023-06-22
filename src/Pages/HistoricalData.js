@@ -289,6 +289,7 @@ function HistoricalData() {
   }
   const getdatareport = function () {
     setListReportData([]);
+    document.getElementById('nodatamessage').style.display = "none";
     let Station="";
     let Pollutent="";
     let GroupId = $("#groupid").val();
@@ -342,6 +343,9 @@ function HistoricalData() {
         if (data) {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+          if(data1.length==0){
+            document.getElementById('nodatamessage').style.display = "block";
+          }
           setListReportData(data1);
           setLoadjsGridData(true);
           getchartdata(data1, Pollutent, "line", "Raw");
@@ -516,6 +520,7 @@ function HistoricalData() {
   /* reported data end */
   const ChangeGroupName = function (e) {
     let stationParamaters=[];
+    document.getElementById('nodatamessage').style.display = "none";
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
     $('.pollutentid')[0].sumo.reload();
@@ -580,6 +585,7 @@ function HistoricalData() {
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
+    document.getElementById('nodatamessage').style.display = "none";
     document.getElementById("groupid").value="";
     if(e.target.value !=""){
       $('#groupid').addClass("disable");
@@ -622,6 +628,7 @@ function HistoricalData() {
   })
   const Changepollutent = function (e) {
     setcriteria([]);
+    document.getElementById('nodatamessage').style.display = "none";
     console.log(selectedStations);
     let stationID = document.getElementById("stationid").val();
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
@@ -677,6 +684,7 @@ function HistoricalData() {
     }
   })
   const Resetfilters = function () {
+    document.getElementById('nodatamessage').style.display = "none";
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
     $('.stationid')[0].sumo.reload();
@@ -914,21 +922,24 @@ function HistoricalData() {
 
             </div>
             {ListReportData.length > 0 && (
-              <div>                
+              <div>      
                   <div className="row">
                     <div className="col-md-12 mb-3">
                       {AllLookpdata.listFlagCodes.map((i) =>
                         <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
                       )}                    
                     </div>
-                </div>
-                
+                  </div>                            
 
-                {/* {ListReportData.length >= 0 ? (<div className="no-data-message">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)} */}
+                {/* {ListReportData.length >= 0 ? (<div class="nodatamessage" id="nodatamessage">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)} */}
                 {/* <div className="jsGrid" ref={jspreadRef} data={ListReportData} /> */}
               </div>
             )}
-            {ListReportData.length >= 0 ? (<div className="no-data-message">No data found</div>) : (<div className="jsGrid" ref={jspreadRef} />)}
+
+            {ListReportData.length == 0 ? (<div class="nodatamessage" id="nodatamessage">No data found</div>) : (<div className="jsGrid" style={{display:"block"}} ref={jspreadRef} />)}
+
+            
+            
             
 
 
