@@ -80,8 +80,9 @@ function DataProcessing() {
   let newdata = [];
   let digit = window.decimalDigit
   const spreadsheetcontainer = document.querySelector(".jexcel_content");
-  const pageLimit = 10; // Number of records per page
+  const pageLimit = 25; // Number of records per page
   let currentPage = 1; // Current page
+  let startindex = 0;
   let isLoading = false;
   let requestId;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
@@ -124,10 +125,6 @@ function DataProcessing() {
     // }
   }, [ListReportData, LoadjsGridData]);
 
-  useEffect(() => {
-    // Code that relies on the latest state
-    // console.log(counter);
-  }, [ReportDataList]);
   const initializeTooltip = function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -432,8 +429,8 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-      //lazyLoading: true,
-      //loadingSpin: true,
+      lazyLoading: true,
+      loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable,
@@ -525,7 +522,8 @@ function DataProcessing() {
     else {
       isAvgData = true;
     }
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: currentpage });
+    startindex=(currentpage - 1) * pageLimit;
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex,PageLimit:pageLimit });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -569,7 +567,6 @@ function DataProcessing() {
     const newData = ReportDataList.concat(data);
     setReportDataList(newData);
     spreadsheet.setData(finaldata);
-    currentPage++; // Increment the current page
     isLoading = false;
   }
 
@@ -578,15 +575,18 @@ function DataProcessing() {
     const scrollTop = spreadsheetcontainer.scrollTop;
     const scrollHeight = spreadsheetcontainer.scrollHeight;
     const containerHeight = spreadsheetcontainer.clientHeight;
-    const scrollThreshold = 50; // Adjust the threshold if needed
+    const scrollThreshold = 100; // Adjust the threshold if needed
     //return scrollTop + containerHeight  >= scrollHeight;
-    return scrollTop + containerHeight > (scrollHeight - scrollThreshold);
+    return scrollTop + containerHeight >= (scrollHeight - scrollThreshold);
   }
 
   const handleScroll = function () {
-
+    if (startindex >= DataCount ) {
+      return false;
+    }
    if (!isLoading && isScrollAtBottom() && !isScrollAtTop()) {
       isLoading = true;
+      currentPage++; // Increment the current page
       fetchDataonscroll(currentPage, pageLimit)
     }
   }
@@ -601,30 +601,20 @@ function DataProcessing() {
   
     return scrollTop === 0;
   }
-  // Event listener for the scroll event on the container
-  window.addEventListener("mousemove", (event) => {
-    if (spreadsheetcontainer != null) {
-      if (DataCount == currentPage) {
-        return false;
-      }
-      spreadsheetcontainer.addEventListener('scroll', scrollHandler 
-        //debounce((event) => { 
-        //(event) => {
-        /* const isAtBottom = spreadsheetcontainer.scrollHeight - spreadsheetcontainer.scrollTop === spreadsheetcontainer.clientHeight;
-        if (!isLoading && isAtBottom && isScrollAtBottom()) {
-          isLoading = true;
-          currentPage++; // Increment the current page
-          fetchDataonscroll(currentPage, pageLimit)
-        } */
-        // }))
-      )
-    }
-  });
 
+  useEffect(() => {
+   // const jspreadsheetContainer = document.getElementById('my-jspreadsheet');
+    if(ListReportData.length>0 && spreadsheetcontainer){
+    spreadsheetcontainer.addEventListener('scroll', scrollHandler);
+
+    return () => {
+      // Clean up the scroll event listener when the component is unmounted
+      spreadsheetcontainer.removeEventListener('scroll', scrollHandler);
+    };
+  }
+  }, [ListReportData,spreadsheetcontainer]);
+ 
   // Fetch initial data for the first page
-  /*  fetchData(currentPage, pageLimit)
-     .then(data => appendDataToSpreadsheet(data)); */
-
   /*Scroll with pageing end  */
   const hexToRgbA = function (hex) {
     var c;
@@ -694,7 +684,8 @@ function DataProcessing() {
     else {
       isAvgData = true;
     }
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: currentPage });
+    startindex=(currentPage - 1) * pageLimit;
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex,PageLimit:pageLimit });
     currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
