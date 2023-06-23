@@ -9,6 +9,7 @@ import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
+//import { debounce } from 'lodash';
 
 import {
   Chart as ChartJS,
@@ -82,6 +83,7 @@ function DataProcessing() {
   const pageLimit = 10; // Number of records per page
   let currentPage = 1; // Current page
   let isLoading = false;
+  let requestId;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
@@ -120,7 +122,7 @@ function DataProcessing() {
     initializeJsGrid();
     initializeTooltip();
     // }
-  }, [ListReportData,LoadjsGridData]);
+  }, [ListReportData, LoadjsGridData]);
 
   useEffect(() => {
     // Code that relies on the latest state
@@ -136,7 +138,7 @@ function DataProcessing() {
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    setselectedgrid([startcolindex, stratrowindex])
+    setselectedgrid([startcolindex, stratrowindex,endcolindex, endrowidex])
     setdataForGridcopy(dataForGrid)
     let cellnames1 = [];
     for (var i = stratrowindex; i <= endrowidex; i++) {
@@ -205,7 +207,7 @@ function DataProcessing() {
       } else {
         filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
       }
-      olddata.push({ Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
+      olddata.push({ ID: filtered[0].id,Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
@@ -331,8 +333,36 @@ function DataProcessing() {
     } else {
       filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     }
+    
     let params = new URLSearchParams({ id: filtered[0].id });
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
+    if (filtered.length>0) {
+      let value = 0;
+      if (window.TruncateorRound == "RoundOff") {
+        value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
+      }
+      else {
+        value = filtered[0].parametervalue == null ? filtered[0].parametervalue : CommonFunctions.truncateNumber(filtered[0].parametervalue, digit)
+      }
+      jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
+      let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
+      let classname = CommonFunctions.SetFlagColor(filtered[0].loggerFlags == null ? window.Okflag : filtered[0].loggerFlags, Flagcodelist);
+      if (cell != undefined) {
+        cell.style.backgroundColor = classname;
+      }
+      let dataold=OldData;
+      let index=dataold.findIndex(x => x.ID ===filtered[0].id);
+      if(index>-1){
+        dataold.splice(index, 1);
+         }
+         setOldData(dataold);
+      if (dataold.length==0) {
+        olddata = [];
+        newdata = [];
+        setNewData([]);
+        setOldData([]);
+      }
+    }
+   /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((originaldata) => {
@@ -351,7 +381,7 @@ function DataProcessing() {
             cell.style.backgroundColor = classname;
           }
         }
-      });
+      }); */
   }
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
@@ -402,8 +432,8 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-      // lazyLoading: true,
-      // loadingSpin: true,
+      //lazyLoading: true,
+      //loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable,
@@ -480,7 +510,7 @@ function DataProcessing() {
     if (!valid) {
       return false;
     }
-    //  document.getElementById('loader').style.display = "block";
+   // document.getElementById('loader').style.display = "block";
     let type = Interval.substr(Interval.length - 1);
     let Intervaltype;
     if (type == 'H') {
@@ -509,9 +539,8 @@ function DataProcessing() {
           //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           appendDataToSpreadsheet(data1, GroupId);
-          isLoading = false;
         }
-        //  document.getElementById('loader').style.display = "none";
+  //      document.getElementById('loader').style.display = "none";
       }).catch((error) => {
         console.log(error)
         return [];
@@ -520,6 +549,19 @@ function DataProcessing() {
   }
 
   // Function to append new data to the jSpreadsheet-CE instance
+  function debounce(func) {
+    let requestId;
+    return function () {
+      if (requestId) {
+        return;
+      }
+      requestId = requestAnimationFrame(() => {
+        func.apply(this, arguments);
+        requestId = undefined;
+      });
+    };
+  }
+
   const appendDataToSpreadsheet = function (data, GroupId) {
     const spreadsheet = jspreadRef.current.jexcel;
     const currentData = spreadsheet.getData();
@@ -527,6 +569,8 @@ function DataProcessing() {
     const newData = ReportDataList.concat(data);
     setReportDataList(newData);
     spreadsheet.setData(finaldata);
+    currentPage++; // Increment the current page
+    isLoading = false;
   }
 
   // Function to check if scroll reaches the bottom of the container
@@ -534,23 +578,46 @@ function DataProcessing() {
     const scrollTop = spreadsheetcontainer.scrollTop;
     const scrollHeight = spreadsheetcontainer.scrollHeight;
     const containerHeight = spreadsheetcontainer.clientHeight;
-    return (Math.round(scrollTop) + containerHeight) > (scrollHeight - 20);
+    const scrollThreshold = 50; // Adjust the threshold if needed
+    //return scrollTop + containerHeight  >= scrollHeight;
+    return scrollTop + containerHeight > (scrollHeight - scrollThreshold);
   }
 
+  const handleScroll = function () {
+
+   if (!isLoading && isScrollAtBottom() && !isScrollAtTop()) {
+      isLoading = true;
+      fetchDataonscroll(currentPage, pageLimit)
+    }
+  }
+ 
+  const scrollHandler = function () {
+    cancelAnimationFrame(requestId);
+    requestId = requestAnimationFrame(handleScroll);
+  }
+
+ const isScrollAtTop= function() {
+    const scrollTop = spreadsheetcontainer.scrollTop;
+  
+    return scrollTop === 0;
+  }
   // Event listener for the scroll event on the container
   window.addEventListener("mousemove", (event) => {
     if (spreadsheetcontainer != null) {
       if (DataCount == currentPage) {
         return false;
       }
-      spreadsheetcontainer.addEventListener('scroll', (event) => { //debounce((event) => {
-        if (!isLoading && isScrollAtBottom()) {
+      spreadsheetcontainer.addEventListener('scroll', scrollHandler 
+        //debounce((event) => { 
+        //(event) => {
+        /* const isAtBottom = spreadsheetcontainer.scrollHeight - spreadsheetcontainer.scrollTop === spreadsheetcontainer.clientHeight;
+        if (!isLoading && isAtBottom && isScrollAtBottom()) {
           isLoading = true;
           currentPage++; // Increment the current page
           fetchDataonscroll(currentPage, pageLimit)
-        }
-        //}, 200))
-      })
+        } */
+        // }))
+      )
     }
   });
 
@@ -1150,37 +1217,22 @@ function DataProcessing() {
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     {AllLookpdata.listFlagCodes.map((x, y) =>
-                      <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
+                      <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
                     )}
-                    {/*  <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Estimated" >R</button>
-                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Corrected" >O</button>
-                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Drift" >P</button>
-                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Failure" >D</button>
-                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invalidated" >I</button>
-                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maintenance" >M</button>
-                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Zero" >Z</button>
-                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Span" >C</button>
-                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Non-obtained" >N</button>
-                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Warning" >W</button>
-                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Anomaly" >B</button>
-                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Stop" >X</button>
-                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Substitute" >S</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of range" >G</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of field" >H</button>
-                  */} </div>
+                     </div>
                 </div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
-                    <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
-                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}>Save</button>
+                    <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
+                    <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}>Save</button>
                   </div>
                 </div>
 
                 <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
               </div>
             )}
-            {ListReportData.length == 0 && LoadjsGridData &&(
+            {ListReportData.length == 0 && LoadjsGridData && (
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && (

@@ -781,7 +781,7 @@ table.jexcel colgroup col:nth-child(1) {
   top: 0 !important;
   z-index: 2;
 }
-.jexcel >thead>tr>td{
+.jexcel >thead>tr:nth-child(2)>td{
   top: 25px !important;
 }
 .jexcel > tbody > tr > td.readonly{
@@ -790,4 +790,6 @@ table.jexcel colgroup col:nth-child(1) {
 .rct-node-icon{
   display: none;
 }
-
+/* .jexcel_content {
+  padding-bottom: 30px !important;
+} */

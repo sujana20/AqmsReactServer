@@ -927,7 +927,7 @@ function HistoricalData() {
                   <div className="row">
                     <div className="col-md-12 mb-3">
                       {AllLookpdata.listFlagCodes.map((i) =>
-                        <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                        <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
                       )}                    
                     </div>
                   </div>                            
