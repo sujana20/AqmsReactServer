@@ -5,6 +5,7 @@ import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import CommonFunctions from "../utils/CommonFunctions";
+import * as bootstrap from 'bootstrap';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -96,8 +97,16 @@ function LiveData() {
       jsptable.refresh();
     }
     initializeJsGrid();
+    initializeTooltip();
   }, [RefreshGrid,ListReportData,LoadjsGridData]);
 
+  const initializeTooltip=function(){
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    return () => {
+      tooltipList.map(t => t.dispose())
+    }
+  }
   useEffect(() => {
     if(AllLookpdata !=null){
     ChangeGroupName('load');
@@ -774,7 +783,7 @@ function LiveData() {
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     {AllLookpdata.listFlagCodes.map((i) =>
-                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
                     )}                    
                   </div>
                 </div>
