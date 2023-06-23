@@ -289,6 +289,7 @@ function HistoricalData() {
   }
   const getdatareport = function () {
     setListReportData([]);
+    setLoadjsGridData(false);
     let Station="";
     let Pollutent="";
     let GroupId = $("#groupid").val();

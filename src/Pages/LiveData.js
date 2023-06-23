@@ -300,7 +300,7 @@ function LiveData() {
   }
   const getdatareport = function () {
     setListReportData([]);
-    
+    setLoadjsGridData(false);
     console.log(new Date());
     
     let Station="";
