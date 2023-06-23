@@ -632,6 +632,7 @@ function DataProcessing() {
     currentPage = 1;
     setListReportData([]);
     setReportDataList([]);
+    setLoadjsGridData(false);
     olddata = [];
     newdata = [];
     setNewData([]);
