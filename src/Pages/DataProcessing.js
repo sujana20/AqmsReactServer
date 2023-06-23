@@ -73,6 +73,9 @@ function DataProcessing() {
 
   const revertRef = useRef();
   revertRef.current = revert;
+  const ReportDataListRef = useRef();
+  ReportDataListRef.current = ReportDataList;
+  const dataForGrid1 = useRef();
   let jsptable = null;
   let cellnames = [];
   let dataForGrid = [];
@@ -280,7 +283,7 @@ function DataProcessing() {
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("_");
-      let filnallist = ReportDataList.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
@@ -419,6 +422,7 @@ function DataProcessing() {
     }
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     dataForGrid = GridData(ListReportData, Groupid);
+    //dataForGrid1.current = dataForGrid;
     // setdataForGridcopy(dataForGrid);
     // if (!jspreadRef) {
     jsptable = jspreadsheet(jspreadRef.current, {
@@ -547,25 +551,13 @@ function DataProcessing() {
   }
 
   // Function to append new data to the jSpreadsheet-CE instance
-  function debounce(func) {
-    let requestId;
-    return function () {
-      if (requestId) {
-        return;
-      }
-      requestId = requestAnimationFrame(() => {
-        func.apply(this, arguments);
-        requestId = undefined;
-      });
-    };
-  }
-
   const appendDataToSpreadsheet = function (data, GroupId) {
     const spreadsheet = jspreadRef.current.jexcel;
     const currentData = spreadsheet.getData();
     let finaldata = GridData(data, GroupId);
     const newData = ReportDataList.concat(data);
-    setReportDataList(newData);
+   // setReportDataList(newData);
+   ReportDataListRef.current=newData;
     spreadsheet.setData(finaldata);
     isLoading = false;
   }
