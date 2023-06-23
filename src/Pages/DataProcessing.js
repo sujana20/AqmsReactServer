@@ -75,7 +75,7 @@ function DataProcessing() {
   revertRef.current = revert;
   const ReportDataListRef = useRef();
   ReportDataListRef.current = ReportDataList;
-  const dataForGrid1 = useRef();
+  const dataForGridref = useRef();
   let jsptable = null;
   let cellnames = [];
   let dataForGrid = [];
@@ -138,8 +138,8 @@ function DataProcessing() {
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    setselectedgrid([startcolindex, stratrowindex,endcolindex, endrowidex])
-    setdataForGridcopy(dataForGrid)
+    setselectedgrid([startcolindex, stratrowindex, endcolindex, endrowidex])
+    setdataForGridcopy(dataForGridref.current)
     let cellnames1 = [];
     for (var i = stratrowindex; i <= endrowidex; i++) {
       for (var k = startcolindex; k <= endcolindex; k++) {
@@ -168,7 +168,7 @@ function DataProcessing() {
 
     let finalarr = [];
     for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
-      finalarr.push(dataForGrid[j]);
+      finalarr.push(dataForGridref.current[j]);
     }
     let key = Object.keys(finalarr[0]);
     let chart = chartRef.current;
@@ -190,7 +190,7 @@ function DataProcessing() {
     chart.update();
   }
   const changed = function (instance, cell, x, y, value) {
-    let changearr = dataForGrid[y];
+    let changearr = dataForGridref.current[y];
     if (!revertRef.current) {
       //cell.classList.add('updated');
       let classname = CommonFunctions.SetFlagColor(window.Editflag, Flagcodelist);
@@ -203,11 +203,11 @@ function DataProcessing() {
       let Parametersplit = SelectedPollutents[x - 1].split("_");
       let filtered = null;
       if (Parametersplit.length > 1) {
-        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
       } else {
-        filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
+        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
       }
-      olddata.push({ ID: filtered[0].id,Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
+      olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
@@ -285,7 +285,7 @@ function DataProcessing() {
       let Parameterssplit = SelectedPollutents[i].split("_");
       let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
-        let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
+        let index = dataForGridref.current.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
           if (filnallist[j].loggerFlags != null) {
@@ -305,9 +305,9 @@ function DataProcessing() {
     let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
     let filtered = null;
     if (Parametersplit.length > 1) {
-      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
     } else {
-      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     }
     let params = new URLSearchParams({ id: filtered[0].id });
 
@@ -329,13 +329,13 @@ function DataProcessing() {
     // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let filtered = null;
     if (Parametersplit.length > 1) {
-      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
     } else {
-      filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     }
-    
+
     let params = new URLSearchParams({ id: filtered[0].id });
-    if (filtered.length>0) {
+    if (filtered.length > 0) {
       let value = 0;
       if (window.TruncateorRound == "RoundOff") {
         value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
@@ -349,39 +349,39 @@ function DataProcessing() {
       if (cell != undefined) {
         cell.style.backgroundColor = classname;
       }
-      let dataold=OldData;
-      let index=dataold.findIndex(x => x.ID ===filtered[0].id);
-      if(index>-1){
+      let dataold = OldData;
+      let index = dataold.findIndex(x => x.ID === filtered[0].id);
+      if (index > -1) {
         dataold.splice(index, 1);
-         }
-         setOldData(dataold);
-      if (dataold.length==0) {
+      }
+      setOldData(dataold);
+      if (dataold.length == 0) {
         olddata = [];
         newdata = [];
         setNewData([]);
         setOldData([]);
       }
     }
-   /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((originaldata) => {
-        if (originaldata) {
-          let value = 0;
-          if (window.TruncateorRound == "RoundOff") {
-            value = originaldata.oldValue == null ? originaldata.oldValue : originaldata.oldValue.toFixed(digit);
-          }
-          else {
-            value = originaldata.oldValue == null ? originaldata.oldValue : CommonFunctions.truncateNumber(originaldata.oldValue, digit)
-          }
-          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
-          let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
-          let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags == null ? window.Okflag : originaldata.loggerFlags, Flagcodelist);
-          if (cell != undefined) {
-            cell.style.backgroundColor = classname;
-          }
-        }
-      }); */
+    /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
+       method: 'GET',
+     }).then((response) => response.json())
+       .then((originaldata) => {
+         if (originaldata) {
+           let value = 0;
+           if (window.TruncateorRound == "RoundOff") {
+             value = originaldata.oldValue == null ? originaldata.oldValue : originaldata.oldValue.toFixed(digit);
+           }
+           else {
+             value = originaldata.oldValue == null ? originaldata.oldValue : CommonFunctions.truncateNumber(originaldata.oldValue, digit)
+           }
+           jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
+           let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
+           let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags == null ? window.Okflag : originaldata.loggerFlags, Flagcodelist);
+           if (cell != undefined) {
+             cell.style.backgroundColor = classname;
+           }
+         }
+       }); */
   }
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
@@ -422,6 +422,7 @@ function DataProcessing() {
     }
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     dataForGrid = GridData(ListReportData, Groupid);
+    dataForGridref.current = dataForGrid;
     //dataForGrid1.current = dataForGrid;
     // setdataForGridcopy(dataForGrid);
     // if (!jspreadRef) {
@@ -437,10 +438,7 @@ function DataProcessing() {
       loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
-      onload: loadtable,
-      afterChange: function (instance, cell, value) {
-        // Handle data changes, if needed
-      }
+      onload: loadtable
     });
     // }
   }
@@ -448,6 +446,7 @@ function DataProcessing() {
   const GridData = function (ReportData, Groupid) {
     for (var k = 0; k < ReportData.length; k++) {
       var obj = {};
+      dataForGrid=dataForGridref.current;
       var temp = dataForGrid.findIndex(x => x.Date === ReportData[k].interval);
       let roundedNumber = 0;
       if (window.TruncateorRound == "RoundOff") {
@@ -511,7 +510,7 @@ function DataProcessing() {
     if (!valid) {
       return false;
     }
-   // document.getElementById('loader').style.display = "block";
+    // document.getElementById('loader').style.display = "block";
     let type = Interval.substr(Interval.length - 1);
     let Intervaltype;
     if (type == 'H') {
@@ -526,8 +525,8 @@ function DataProcessing() {
     else {
       isAvgData = true;
     }
-    startindex=(currentpage - 1) * pageLimit;
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex,PageLimit:pageLimit });
+    startindex = (currentpage - 1) * pageLimit;
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -542,7 +541,7 @@ function DataProcessing() {
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           appendDataToSpreadsheet(data1, GroupId);
         }
-  //      document.getElementById('loader').style.display = "none";
+        //      document.getElementById('loader').style.display = "none";
       }).catch((error) => {
         console.log(error)
         return [];
@@ -555,9 +554,10 @@ function DataProcessing() {
     const spreadsheet = jspreadRef.current.jexcel;
     const currentData = spreadsheet.getData();
     let finaldata = GridData(data, GroupId);
-    const newData = ReportDataList.concat(data);
-   // setReportDataList(newData);
-   ReportDataListRef.current=newData;
+    let newData = ReportDataListRef.current.concat(data);
+     setReportDataList(newData);
+    ReportDataListRef.current = newData;
+    getchartdata(newData, SelectedPollutents, "line", "Raw");
     spreadsheet.setData(finaldata);
     isLoading = false;
   }
@@ -573,39 +573,40 @@ function DataProcessing() {
   }
 
   const handleScroll = function () {
-    if (startindex >= DataCount ) {
+    if (startindex >= DataCount) {
       return false;
     }
-   if (!isLoading && isScrollAtBottom() && !isScrollAtTop()) {
+    if (!isLoading && isScrollAtBottom() && !isScrollAtTop()) {
       isLoading = true;
       currentPage++; // Increment the current page
-      fetchDataonscroll(currentPage, pageLimit)
+      //fetchDataonscroll(currentPage, pageLimit)
+      GetProcessingData(currentPage, false);
     }
   }
- 
+
   const scrollHandler = function () {
     cancelAnimationFrame(requestId);
     requestId = requestAnimationFrame(handleScroll);
   }
 
- const isScrollAtTop= function() {
+  const isScrollAtTop = function () {
     const scrollTop = spreadsheetcontainer.scrollTop;
-  
+
     return scrollTop === 0;
   }
 
   useEffect(() => {
-   // const jspreadsheetContainer = document.getElementById('my-jspreadsheet');
-    if(ListReportData.length>0 && spreadsheetcontainer){
-    spreadsheetcontainer.addEventListener('scroll', scrollHandler);
+    // const jspreadsheetContainer = document.getElementById('my-jspreadsheet');
+    if (ListReportData.length > 0 && spreadsheetcontainer) {
+      spreadsheetcontainer.addEventListener('scroll', scrollHandler);
 
-    return () => {
-      // Clean up the scroll event listener when the component is unmounted
-      spreadsheetcontainer.removeEventListener('scroll', scrollHandler);
-    };
-  }
-  }, [ListReportData,spreadsheetcontainer]);
- 
+      return () => {
+        // Clean up the scroll event listener when the component is unmounted
+        spreadsheetcontainer.removeEventListener('scroll', scrollHandler);
+      };
+    }
+  }, [ListReportData, spreadsheetcontainer]);
+
   // Fetch initial data for the first page
   /*Scroll with pageing end  */
   const hexToRgbA = function (hex) {
@@ -620,30 +621,12 @@ function DataProcessing() {
     }
     throw new Error('Bad Hex');
   }
-  const getdatareport = function () {
-    currentPage = 1;
-    setListReportData([]);
-    setReportDataList([]);
-    setLoadjsGridData(false);
-    olddata = [];
-    newdata = [];
-    setNewData([]);
-    setOldData([]);
-    console.log(new Date());
-    // if (chartRef.current != null) {
-    //     chartRef.current.data = {};
-    //   }
+
+  const GetProcessingData = function (currentPage, isInitialized) {
     let Station = "";
     let Pollutent = "";
     let GroupId = $("#groupid").val();
-    /* if(GroupId==0){
-
-    }
-    else{ */
     Station = $("#stationid").val();
-    /*  if (Station.length > 0) {
-       Station.join(',')
-     } */
     Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -653,8 +636,6 @@ function DataProcessing() {
     } else {
       Pollutent = SelectedPollutents;
     }
-    //}
-
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
@@ -677,9 +658,9 @@ function DataProcessing() {
     else {
       isAvgData = true;
     }
-    startindex=(currentPage - 1) * pageLimit;
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex,PageLimit:pageLimit });
-    currentPage++;
+    startindex = (currentPage - 1) * pageLimit;
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
+   // currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -689,46 +670,35 @@ function DataProcessing() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-          console.log(new Date());
-          //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-          setListReportData(data1);
-          setReportDataList(data1);
-          setDataCount(data1.length > 0 ? data1[0].count : 0)
-          setLoadjsGridData(true);
-          // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
-          getchartdata(data1, Pollutent, "line", "Raw");
-          //document.getElementById('loader').style.display = "none";
+          if (isInitialized) {
+            setListReportData(data1);
+            setReportDataList(data1);
+            setDataCount(data1.length > 0 ? data1[0].count : 0)
+            setLoadjsGridData(true);
+            getchartdata(data1, Pollutent, "line", "Raw");
+          }
+          else {
+            appendDataToSpreadsheet(data1, GroupId);
+          }
         }
-        document.getElementById('loader').style.display = "none";
-      }).catch((error) => console.log(error));
 
+        document.getElementById('loader').style.display = "none";
+
+      }).catch((error) => console.log(error));
 
   }
 
-  const DownloadExcel = function () {
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
-    }
-    let Pollutent = $("#pollutentid").val();
-    if (Pollutent.length > 0) {
-      Pollutent.join(',')
-    }
-    let Fromdate = document.getElementById("fromdateid").value;
-    let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
-    if (!valid) {
-      return false;
-    }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params, "_blank");
-    /*  fetch(url + params, {
-       method: 'GET',
-     }).then((response) => response.json())
-       .then((data) => {
-       }).catch((error) => console.log(error)); */
+  const getdatareport = function () {
+    currentPage = 1;
+    setListReportData([]);
+    setReportDataList([]);
+    setLoadjsGridData(false);
+    olddata = [];
+    newdata = [];
+    setNewData([]);
+    setOldData([]);
+    GetProcessingData(currentPage,true);
   }
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval, GroupId) {
@@ -883,34 +853,7 @@ function DataProcessing() {
          stationParamaters.push({"Station": StationGroups[i].stationID,"ParameterName":StationGroups[i].parameterID});
      } */
   }
-  /*  $('#stationid').change(function (event) {
-     setPollutents([]);
-     setcriteria([]);
-     let filter = $(this).val();
-     setselectedStations(filter);
-     let finaldata = AllLookpdata.listPollutents.filter(function (item) {
-       for (var i = 0; i < filter.length; i++) {
-         if (item['stationID'] == filter[i])
-           return true;
-       }
-     });
-     var finaldata1 = [];
-     if (filter.length >= 2) {
-       finaldata1 = finaldata.reduce((unique, o) => {
-         if (!unique.some(obj => obj.stationID != o.stationID && obj.parameterName === o.parameterName)) {
-           unique.push(o);
-         }
-         return unique;
-       }, []);
-     } else {
-       finaldata1 = finaldata;
-     }
-     setPollutents(finaldata1);
-     setTimeout(function () {
-       // $('.pollutentid')[0].sumo.unSelectAll(); 
-       $('.pollutentid')[0].sumo.reload();
-     }, 10);
-   }) */
+ 
   const Changepollutent = function (e) {
     setcriteria([]);
     console.log(selectedStations);
@@ -971,12 +914,12 @@ function DataProcessing() {
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
-    if (chartRef.current != null) {
+    /* if (chartRef.current != null) {
       chartRef.current.data = {};
-    }
+    } */
 
-    setChartData({ labels: [], datasets: [] });
-    setChartOptions();
+   /*  setChartData({ labels: [], datasets: [] });
+    setChartOptions(); */
     let datasets = [];
     let chartdata = [];
     let tempdata = [];
@@ -1202,7 +1145,7 @@ function DataProcessing() {
                     {AllLookpdata.listFlagCodes.map((x, y) =>
                       <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
                     )}
-                     </div>
+                  </div>
                 </div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
