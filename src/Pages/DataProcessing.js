@@ -961,7 +961,7 @@ function DataProcessing() {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
           display: true,
-          position: 'left',
+          position: i % 2 === 0?'left':'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]

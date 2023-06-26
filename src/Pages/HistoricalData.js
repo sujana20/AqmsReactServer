@@ -20,7 +20,7 @@ import {
   Tooltip,
   Legend,
   TimeScale,
-  defaults
+  defaults,
 } from 'chart.js';
 
 ChartJS.register(
@@ -129,7 +129,7 @@ function HistoricalData() {
     }
   }
 
-   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
+  const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
     setselectedgrid([startcolindex, stratrowindex, endcolindex, endrowidex])
@@ -298,76 +298,6 @@ function HistoricalData() {
 
   /* Scroll with pageing start */
 
-  // Function to fetch data for a specific page
-  const fetchDataonscroll = function (currentpage, limit) {
-    let Station = "";
-    let Pollutent = "";
-    let GroupId = $("#groupid").val();
-    /* if(GroupId==0){
-
-    }
-    else{ */
-    Station = $("#stationid").val();
-    /*  if (Station.length > 0) {
-       Station.join(',')
-     } */
-    Pollutent = $("#pollutentid").val();
-    if (Pollutent.length > 0) {
-      Pollutent.join(',')
-    }
-    if (GroupId == "") {
-      setSelectedPollutents(Pollutent);
-    } else {
-      Pollutent = SelectedPollutents;
-    }
-    //}
-
-    let Fromdate = document.getElementById("fromdateid").value;
-    let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval, GroupId);
-    if (!valid) {
-      return false;
-    }
-    // document.getElementById('loader').style.display = "block";
-    let type = Interval.substr(Interval.length - 1);
-    let Intervaltype;
-    if (type == 'H') {
-      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
-    } else {
-      Intervaltype = Interval.substr(0, Interval.length - 1);
-    }
-    let isAvgData = false;
-    if (Interval == '15-M') {
-      isAvgData = false;
-    }
-    else {
-      isAvgData = true;
-    }
-    startindex = (currentpage - 1) * pageLimit;
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
-    if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
-    }
-    fetch(url + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          console.log(new Date());
-          //let Chart_data = JSON.parse(data);
-          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-          appendDataToSpreadsheet(data1, GroupId);
-        }
-        //      document.getElementById('loader').style.display = "none";
-      }).catch((error) => {
-        console.log(error)
-        return [];
-      });
-
-  }
-
   // Function to append new data to the jSpreadsheet-CE instance
   const appendDataToSpreadsheet = function (data, GroupId) {
     const spreadsheet = jspreadRef.current.jexcel;
@@ -480,7 +410,7 @@ function HistoricalData() {
     }
     startindex = (currentPage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
-   // currentPage++;
+    // currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -514,7 +444,7 @@ function HistoricalData() {
     setListReportData([]);
     setReportDataList([]);
     setLoadjsGridData(false);
-    GetProcessingData(currentPage,true);
+    GetProcessingData(currentPage, true);
   }
 
   const DownloadExcel = function () {
@@ -853,13 +783,14 @@ function HistoricalData() {
     setLoadjsGridData(false);
   }
 
+  /* Chart Start */
   const getchartdata = function (data, pollutent, charttype, criteria) {
-    if (chartRef.current != null) {
+    /* if (chartRef.current != null) {
       chartRef.current.data = {};
-    }
+    } */
 
-    setChartData({ labels: [], datasets: [] });
-    setChartOptions();
+   /*  setChartData({ labels: [], datasets: [] });
+    setChartOptions(); */
     let datasets = [];
     let chartdata = [];
     let tempdata = [];
@@ -878,7 +809,6 @@ function HistoricalData() {
       NinetyEightPercentile = [];
       FiftyPercentile = [];
       // let pollutentdata = data[pollutent[i]];
-      //let pollutentdata = data.filter(val => val.parameterName.toLowerCase() == pollutent[i].toLowerCase());
       let Parametersplit = pollutent[i].split("_")
       let Groupid = document.getElementById("groupid").value;
       let pollutentdata = [];
@@ -902,15 +832,13 @@ function HistoricalData() {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
           display: true,
-          position: 'left',
+          position: i % 2 === 0?'left':'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
           }
         }
         datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
-
-        //datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
     Scaleslist["xAxes"] = {
@@ -929,21 +857,36 @@ function HistoricalData() {
         }
       }
     };
+    /*   setChartOptions({
+        responsive: true,
+        dragData: true,
+        onDragStart: function (e) {
+          console.log(e)
+        },
+        onDrag: function (e, datasetIndex, index, value) {
+          console.log(datasetIndex, index, value)
+        },
+      
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+          },
+        },
+      }); */
+
     setChartOptions({
       responsive: true,
       scales: Scaleslist,
-      /* interaction: {
-        mode: 'index',
-        intersect: false,
-      }, */
-      //   maintainAspectRatio: true,
+      // maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
         },
         title: {
           display: true,
-          //text: 'Chart.js Bar Chart',
         },
       },
     });
@@ -952,11 +895,12 @@ function HistoricalData() {
     }
     setTimeout(() => {
       setChartData({
-        //   labels,
+        // labels,
         datasets: datasets
       })
     }, 10);
   }
+  /* Chart End */
 
   return (
     <main id="main" className="main" >
