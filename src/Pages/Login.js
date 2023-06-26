@@ -23,7 +23,7 @@ function Login() {
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+            window.location.href =process.env.REACT_APP_BASE_URL+ "/ServerDashBoard";
           } else {
              //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
 

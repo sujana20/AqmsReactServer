@@ -9,7 +9,7 @@ import Sidenavbar from "./Layouts/Sidenavbar";
 import Pagination from "./Pagination";
 import { LayoutCssClasses } from "ag-grid-community";
 const Login =lazy(() => import("./Pages/Login"));
-const Dashboard =lazy(() => import("./Pages/Dashboard"));
+// const Dashboard =lazy(() => import("./Pages/Dashboard"));
 const Profile =lazy(() => import("./Pages/Profile"));
 const Parameters =lazy(() => import("./Pages/Parameters"));
 const AirQuality =lazy(() => import("./Pages/AirQuality"));
@@ -33,6 +33,7 @@ const DataProcessingClient=lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData=lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports=lazy(() => import("./Pages/LiveDataReports"));
 const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
+const ServerDashBoard=lazy(() => import("./Pages/ServerDashBoard"));
 
 function App() {
    // const [location, setlocation] = useState(window.location.pathname);
@@ -48,7 +49,7 @@ function App() {
   <Suspense fallback={<div>Loading...</div>}>
       <Routes>
       <Route   path="/"   element={<Login />} />
-      <Route   path="/Dashboard"  element={<Dashboard />} />
+      {/* <Route   path="/Dashboard"  element={<Dashboard />} /> */}
       <Route   path="/Profile" exact element={<Profile />} />
       <Route   path="/Parameters" exact element={<Parameters />} />
       <Route   path="/AirQuality" exact element={<AirQuality />} />
@@ -72,6 +73,7 @@ function App() {
       <Route   path="/HistoricalData"  exact element={<HistoricalData />}/>
       <Route   path="/LiveDataReports" exact element={<LiveDataReports />} />
       <Route   path="/GroupingParameter" exact element={<GroupingParameter />} />
+      <Route   path="/ServerDashBoard" exact element={<ServerDashBoard />} />
       </Routes>
       </Suspense>
   </BrowserRouter>
