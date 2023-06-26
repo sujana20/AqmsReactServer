@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
-function Parameters1() {
+function Parameters() {
   const gridRef = useRef();
   const gridRefjsgrid = useRef();
   const $ = window.jQuery;
@@ -1238,4 +1238,4 @@ function Parameters1() {
     </main>
   );
 }
-export default Parameters1;
+export default Parameters;
