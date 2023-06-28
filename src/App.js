@@ -9,7 +9,7 @@ import Sidenavbar from "./Layouts/Sidenavbar";
 import Pagination from "./Pagination";
 import { LayoutCssClasses } from "ag-grid-community";
 const Login =lazy(() => import("./Pages/Login"));
-// const Dashboard =lazy(() => import("./Pages/Dashboard"));
+const Dashboard =lazy(() => import("./Pages/Dashboard"));
 const Profile =lazy(() => import("./Pages/Profile"));
 const Parameters =lazy(() => import("./Pages/Parameters"));
 const AirQuality =lazy(() => import("./Pages/AirQuality"));
