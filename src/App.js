@@ -38,7 +38,6 @@ const ServerDashBoard=lazy(() => import("./Pages/ServerDashBoard"));
 function App() {
    // const [location, setlocation] = useState(window.location.pathname);
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-   
   return (
     
     <div>
@@ -48,8 +47,8 @@ function App() {
       {currentUser!=null?<Sidenavbar />:""}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route   path="/" exact element={<Login />} />
-          <Route   path="/Login" exact element={<Login />} />
+          <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
+          <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
           <Route   path="*" exact element={<Login />} />
           <Route   path="/Dashboard" exact element={currentUser !=null ? <ServerDashBoard /> : (<Navigate to="/" />)} />
           <Route   path="/Profile" exact element={currentUser !=null ? <Profile /> : (<Navigate to="/" />)} />
