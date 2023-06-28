@@ -149,7 +149,7 @@ function StasticsReport() {
       });
       isvalid = false;
     } else if (Pollutent == "") {
-      toast.error('Please select pollutent', {
+      toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
