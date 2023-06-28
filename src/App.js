@@ -1,5 +1,5 @@
 import React, { useEffect, useState ,Suspense, lazy} from "react";
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
@@ -40,41 +40,43 @@ function App() {
    
   return (
     
-  <div>
-  <BrowserRouter basename={process.env.REACT_APP_BASE_URL}> 
-  <ToastContainer />
-  {currentUser!=null?<Header />:""}
-  {currentUser!=null?<Sidenavbar />:""}
-  <Suspense fallback={<div>Loading...</div>}>
-      <Routes>
-      <Route   path="/"   element={<Login />} />
-      <Route   path="/Dashboard"  element={<Dashboard />} />
-      <Route   path="/Profile" exact element={<Profile />} />
-      <Route   path="/Parameters" exact element={<Parameters />} />
-      <Route   path="/AirQuality" exact element={<AirQuality />} />
-      <Route   path="/AverageDataReport" exact element={<AverageDataReport />} />
-      <Route   path="/StatisticalReport" exact element={<StasticsReport />} />
-      <Route   path="/StasticsDataReport" exact element={<StasticsDataReport />} />
-      <Route   path="/Adduser" exact element={<Adduser />} />
-      <Route   path="/AddStation" exact element={<AddStation />} />
-      <Route   path="/AddDevice" exact element={<AddDevice />} />
-      <Route   path="/AddParameter" exact element={<AddParameter />} />
-      <Route   path="/UserLogHistory" exact element={<UserLogHistory />} />
-      <Route   path="/PredefinedCharts" exact element={<PredefinedCharts />} />
-      <Route   path="/DetailedAnalysisReports" exact element={<DetailedAnalysisReports />} />
-      <Route   path="/GsiModbusDrivers" exact element={<GsiModbusDrivers />} />
-      <Route   path="/Calibrations"  exact element={<Calibration />}/>
-      <Route   path="/AverageAlarm"  exact element={<AverageAlarm />}/>
-      <Route   path="/DataProcessing"  exact element={<DataProcessing />}/>
-      <Route   path="/AppLogHistory" exact element={<AppLogHistory />} />
-      <Route   path="/LiveData"  exact element={<LiveData />}/>
-      <Route   path="/DataProcessingClient" exact element={<DataProcessingClient />} />
-      <Route   path="/HistoricalData"  exact element={<HistoricalData />}/>
-      <Route   path="/LiveDataReports" exact element={<LiveDataReports />} />
-      <Route   path="/GroupingParameter" exact element={<GroupingParameter />} />
-      </Routes>
+    <div>
+      {/* <BrowserRouter basename={process.env.REACT_APP_BASE_URL}> 
+      <ToastContainer /> */}
+      {currentUser!=null?<Header />:""}
+      {currentUser!=null?<Sidenavbar />:""}
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route   path="/" exact element={<Login />} />
+          <Route   path="/Login" exact element={<Login />} />
+          <Route   path="*" exact element={<Login />} />
+          <Route   path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
+          <Route   path="/Profile" exact element={currentUser !=null ? <Profile /> : (<Navigate to="/" />)} />
+          <Route   path="/Parameters" exact element={currentUser !=null ? <Parameters /> : (<Navigate to="/" />)} />
+          <Route   path="/AirQuality" exact element={currentUser !=null ? <AirQuality /> : (<Navigate to="/" />)} />
+          <Route   path="/AverageDataReport" exact element={currentUser !=null ? <AverageDataReport /> : (<Navigate to="/" />)} />
+          <Route   path="/StatisticalReport" exact element={currentUser !=null ? <StasticsReport /> : (<Navigate to="/" />)} />
+          <Route   path="/StasticsDataReport" exact element={currentUser !=null ? <StasticsDataReport /> : (<Navigate to="/" />)} />
+          <Route   path="/Adduser" exact element={currentUser !=null ? <Adduser /> : (<Navigate to="/" />)} />
+          <Route   path="/AddStation" exact element={currentUser !=null ? <AddStation /> : (<Navigate to="/" />)} />
+          <Route   path="/AddDevice" exact element={currentUser !=null ? <AddDevice /> : (<Navigate to="/" />)} />
+          <Route   path="/AddParameter" exact element={currentUser !=null ? <AddParameter /> : (<Navigate to="/" />)} />
+          <Route   path="/UserLogHistory" exact element={currentUser !=null ? <UserLogHistory /> : (<Navigate to="/" />)} />
+          <Route   path="/PredefinedCharts" exact element={currentUser !=null ? <PredefinedCharts /> : (<Navigate to="/" />)} />
+          <Route   path="/DetailedAnalysisReports" exact element={currentUser !=null ? <DetailedAnalysisReports /> : (<Navigate to="/" />)} />
+          <Route   path="/GsiModbusDrivers" exact element={currentUser !=null ? <GsiModbusDrivers /> : (<Navigate to="/" />)} />
+          <Route   path="/Calibrations"  exact element={currentUser !=null ? <Calibration /> : (<Navigate to="/" />)}/>
+          <Route   path="/AverageAlarm"  exact element={currentUser !=null ? <AverageAlarm /> : (<Navigate to="/" />)}/>
+          <Route   path="/DataProcessing"  exact element={currentUser !=null ? <DataProcessing /> : (<Navigate to="/" />)}/>
+          <Route   path="/AppLogHistory" exact element={currentUser !=null ? <AppLogHistory /> : (<Navigate to="/" />)} />
+          <Route   path="/LiveData"  exact element={currentUser !=null ? <LiveData /> : (<Navigate to="/" />)}/>
+          <Route   path="/DataProcessingClient" exact element={currentUser !=null ? <DataProcessingClient /> : (<Navigate to="/" />)} />
+          <Route   path="/HistoricalData"  exact element={currentUser !=null ? <HistoricalData /> : (<Navigate to="/" />)}/>
+          <Route   path="/LiveDataReports" exact element={currentUser !=null ? <LiveDataReports /> : (<Navigate to="/" />)} />
+          <Route   path="/GroupingParameter" exact element={currentUser !=null ? <GroupingParameter /> : (<Navigate to="/" />)} />
+        </Routes>
       </Suspense>
-  </BrowserRouter>
+  {/* </BrowserRouter> */}
   </div>
   );
 }
