@@ -26,7 +26,7 @@ import bcrypt from 'bcryptjs';
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            window.location.href =process.env.REACT_APP_BASE_URL+ "/ServerDashBoard";
+            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
              //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
 

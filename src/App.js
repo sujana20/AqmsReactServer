@@ -51,7 +51,7 @@ function App() {
           <Route   path="/" exact element={<Login />} />
           <Route   path="/Login" exact element={<Login />} />
           <Route   path="*" exact element={<Login />} />
-          <Route   path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
+          <Route   path="/Dashboard" exact element={currentUser !=null ? <ServerDashBoard /> : (<Navigate to="/" />)} />
           <Route   path="/Profile" exact element={currentUser !=null ? <Profile /> : (<Navigate to="/" />)} />
           <Route   path="/Parameters" exact element={currentUser !=null ? <Parameters /> : (<Navigate to="/" />)} />
           <Route   path="/AirQuality" exact element={currentUser !=null ? <AirQuality /> : (<Navigate to="/" />)} />
