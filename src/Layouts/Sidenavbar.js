@@ -30,7 +30,7 @@ function Sidenavbar() {
       <ul className="sidebar-nav" id="sidebar-nav">
 
         <li className="nav-item">
-          <NavLink to="/ServerDashBoard" className="nav-link animation-forwards animate-delay-1" >
+          <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
             <span>Dashboard</span>
           </NavLink >
