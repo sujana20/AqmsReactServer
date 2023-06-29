@@ -1,5 +1,6 @@
 
 import React, { Component, useEffect, useState, useRef } from "react";
+import { json } from "react-router-dom";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 function AddParameter() {
@@ -111,6 +112,30 @@ function AddParameter() {
       document.getElementById("coefb").value=param.coefB;
     }, 10);
 
+  }
+
+  const Insertparameter= function(param){
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
+    fetch(process.env.REACT_APP_WSurl + 'api/ParameterInsertConversionfactor', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ StationID: param.stationID, DeviceID: param.deviceID, DriverID: param.driverID, ParameterName: param.parameterName, PollingInterval: param.pollingInterval, AvgInterval: param.avgInterval, CoefA:param.coefA, CoefB:param.coefB, UnitID: param.unitID, ScaleFactor: param.scaleFactor,Status:param.status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy, ParameterID:param.parameterID,Alarm:param.alarm,ParameterValue:param.parameterValue,IsEnable:param.isEnable,Flag:param.flag,IsCalculated:param.isCalculated,ServerAvgInterval:param.serverAvgInterval }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == "Parameteradd") {
+          toast.success('Parameter added successfully');
+          Getparameters();
+          setparameterList(true);
+        } else if (responseJson == "Parameterexist") {
+          toast.error('Parameter already exist with given parameter Name. Please try with another parameter Name.');
+        } else {
+          toast.error('Unable to add the parameter. Please contact adminstrator');
+        }
+      }).catch((error) => toast.error('Unable to add the parameter. Please contact adminstrator'));
   }
 
   const Updateparameter = function () {
@@ -242,7 +267,8 @@ function AddParameter() {
         }
       },
       fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
+        // { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
+        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
         { name: "deviceID", title: "Device Name", type: "select", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
         { name: "driverID", title: "Driver Name", type: "select", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
         { name: "parameterName", title: "parameter Name", type: "text" },
@@ -251,21 +277,17 @@ function AddParameter() {
         { name: "avgInterval", title: "Average Interval", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
-          /* itemTemplate: function (value, item) {
-            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
-              .click(function (e) {
-                Editparameter(item);
-                e.stopPropagation();
-              });
-
-            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
-              .click(function (e) {
-                Deleteparameter(item);
-                e.stopPropagation();
-              });
-
-            return $("<div>").append($customEditButton).append($customDeleteButton);
-          } */
+          itemTemplate: function (value, item) {
+            const filteredData = Listparameters.filter(a => a.stationID== item["stationID"] && a.deviceID==item["deviceID"] && a.parameterID==item['parameterID'] );
+            if(filteredData.length==1){
+              var $customAddButton = $("<button>").attr({ class: "customGridInsertbutton jsgrid-button jsgrid-insert-button" })
+                .click(function (e) {
+                  Insertparameter(item);
+                  e.stopPropagation();
+               });
+            }
+            return $("<div>").append($customAddButton);
+          } 
         },
       ]
     });
