@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 import 'chartjs-adapter-moment';
 import DatePicker from "react-datepicker";
 import { Line } from 'react-chartjs-2';
-import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
@@ -434,8 +433,8 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-      lazyLoading: true,
-      loadingSpin: true,
+    //  lazyLoading: true,
+     // loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable
@@ -567,7 +566,7 @@ function DataProcessing() {
     const scrollTop = spreadsheetcontainer.scrollTop;
     const scrollHeight = spreadsheetcontainer.scrollHeight;
     const containerHeight = spreadsheetcontainer.clientHeight;
-    const scrollThreshold = 100; // Adjust the threshold if needed
+    const scrollThreshold = 0; // Adjust the threshold if needed
     //return scrollTop + containerHeight  >= scrollHeight;
     return scrollTop + containerHeight >= (scrollHeight - scrollThreshold);
   }

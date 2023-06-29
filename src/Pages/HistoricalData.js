@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
-import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
@@ -308,6 +307,13 @@ function HistoricalData() {
     ReportDataListRef.current = newData;
     getchartdata(newData, SelectedPollutents, "line", "Raw");
     spreadsheet.setData(finaldata);
+    /* let jspcontainer = jspreadRef.current.jexcel;;
+    let scrollTop = jspcontainer.scrollTop;
+
+    // Update the data in your spreadsheet
+
+    // Adjust the scroll position to maintain the current view
+    jspcontainer.scrollTop = scrollTop; */
     isLoading = false;
   }
 
