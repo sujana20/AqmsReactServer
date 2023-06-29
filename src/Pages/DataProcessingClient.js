@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import { Line } from 'react-chartjs-2';
-import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import CommonFunctions from "../utils/CommonFunctions";
