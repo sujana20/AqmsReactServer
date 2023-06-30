@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
+import ReactDOM from 'react-dom/client';
 import { toast } from 'react-toastify';
 import 'chartjs-adapter-moment';
 import DatePicker from "react-datepicker";
-import { Line } from 'react-chartjs-2';
+import { Chart, Line } from 'react-chartjs-2';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
@@ -25,6 +26,8 @@ import {
   defaults
 } from 'chart.js';
 
+import annotationPlugin from "chartjs-plugin-annotation";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -34,7 +37,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  annotationPlugin,
 );
 
 function DataProcessing() {
@@ -67,6 +71,7 @@ function DataProcessing() {
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
   const [LoadjsGridData, setLoadjsGridData] = useState(false);
+
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
@@ -385,6 +390,9 @@ function DataProcessing() {
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
+  const generateDatabaseDateTime16 = function (date) {
+    return date.replace("T", " ").substring(0, 16);
+  }
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
@@ -433,19 +441,91 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-    //  lazyLoading: true,
-     // loadingSpin: true,
+      //  lazyLoading: true,
+      // loadingSpin: true,
       onselection: selectionActive,
       onchange: changed,
       onload: loadtable
     });
+
+    if (jspreadRef.current != null) {
+      getchartdata(ListReportData, SelectedPollutents, "line", "Raw");
+      //Visiblerecords();
+    }
     // }
   }
 
+  const Visiblerecords = function (param) {
+    const sheetcontainer = document.querySelector(".jexcel_content");
+    const rowHeight = 25.6; // Height of a single row in pixels 
+    let records = 1;
+    if (param != "") {
+      records = 2;
+    }
+    const visibleRowCount = Math.ceil(sheetcontainer.clientHeight / rowHeight) - records;
+    const scrollPosition = sheetcontainer.scrollTop;
+    const firstVisibleRow = Math.floor(scrollPosition / rowHeight);
+    console.log(visibleRowCount, firstVisibleRow);
+    const visibleRecords = dataForGridref.current.slice(firstVisibleRow, firstVisibleRow + visibleRowCount); // Perform operations with the visibleRecords data, such as updating the display // or executing any other desired actions
+    return visibleRecords;
+    /* const targetRowIndex = 15; // Index of the target row
+    const scrollOffset = targetRowIndex * rowHeight;
+    sheetcontainer.scrollTop = scrollOffset; */
+
+    //const rowElement = document.querySelector(`.jexcel_content tr:nth-child(${rowIndex + 1})`);
+    //rowElement.scrollIntoView();
+  }
+
+  const Getmaxvalue = function (visibleRecords, Key) {
+    let max;
+    let excludedKey = 'Date';
+    if (Key != "") {
+      max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey]);
+      return generateDatabaseDateTime16(max);
+    } else {
+
+      max = visibleRecords.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (key !== excludedKey && value > max) {
+            max = value;
+          }
+        });
+      });
+
+    }
+    return max;
+
+  }
+  const Getminvalue = function (visibleRecords, Key) {
+    let min;
+    let min1 = 0;
+    let excludedKey = 'Date';
+    if (Key != "") {
+      min = visibleRecords.reduce((min, current) => {
+        if (current[excludedKey] < min[excludedKey]) {
+          return current;
+        } else {
+          return min;
+        }
+      })[excludedKey];
+      return generateDatabaseDateTime16(min);
+    } else {
+      min = visibleRecords.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (key !== excludedKey && value < min) {
+            min = value;
+          }
+        });
+      });
+
+    }
+    return min;
+
+  }
   const GridData = function (ReportData, Groupid) {
     for (var k = 0; k < ReportData.length; k++) {
       var obj = {};
-      dataForGrid=dataForGridref.current;
+      dataForGrid = dataForGridref.current;
       var temp = dataForGrid.findIndex(x => x.Date === ReportData[k].interval);
       let roundedNumber = 0;
       if (window.TruncateorRound == "RoundOff") {
@@ -554,7 +634,7 @@ function DataProcessing() {
     const currentData = spreadsheet.getData();
     let finaldata = GridData(data, GroupId);
     let newData = ReportDataListRef.current.concat(data);
-     setReportDataList(newData);
+    setReportDataList(newData);
     ReportDataListRef.current = newData;
     getchartdata(newData, SelectedPollutents, "line", "Raw");
     spreadsheet.setData(finaldata);
@@ -572,6 +652,7 @@ function DataProcessing() {
   }
 
   const handleScroll = function () {
+    getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
     if (startindex >= DataCount) {
       return false;
     }
@@ -659,7 +740,7 @@ function DataProcessing() {
     }
     startindex = (currentPage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
-   // currentPage++;
+    // currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
@@ -675,7 +756,7 @@ function DataProcessing() {
             setReportDataList(data1);
             setDataCount(data1.length > 0 ? data1[0].count : 0)
             setLoadjsGridData(true);
-            getchartdata(data1, Pollutent, "line", "Raw");
+            //getchartdata(data1, Pollutent, "line", "Raw");
           }
           else {
             appendDataToSpreadsheet(data1, GroupId);
@@ -697,7 +778,7 @@ function DataProcessing() {
     newdata = [];
     setNewData([]);
     setOldData([]);
-    GetProcessingData(currentPage,true);
+    GetProcessingData(currentPage, true);
   }
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval, GroupId) {
@@ -852,7 +933,7 @@ function DataProcessing() {
          stationParamaters.push({"Station": StationGroups[i].stationID,"ParameterName":StationGroups[i].parameterID});
      } */
   }
- 
+
   const Changepollutent = function (e) {
     setcriteria([]);
     console.log(selectedStations);
@@ -917,8 +998,9 @@ function DataProcessing() {
       chartRef.current.data = {};
     } */
 
-   /*  setChartData({ labels: [], datasets: [] });
-    setChartOptions(); */
+    /*  setChartData({ labels: [], datasets: [] });*/
+    setChartOptions({});
+    let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
     let tempdata = [];
@@ -960,7 +1042,7 @@ function DataProcessing() {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
           display: true,
-          position: i % 2 === 0?'left':'right',
+          position: i % 2 === 0 ? 'left' : 'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
@@ -969,19 +1051,12 @@ function DataProcessing() {
         datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
-    Scaleslist["xAxes"] = {
+    Scaleslist["x"] = {
       type: 'time',
       time: {
+        unit: 'minutes',
         displayFormats: {
-          millisecond: 'MMM DD YYYY',
-          second: 'MMM DD YYYY',
-          minute: 'MMM DD YYYY',
-          hour: 'MMM DD YYYY',
-          day: 'MMM DD YYYY',
-          week: 'MMM DD YYYY',
-          month: 'MMM DD YYYY',
-          quarter: 'MMM DD YYYY',
-          year: 'MMM DD YYYY',
+          minutes: 'YYYY-MM-DD HH:mm'
         }
       }
     };
@@ -1016,12 +1091,36 @@ function DataProcessing() {
         title: {
           display: true,
         },
+        annotation: {
+          events: ["click"],
+          annotations: [
+            {
+              type: 'box',
+              id: 'dragabbleAnnotation',
+              mode: 'vertical',
+              drawTime: 'afterDraw',
+              xScaleID: 'x',
+              yScaleID: '1_SO2',
+              /* xMin: '2023-06-01 00:00',
+               xMax: '2023-06-01 2:15',
+                yMin: 0,
+               yMax: 2, */
+              xMin: Getminvalue(visibleRecords, "Date"),
+              xMax: Getmaxvalue(visibleRecords, "Date"),
+              yMin: 0,
+              yMax: 2,
+              borderWidth: 2,
+              borderColor: 'red',
+              backgroundColor: 'rgba(255,0,0,0.2)',
+              
+            },
+          ],
+        },
       },
     });
-    if (criteria == 'MeanTimeseries') {
-      labels = xAxislabel;
-    }
+
     setTimeout(() => {
+
       setChartData({
         // labels,
         datasets: datasets
@@ -1160,9 +1259,9 @@ function DataProcessing() {
             {ListReportData.length == 0 && LoadjsGridData && (
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
-            {ListReportData.length > 0 && ChartData && (
+            {ListReportData.length > 0 && ChartData && jspreadRef.current !=null && (
               <div className="chartmaindiv">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} />
               </div>
             )}
           </div>
