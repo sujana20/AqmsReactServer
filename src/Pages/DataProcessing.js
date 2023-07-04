@@ -204,7 +204,7 @@ function DataProcessing() {
       }
     }
     if (!revertRef.current) {
-      let Parametersplit = SelectedPollutents[x - 1].split("_");
+      let Parametersplit = SelectedPollutents[x - 1].split("@_");
       let filtered = null;
       if (Parametersplit.length > 1) {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
@@ -286,7 +286,7 @@ function DataProcessing() {
   }
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGridref.current.findIndex(y => y.Date === filnallist[j].interval);
@@ -306,7 +306,7 @@ function DataProcessing() {
 
   const gethistory = function () {
     let changearr = dataForGridcopy[selectedgrid[1]];
-    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
+    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
     let filtered = null;
     if (Parametersplit.length > 1) {
       filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
@@ -329,7 +329,7 @@ function DataProcessing() {
   const reverttoprevious = function () {
     revertRef.current = true;
     let changearr = dataForGridcopy[selectedgrid[1]];
-    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("_");
+    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
     // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let filtered = null;
     if (Parametersplit.length > 1) {
@@ -410,7 +410,7 @@ function DataProcessing() {
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
@@ -538,10 +538,10 @@ function DataProcessing() {
       }
       if (Groupid != "") {
         if (temp >= 0) {
-          dataForGrid[temp][ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+          dataForGrid[temp][ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
         } else {
           obj["Date"] = ReportData[k].interval;
-          obj[ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+          obj[ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
           dataForGrid.push(obj);
         }
       } else {
@@ -892,14 +892,14 @@ function DataProcessing() {
     let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     let filter2 = [];
     for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID, unitID: a.unitID }));
       let station = Stations.filter(x => x.id == finalstationID[i]);
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j].parameterID && x.unitID == parameters[j].unitID);
         let value = value1.length > 0 ? value1[0].parameterName : "";
-        filter2.push(value + "_" + finalstationID[i]);
+        filter2.push(value + "@_" + finalstationID[i]);
       }
     }
     if (filter2.length < 10) {
@@ -1019,7 +1019,7 @@ function DataProcessing() {
       NinetyEightPercentile = [];
       FiftyPercentile = [];
       // let pollutentdata = data[pollutent[i]];
-      let Parametersplit = pollutent[i].split("_")
+      let Parametersplit = pollutent[i].split("@_")
       let Groupid = document.getElementById("groupid").value;
       let pollutentdata = [];
       let Stationlist = Stations.filter(x => x.id == Parametersplit[1]);
@@ -1112,7 +1112,6 @@ function DataProcessing() {
               borderWidth: 2,
               borderColor: 'red',
               backgroundColor: 'rgba(255,0,0,0.2)',
-              
             },
           ],
         },
@@ -1259,7 +1258,7 @@ function DataProcessing() {
             {ListReportData.length == 0 && LoadjsGridData && (
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
-            {ListReportData.length > 0 && ChartData && jspreadRef.current !=null && (
+            {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="chartmaindiv">
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} />
               </div>

@@ -119,7 +119,7 @@ function Grouping() {
         children=[];
         for(var j=0;j<Listparameters.length;j++){               
           if(ListStations[i].id==Listparameters[j].stationID){
-            children.push({ value: ListStations[i].id +"-"+ Listparameters[j].parameterID, label: Listparameters[j].parameterName});
+            children.push({ value: ListStations[i].id +"-"+ Listparameters[j].parameterID+"-"+Listparameters[j].unitID, label: Listparameters[j].parameterName});
           }                
         }
         parent.push({ value: ListStations[i].id, label: ListStations[i].stationName, children: children });
@@ -152,7 +152,7 @@ function Grouping() {
       var parameterArray=[];
       for(var u=0;u<checkedStationValues.length;u++){
         var parameter= checkedStationValues[u].split("-");
-        parameterArray.push({GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
+        parameterArray.push({GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1],UnitID: parameter[2], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
       }
       console.log(parameterArray);      
       let validation = Groupingaddvalidation(groupname,checked);
@@ -192,7 +192,8 @@ function Grouping() {
           if(ListStationGroups[u].groupID == param.groupID){
             var parameter= ListStationGroups[u].parameterID;
             var station=  ListStationGroups[u].stationID;
-            parameterArray.push([station + "-" + parameter]); 
+            var unit=  ListStationGroups[u].unitID;
+            parameterArray.push([station + "-" + parameter + "-" + unit]); 
           }
                   
         }
@@ -209,7 +210,7 @@ function Grouping() {
       var parameterArray=[];
       for(var u=0;u<checked.length;u++){
         var parameter= checked[u].split("-");
-        parameterArray.push({GroupID:GroupId, GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
+        parameterArray.push({GroupID:GroupId, GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1],UnitID: parameter[2], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
       }
       let validation = Groupingaddvalidation(groupname,checked);
       if (!validation) {
