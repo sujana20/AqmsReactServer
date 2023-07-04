@@ -21,7 +21,7 @@ import {
   TimeScale,
   defaults,
 } from 'chart.js';
-
+import annotationPlugin from "chartjs-plugin-annotation";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -31,7 +31,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  TimeScale
+  TimeScale,
+  annotationPlugin
 );
 
 function HistoricalData() {
@@ -185,7 +186,7 @@ function HistoricalData() {
 
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGridref.current.findIndex(y => y.Date === filnallist[j].interval);
@@ -207,6 +208,9 @@ function HistoricalData() {
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
+  const generateDatabaseDateTime16 = function (date) {
+    return date.replace("T", " ").substring(0, 16);
+  }
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
@@ -224,7 +228,7 @@ function HistoricalData() {
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
@@ -257,6 +261,76 @@ function HistoricalData() {
       onselection: selectionActive,
       onload: loadtable,
     });
+    if (jspreadRef.current != null) {
+      getchartdata(ListReportData, SelectedPollutents, "line", "Raw");
+      //Visiblerecords();
+    }
+  }
+
+  const Visiblerecords = function (param) {
+    const sheetcontainer = document.querySelector(".jexcel_content");
+    const rowHeight = 25.6; // Height of a single row in pixels 
+    let records = 1;
+    if (param != "") {
+      records = 2;
+    }
+    const visibleRowCount = Math.ceil(sheetcontainer.clientHeight / rowHeight) - records;
+    const scrollPosition = sheetcontainer.scrollTop;
+    const firstVisibleRow = Math.floor(scrollPosition / rowHeight);
+    console.log(visibleRowCount, firstVisibleRow);
+    const visibleRecords = dataForGridref.current.slice(firstVisibleRow, firstVisibleRow + visibleRowCount); // Perform operations with the visibleRecords data, such as updating the display // or executing any other desired actions
+    return visibleRecords;
+    /* const targetRowIndex = 15; // Index of the target row
+    const scrollOffset = targetRowIndex * rowHeight;
+    sheetcontainer.scrollTop = scrollOffset; */
+
+    //const rowElement = document.querySelector(`.jexcel_content tr:nth-child(${rowIndex + 1})`);
+    //rowElement.scrollIntoView();
+  }
+  const Getmaxvalue = function (visibleRecords, Key) {
+    let max;
+    let excludedKey = 'Date';
+    if (Key != "") {
+      max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey]);
+      return generateDatabaseDateTime16(max);
+    } else {
+
+      max = visibleRecords.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (key !== excludedKey && value > max) {
+            max = value;
+          }
+        });
+      });
+
+    }
+    return max;
+
+  }
+  const Getminvalue = function (visibleRecords, Key) {
+    let min;
+    let min1 = 0;
+    let excludedKey = 'Date';
+    if (Key != "") {
+      min = visibleRecords.reduce((min, current) => {
+        if (current[excludedKey] < min[excludedKey]) {
+          return current;
+        } else {
+          return min;
+        }
+      })[excludedKey];
+      return generateDatabaseDateTime16(min);
+    } else {
+      min = visibleRecords.forEach(obj => {
+        Object.entries(obj).forEach(([key, value]) => {
+          if (key !== excludedKey && value < min) {
+            min = value;
+          }
+        });
+      });
+
+    }
+    return min;
 
   }
 
@@ -276,10 +350,10 @@ function HistoricalData() {
       }
       if (Groupid != "") {
         if (temp >= 0) {
-          dataForGrid[temp][ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+          dataForGrid[temp][ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
         } else {
           obj["Date"] = ReportData[k].interval;
-          obj[ReportData[k].parameterName + "_" + ReportData[k].stationID] = roundedNumber;
+          obj[ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
           dataForGrid.push(obj);
         }
       } else {
@@ -328,6 +402,7 @@ function HistoricalData() {
   }
 
   const handleScroll = function () {
+    getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
     if (startindex >= DataCount) {
       return false;
     }
@@ -432,7 +507,7 @@ function HistoricalData() {
             setReportDataList(data1);
             setDataCount(data1.length > 0 ? data1[0].count : 0)
             setLoadjsGridData(true);
-            getchartdata(data1, Pollutent, "line", "Raw");
+            //getchartdata(data1, Pollutent, "line", "Raw");
           }
           else {
             appendDataToSpreadsheet(data1, GroupId);
@@ -504,7 +579,7 @@ function HistoricalData() {
       let filter;
       let unitname;
       if (GroupId != "") {
-        let Parameterssplit = SelectedPollutents[i].split("_");
+        let Parameterssplit = SelectedPollutents[i].split("@_");
         let stationName = AllLookpdata.listStations.filter(x => x.id == Parameterssplit[1]);
         filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
         unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
@@ -644,9 +719,9 @@ function HistoricalData() {
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
         let value = value1.length > 0 ? value1[0].parameterName : "";
-        filter2.push(value + "_" + finalstationID[i]);
+        filter2.push(value + "@_" + finalstationID[i]);
       }
     }
     if (filter2.length < 10) {
@@ -659,7 +734,7 @@ function HistoricalData() {
     // let filter2 = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) && filter1.includes(obj.parameterID)).map(a => a.parameterName);
     // setSelectedPollutents(filter2);
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
-    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterID));
+    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.id));
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
@@ -795,8 +870,9 @@ function HistoricalData() {
       chartRef.current.data = {};
     } */
 
-   /*  setChartData({ labels: [], datasets: [] });
-    setChartOptions(); */
+    /*  setChartData({ labels: [], datasets: [] });*/
+    setChartOptions({});
+    let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
     let tempdata = [];
@@ -815,7 +891,7 @@ function HistoricalData() {
       NinetyEightPercentile = [];
       FiftyPercentile = [];
       // let pollutentdata = data[pollutent[i]];
-      let Parametersplit = pollutent[i].split("_")
+      let Parametersplit = pollutent[i].split("@_")
       let Groupid = document.getElementById("groupid").value;
       let pollutentdata = [];
       let Stationlist = Stations.filter(x => x.id == Parametersplit[1]);
@@ -838,7 +914,7 @@ function HistoricalData() {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
           display: true,
-          position: i % 2 === 0?'left':'right',
+          position: i % 2 === 0 ? 'left' : 'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
@@ -847,19 +923,12 @@ function HistoricalData() {
         datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
-    Scaleslist["xAxes"] = {
+    Scaleslist["x"] = {
       type: 'time',
       time: {
+        unit: 'minutes',
         displayFormats: {
-          millisecond: 'MMM DD YYYY',
-          second: 'MMM DD YYYY',
-          minute: 'MMM DD YYYY',
-          hour: 'MMM DD YYYY',
-          day: 'MMM DD YYYY',
-          week: 'MMM DD YYYY',
-          month: 'MMM DD YYYY',
-          quarter: 'MMM DD YYYY',
-          year: 'MMM DD YYYY',
+          minutes: 'YYYY-MM-DD HH:mm'
         }
       }
     };
@@ -894,12 +963,35 @@ function HistoricalData() {
         title: {
           display: true,
         },
+        annotation: {
+          events: ["click"],
+          annotations: [
+            {
+              type: 'box',
+              id: 'dragabbleAnnotation',
+              mode: 'vertical',
+              drawTime: 'afterDraw',
+              xScaleID: 'x',
+              yScaleID: '1_SO2',
+              /* xMin: '2023-06-01 00:00',
+               xMax: '2023-06-01 2:15',
+                yMin: 0,
+               yMax: 2, */
+              xMin: Getminvalue(visibleRecords, "Date"),
+              xMax: Getmaxvalue(visibleRecords, "Date"),
+              yMin: 0,
+              yMax: 2,
+              borderWidth: 2,
+              borderColor: 'red',
+              backgroundColor: 'rgba(255,0,0,0.2)',
+            },
+          ],
+        },
       },
     });
-    if (criteria == 'MeanTimeseries') {
-      labels = xAxislabel;
-    }
+
     setTimeout(() => {
+
       setChartData({
         // labels,
         datasets: datasets

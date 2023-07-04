@@ -892,12 +892,12 @@ function DataProcessing() {
     let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     let filter2 = [];
     for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID, unitID: a.unitID }));
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID}));
       let station = Stations.filter(x => x.id == finalstationID[i]);
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j].parameterID && x.unitID == parameters[j].unitID);
+        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j].parameterID);
         let value = value1.length > 0 ? value1[0].parameterName : "";
         filter2.push(value + "@_" + finalstationID[i]);
       }
@@ -912,7 +912,7 @@ function DataProcessing() {
     // let filter2 = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) && filter1.includes(obj.parameterID)).map(a => a.parameterName);
     // setSelectedPollutents(filter2);
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
-    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterID));
+    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.id));
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {

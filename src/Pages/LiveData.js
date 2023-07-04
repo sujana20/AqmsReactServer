@@ -176,7 +176,7 @@ function LiveData() {
  
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
@@ -225,7 +225,7 @@ function LiveData() {
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("_");
+      let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
@@ -263,10 +263,10 @@ function LiveData() {
       let Groupid=document.getElementById("groupid").value;
       if(Groupid !=""){
         if (temp >= 0) {
-          dataForGrid[temp][ListReportData[k].parameterName+"_"+ListReportData[k].stationID] = roundedNumber;
+          dataForGrid[temp][ListReportData[k].parameterName+"@_"+ListReportData[k].stationID] = roundedNumber;
         } else {
           obj["Date"] = ListReportData[k].interval;
-          obj[ListReportData[k].parameterName+"_"+ListReportData[k].stationID] = roundedNumber;
+          obj[ListReportData[k].parameterName+"@_"+ListReportData[k].stationID] = roundedNumber;
           dataForGrid.push(obj);
         }
       }else{
@@ -557,9 +557,9 @@ function LiveData() {
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
       for (let j = 0; j < parameters.length; j++) {
-        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.parameterID == parameters[j]);
+        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
         let value = value1.length>0?value1[0].parameterName:"";
-        filter2.push(value + "_" + finalstationID[i]);
+        filter2.push(value + "@_" + finalstationID[i]);
       }
     }
     if (filter2.length < 10) {
@@ -569,7 +569,7 @@ function LiveData() {
     setSelectedPollutents(filter2);
     setNestedheaders(headers);
 
-    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterID));
+    let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.id));
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
