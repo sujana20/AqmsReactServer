@@ -287,8 +287,8 @@ function LiveData() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-      lazyLoading: true,
-      loadingSpin: true,
+     // lazyLoading: true,
+     // loadingSpin: true,
       onselection: selectionActive,
       onload: loadtable,
     });
