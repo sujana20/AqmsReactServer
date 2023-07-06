@@ -484,16 +484,22 @@ function DataProcessing() {
       return generateDatabaseDateTime16(max);
     } else {
 
-      max = visibleRecords.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (key !== excludedKey && value > max) {
-            max = value;
+      let maxValue = -Infinity;
+      for (let i = 0; i < visibleRecords.length; i++) {
+        const object = visibleRecords[i];
+        for (const key in object) {
+          if (key !== excludedKey) {
+            const value = object[key];
+            //  if (typeof value === 'number') {
+            maxValue = Math.max(maxValue, value);
+            //}
           }
-        });
-      });
+        }
+      }
+      return maxValue;
 
     }
-    return max;
+    //return max;
 
   }
   const Getminvalue = function (visibleRecords, Key) {
@@ -510,16 +516,23 @@ function DataProcessing() {
       })[excludedKey];
       return generateDatabaseDateTime16(min);
     } else {
-      min = visibleRecords.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (key !== excludedKey && value < min) {
-            min = value;
-          }
-        });
-      });
+      let minValue = Infinity;
 
+      for (let i = 0; i < visibleRecords.length; i++) {
+        const object = visibleRecords[i];
+
+        for (const key in object) {
+          if (key !== excludedKey) {
+            const value = object[key];
+            // if (typeof value === 'number') {
+            minValue = Math.min(minValue, value);
+            // }
+          }
+        }
+      }
+      return minValue;
     }
-    return min;
+    // return min;
 
   }
   const GridData = function (ReportData, Groupid) {
@@ -892,7 +905,7 @@ function DataProcessing() {
     let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     let filter2 = [];
     for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID}));
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID }));
       let station = Stations.filter(x => x.id == finalstationID[i]);
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
@@ -1038,11 +1051,13 @@ function DataProcessing() {
         chartdata.push({ x: pollutentdata[k].interval, y: pollutentdata[k].parametervalue });
         pointRadius.push(2);
       }
+      let chartele=chartRef.current?.options?.scales[Parametersplit[1] + "_" + Parametersplit[0]];
+
       if (charttype == 'line') {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
-          display: true,
-          position: i % 2 === 0 ? 'left' : 'right',
+          display: chartele?.display==undefined?true:chartele?.display,
+          position: chartele?.position?chartele.position:i % 2 === 0 ? 'left' : 'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
@@ -1051,10 +1066,12 @@ function DataProcessing() {
         datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
+
     Scaleslist["x"] = {
       type: 'time',
       time: {
         unit: 'minutes',
+        stepSize: 'auto',
         displayFormats: {
           minutes: 'YYYY-MM-DD HH:mm'
         }
@@ -1087,6 +1104,37 @@ function DataProcessing() {
       plugins: {
         legend: {
           position: 'top',
+          onClick: function (event, legendItem) {
+            let chart = chartRef.current;
+            const datasetIndex = legendItem.datasetIndex;
+            const meta = chart.getDatasetMeta(datasetIndex);
+            meta.hidden = !meta.hidden;
+
+            const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
+            const allHidden = chart.options.scales[yAxisID].display;
+
+            if (allHidden) {
+              chart.options.scales[yAxisID].display = false;
+            } else {
+              chart.options.scales[yAxisID].display = true;
+            }
+            // Determine the visible y-axes
+            const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
+              if(axis !='x'){
+                return chart.options.scales[axis].display;
+              }
+            });
+
+            // Update the positions of the visible y-axes
+           // const numVisibleAxes = visibleAxes.length;
+           // const yAxisPositions = ['left', 'right']; // Modify if needed
+
+            visibleAxes.forEach((axis, index) => {
+              chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
+            });
+            // Update the chart to reflect the visibility changes
+            chart.update();
+          },
         },
         title: {
           display: true,
@@ -1107,8 +1155,8 @@ function DataProcessing() {
                yMax: 2, */
               xMin: Getminvalue(visibleRecords, "Date"),
               xMax: Getmaxvalue(visibleRecords, "Date"),
-              yMin: 0,
-              yMax: 2,
+              yMin: Getminvalue(visibleRecords, ""),
+              yMax: Getmaxvalue(visibleRecords, ""),
               borderWidth: 2,
               borderColor: 'red',
               backgroundColor: 'rgba(255,0,0,0.2)',
