@@ -16,6 +16,7 @@ import {
   defaults
 } from 'chart.js';
 import { Chart, Bar, Line, Scatter } from 'react-chartjs-2';
+import annotationPlugin from "chartjs-plugin-annotation";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -23,6 +24,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   TimeScale,
+  annotationPlugin,
   Filler,
   Title,
   Tooltip,
@@ -54,7 +56,7 @@ function DetailedAnalysisReports() {
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733","#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   useEffect(() => {
     var d = new Date();
     var currentyear = d.getFullYear();
@@ -81,7 +83,7 @@ function DetailedAnalysisReports() {
     });
   })
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetLookupDataDetailedAnalysis")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -96,7 +98,7 @@ function DetailedAnalysisReports() {
     let FromYear = fromDate;
     let ToYear = toDate;
     let Interval = '1440,60';
-    let Interval1=Interval.split(',');
+    let Interval1 = Interval.split(',');
     let valid = ReportValidations(Station, Pollutent, FromYear, ToYear, Interval);
     if (!valid) {
       return false;
@@ -118,8 +120,8 @@ function DetailedAnalysisReports() {
           getchartdataMax(data1.MaxData, Pollutent, ChartType, Criteria);
           getchartdata24Hourly(data1.Hourly24Data, Pollutent, ChartType, Criteria);
           getchartdataHourly(data1.HourlyData, Pollutent, ChartType, Criteria);
-          getchartdataExcedence24H(data1['HourlyDataExedence'+Interval1[0]], Pollutent, ChartType, Criteria);
-          getchartdataExcedence1H(data1['HourlyDataExedence'+Interval1[1]], Pollutent, ChartType, Criteria);
+          getchartdataExcedence24H(data1['HourlyDataExedence' + Interval1[0]], Pollutent, ChartType, Criteria, data1.Excedencevalues, Interval1[0]);
+          getchartdataExcedence1H(data1['HourlyDataExedence' + Interval1[1]], Pollutent, ChartType, Criteria, data1.Excedencevalues, Interval1[1]);
         }
       }).catch((error) => console.log(error));
   }
@@ -286,14 +288,14 @@ function DetailedAnalysisReports() {
       let index = labels.indexOf(pollutentdata[k].YearValue);
       if (index == -1) {
         labels.push(pollutentdata[k].YearValue);
-     //   bgcolors.push(hexToRgbA(colorArray[k]));
+        //   bgcolors.push(hexToRgbA(colorArray[k]));
       }
     }
     for (let i = 0; i < labels.length; i++) {
       chartdata = [];
       for (let j = 0; j < pollutentdata.length; j++) {
         if (pollutentdata[j].YearValue == labels[i]) {
-          chartdata.push({x:pollutentdata[j].Interval,y:pollutentdata[j].PollutantValue});
+          chartdata.push({ x: pollutentdata[j].Interval, y: pollutentdata[j].PollutantValue });
         }
       }
       datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
@@ -320,18 +322,18 @@ function DetailedAnalysisReports() {
       },
       plugins: {
         legend: {
-         // display: false,
+          // display: false,
           position: 'top',
         },
         title: {
           display: true,
-          text: pollutent+' HOUR CONCENTRATIONS - 24Hr',
+          text: pollutent + ' HOUR CONCENTRATIONS - 24Hr',
         },
       },
     });
     setTimeout(() => {
       setChartData24h({
-       // labels,
+        // labels,
         datasets: datasets
       })
     }, 10);
@@ -351,14 +353,14 @@ function DetailedAnalysisReports() {
       let index = labels.indexOf(pollutentdata[k].YearValue);
       if (index == -1) {
         labels.push(pollutentdata[k].YearValue);
-     //   bgcolors.push(hexToRgbA(colorArray[k]));
+        //   bgcolors.push(hexToRgbA(colorArray[k]));
       }
     }
     for (let i = 0; i < labels.length; i++) {
       chartdata = [];
       for (let j = 0; j < pollutentdata.length; j++) {
         if (pollutentdata[j].YearValue == labels[i]) {
-          chartdata.push({x:pollutentdata[j].Interval,y:pollutentdata[j].PollutantValue});
+          chartdata.push({ x: pollutentdata[j].Interval, y: pollutentdata[j].PollutantValue });
         }
       }
       datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
@@ -380,12 +382,12 @@ function DetailedAnalysisReports() {
       },
       plugins: {
         legend: {
-         // display: false,
+          // display: false,
           position: 'top',
         },
         title: {
           display: true,
-          text: pollutent+' HOUR CONCENTRATIONS - 1Hr',
+          text: pollutent + ' HOUR CONCENTRATIONS - 1Hr',
         },
       },
     });
@@ -396,8 +398,15 @@ function DetailedAnalysisReports() {
       })
     }, 10);
   }
-
-  const getchartdataExcedence24H = function (data, pollutent, charttype, criteria) {
+  const toggleLabel = function (ctx, event) {
+    const oneThirdWidth = ctx.element.width / 3;
+    const chart = ctx.chart;
+    const annotationOpts = chart.options.plugins.annotation?.annotations[0];
+    annotationOpts.label.display = !annotationOpts.label.display;
+    annotationOpts.label.position = (event.x / ctx.chart.chartArea.width * 100) + '%';
+    chart.update();
+  }
+  const getchartdataExcedence24H = function (data, pollutent, charttype, criteria, ExcedenceValue, Type) {
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
@@ -416,6 +425,33 @@ function DetailedAnalysisReports() {
         bgcolors.push(hexToRgbA(colorArray[k]));
       }
     }
+    let Excedence = ExcedenceValue?.filter(x => x.Interval == Type).length > 0 ? ExcedenceValue?.filter(x => x.Interval == Type)[0].ExcedenceValue : "";
+    let Annotations = Excedence == "" || data.length == 0 ? [] : [
+      {
+        type: 'line',
+        /*   yMin: Excedence,
+          yMax: Excedence, */
+        borderColor: 'rgb(255, 99, 132)',
+        borderWidth: 4,
+        label: {
+          display: false,
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderWidth: 0,
+          drawTime: 'afterDraw',
+          color: 'white',
+          content: (ctx) => ['Excedence value is: ' + Excedence.toFixed(3)],
+          textAlign: 'center'
+        },
+        scaleID: 'y',
+        value: Excedence,
+        enter(ctx, event) {
+          toggleLabel(ctx, event);
+        },
+        leave(ctx, event) {
+          toggleLabel(ctx, event);
+        }
+      },
+    ];
     datasets.push({ label: "", data: chartdata, borderColor: colorArray, borderWidth: 2, borderRadius: 5, backgroundColor: bgcolors })
     setChartOptionsExcedence24h({
       responsive: true,
@@ -429,9 +465,12 @@ function DetailedAnalysisReports() {
           display: false,
           position: 'top',
         },
-        title: { 
+        title: {
           display: true,
-          text: pollutent+' HOURS EXCEEDING -24Hr',
+          text: pollutent + ' HOURS EXCEEDING -24Hr',
+        },
+        annotation: {
+          annotations: Annotations
         },
       },
     });
@@ -442,7 +481,8 @@ function DetailedAnalysisReports() {
       })
     }, 10);
   }
-  const getchartdataExcedence1H = function (data, pollutent, charttype, criteria) {
+
+  const getchartdataExcedence1H = function (data, pollutent, charttype, criteria, ExcedenceValue, Type) {
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
@@ -461,6 +501,33 @@ function DetailedAnalysisReports() {
         bgcolors.push(hexToRgbA(colorArray[k]));
       }
     }
+    let Excedence = ExcedenceValue?.filter(x => x.Interval == Type).length > 0 ? ExcedenceValue?.filter(x => x.Interval == Type)[0].ExcedenceValue : "";
+    let Annotations = Excedence == "" || data.length == 0 ? [] : [
+      {
+        type: 'line',
+        /*   yMin: Excedence,
+          yMax: Excedence, */
+        borderColor: 'rgb(255, 99, 132)',
+        borderWidth: 4,
+        label: {
+          display: false,
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderWidth: 0,
+          drawTime: 'afterDraw',
+          color: 'white',
+          content: (ctx) => ['Excedence value is: ' + Excedence.toFixed(3)],
+          textAlign: 'center'
+        },
+        scaleID: 'y',
+        value: Excedence,
+        enter(ctx, event) {
+          toggleLabel(ctx, event);
+        },
+        leave(ctx, event) {
+          toggleLabel(ctx, event);
+        }
+      },
+    ];
     datasets.push({ label: "", data: chartdata, borderColor: colorArray, borderWidth: 2, borderRadius: 5, backgroundColor: bgcolors })
     setChartOptionsExcedence1h({
       responsive: true,
@@ -476,7 +543,10 @@ function DetailedAnalysisReports() {
         },
         title: {
           display: true,
-          text: pollutent+' HOURS EXCEEDING -1Hr',
+          text: pollutent + ' HOURS EXCEEDING -1Hr',
+        },
+        annotation: {
+          annotations: Annotations
         },
       },
     });
@@ -537,12 +607,12 @@ function DetailedAnalysisReports() {
               )}
               {ChartData24h && (
                 <div className="col-md-6">
-                  <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90}/>
+                  <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90} />
                 </div>
               )}
               {ChartOptionsh && (
                 <div className="col-md-6">
-                  <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90}/>
+                  <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90} />
                 </div>
               )}
               {ChartOptionsExcedence24h && (
