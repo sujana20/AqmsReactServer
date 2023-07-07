@@ -75,6 +75,8 @@ function DataProcessing() {
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
+  const chartelementRef = useRef();
+  const chartlastEventRef = useRef();
   const revertRef = useRef();
   revertRef.current = revert;
   const ReportDataListRef = useRef();
@@ -476,6 +478,14 @@ function DataProcessing() {
     //rowElement.scrollIntoView();
   }
 
+  const ScrolltoDrop=function(index){
+    const sheetcontainer = document.querySelector(".jexcel_content");
+    const rowHeight = 25.6; // Height of a single row in pixels 
+    const targetRowIndex = index; // Index of the target row
+    const scrollOffset = targetRowIndex * rowHeight;
+    sheetcontainer.scrollTop = scrollOffset; 
+  }
+
   const Getmaxvalue = function (visibleRecords, Key) {
     let max;
     let excludedKey = 'Date';
@@ -484,16 +494,22 @@ function DataProcessing() {
       return generateDatabaseDateTime16(max);
     } else {
 
-      max = visibleRecords.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (key !== excludedKey && value > max) {
-            max = value;
+      let maxValue = -Infinity;
+      for (let i = 0; i < visibleRecords.length; i++) {
+        const object = visibleRecords[i];
+        for (const key in object) {
+          if (key !== excludedKey) {
+            const value = object[key];
+            //  if (typeof value === 'number') {
+            maxValue = Math.max(maxValue, value);
+            //}
           }
-        });
-      });
+        }
+      }
+      return maxValue;
 
     }
-    return max;
+    //return max;
 
   }
   const Getminvalue = function (visibleRecords, Key) {
@@ -510,16 +526,23 @@ function DataProcessing() {
       })[excludedKey];
       return generateDatabaseDateTime16(min);
     } else {
-      min = visibleRecords.forEach(obj => {
-        Object.entries(obj).forEach(([key, value]) => {
-          if (key !== excludedKey && value < min) {
-            min = value;
-          }
-        });
-      });
+      let minValue = Infinity;
 
+      for (let i = 0; i < visibleRecords.length; i++) {
+        const object = visibleRecords[i];
+
+        for (const key in object) {
+          if (key !== excludedKey) {
+            const value = object[key];
+            // if (typeof value === 'number') {
+            minValue = Math.min(minValue, value);
+            // }
+          }
+        }
+      }
+      return minValue;
     }
-    return min;
+    // return min;
 
   }
   const GridData = function (ReportData, Groupid) {
@@ -652,7 +675,9 @@ function DataProcessing() {
   }
 
   const handleScroll = function () {
+    if(!chartelementRef.current){
     getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
+  }
     if (startindex >= DataCount) {
       return false;
     }
@@ -892,7 +917,7 @@ function DataProcessing() {
     let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     let filter2 = [];
     for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID}));
+      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => ({ parameterID: a.parameterID }));
       let station = Stations.filter(x => x.id == finalstationID[i]);
       let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
       headers.push(obj);
@@ -993,6 +1018,120 @@ function DataProcessing() {
     setLoadjsGridData(false);
   }
 
+  /* Drag and drop start */
+
+  const FormatedDate = function (timestamp) {
+    const date = new Date(timestamp);
+
+    // Extract the date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const day = String(date.getDate()).padStart(2, '0');
+
+    // Extract the time components
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    // Format the date and time
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+    return formattedDateTime;
+  }
+
+  const findClosestTimeIndex=function(targetTime) {
+    // Convert the target time to a Date object
+    const targetDate = new Date(targetTime);
+
+    // Find the index of the object with the closest time
+    let closestIndex = -1;
+    let closestDiff = Infinity;
+
+    for (let i = 0; i < dataForGridref.current.length; i++) {
+      const time = dataForGridref.current[i].Date;
+      const currentDate = new Date(time);
+      const diff = Math.abs(targetDate - currentDate);
+
+      if (diff < closestDiff) {
+        closestIndex = i;
+        closestDiff = diff;
+      }
+    }
+
+    return closestIndex;
+  }
+
+
+  const drag = function (moveX, moveY) {
+    chartelementRef.current.x += moveX;
+    //chartelementRef.current.y += moveY;
+    chartelementRef.current.x2 += moveX;
+    //chartelementRef.current.y2 += moveY;
+    chartelementRef.current.centerX += moveX;
+    // chartelementRef.current.centerY += moveY;
+    if (chartelementRef.current.elements && chartelementRef.current.elements.length) {
+      for (const subEl of chartelementRef.current.elements) {
+        subEl.x += moveX;
+        //subEl.y += moveY;
+        subEl.x2 += moveX;
+        //subEl.y2 += moveY;
+        subEl.centerX += moveX;
+        // subEl.centerY += moveY;
+        subEl.bX += moveX;
+        //  subEl.bY += moveY;
+        //const value = xAxis.getValueForPixel(subEl.x);
+        console.log(subEl.x, subEl.x2)
+      }
+    }
+  };
+
+  const handleElementDragging = function (event) {
+    if (!chartlastEventRef.current || !chartelementRef.current) {
+      return;
+    }
+    const moveX = event.x - chartlastEventRef.current.x;
+    const moveY = event.y - chartlastEventRef.current.y;
+    drag(moveX, moveY);
+    chartlastEventRef.current = event;
+    return true;
+  };
+
+  const handleDrag = function (event) {
+    if (chartelementRef.current) {
+      switch (event.type) {
+        case 'mousemove':
+          return handleElementDragging(event);
+        case 'mouseout':
+        case 'mouseup':
+          chartlastEventRef.current = undefined;
+          break;
+        case 'mousedown':
+          chartlastEventRef.current = event;
+          break;
+        default:
+      }
+    }
+  };
+
+  const dragger = {
+    id: 'dragger',
+    beforeEvent(chart, args, options) {
+      if (handleDrag(args.event)) {
+        args.changed = true;
+        const xAxis = chart.scales['x'];
+        let xmin = chartelementRef.current.x;
+        let xmax = chartelementRef.current.x2;
+        // Retrieve the corresponding x-axis scale value based on the pixel position
+        const xminvalue = xAxis.getValueForPixel(xmin);
+        const xmaxvalue = xAxis.getValueForPixel(xmax);
+        let index=findClosestTimeIndex(FormatedDate(xminvalue));
+        ScrolltoDrop(index);
+       // console.log(findClosestTimeIndex(FormatedDate(xminvalue)),findClosestTimeIndex(FormatedDate(xmaxvalue)));
+        return;
+      }
+    }
+  };
+  /* Drag and drop end */
+
+
   const getchartdata = function (data, pollutent, charttype, criteria) {
     /* if (chartRef.current != null) {
       chartRef.current.data = {};
@@ -1038,11 +1177,13 @@ function DataProcessing() {
         chartdata.push({ x: pollutentdata[k].interval, y: pollutentdata[k].parametervalue });
         pointRadius.push(2);
       }
+      let chartele = chartRef.current?.options?.scales[Parametersplit[1] + "_" + Parametersplit[0]];
+
       if (charttype == 'line') {
         Scaleslist[Parametersplit[1] + "_" + Parametersplit[0]] = {
           type: 'linear',
-          display: true,
-          position: i % 2 === 0 ? 'left' : 'right',
+          display: chartele?.display == undefined ? true : chartele?.display,
+          position: chartele?.position ? chartele.position : i % 2 === 0 ? 'left' : 'right',
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
@@ -1051,10 +1192,12 @@ function DataProcessing() {
         datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
+
     Scaleslist["x"] = {
       type: 'time',
       time: {
         unit: 'minutes',
+        stepSize: 'auto',
         displayFormats: {
           minutes: 'YYYY-MM-DD HH:mm'
         }
@@ -1083,16 +1226,54 @@ function DataProcessing() {
     setChartOptions({
       responsive: true,
       scales: Scaleslist,
+      events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
       // maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
+          onClick: function (event, legendItem) {
+            let chart = chartRef.current;
+            const datasetIndex = legendItem.datasetIndex;
+            const meta = chart.getDatasetMeta(datasetIndex);
+            meta.hidden = !meta.hidden;
+
+            const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
+            const allHidden = chart.options.scales[yAxisID].display;
+
+            if (allHidden) {
+              chart.options.scales[yAxisID].display = false;
+            } else {
+              chart.options.scales[yAxisID].display = true;
+            }
+            // Determine the visible y-axes
+            const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
+              if (axis != 'x') {
+                return chart.options.scales[axis].display;
+              }
+            });
+
+            // Update the positions of the visible y-axes
+            // const numVisibleAxes = visibleAxes.length;
+            // const yAxisPositions = ['left', 'right']; // Modify if needed
+
+            visibleAxes.forEach((axis, index) => {
+              chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
+            });
+            // Update the chart to reflect the visibility changes
+            chart.update();
+          },
         },
         title: {
           display: true,
         },
         annotation: {
-          events: ["click"],
+          enter(ctx) {
+            chartelementRef.current = ctx.element;
+          },
+          leave() {
+            chartelementRef.current = undefined;
+            chartlastEventRef.current = undefined;
+          },
           annotations: [
             {
               type: 'box',
@@ -1107,8 +1288,8 @@ function DataProcessing() {
                yMax: 2, */
               xMin: Getminvalue(visibleRecords, "Date"),
               xMax: Getmaxvalue(visibleRecords, "Date"),
-              yMin: 0,
-              yMax: 2,
+              yMin: Getminvalue(visibleRecords, ""),
+              yMax: Getmaxvalue(visibleRecords, ""),
               borderWidth: 2,
               borderColor: 'red',
               backgroundColor: 'rgba(255,0,0,0.2)',
@@ -1260,7 +1441,7 @@ function DataProcessing() {
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="chartmaindiv">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} />
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} />
               </div>
             )}
           </div>
