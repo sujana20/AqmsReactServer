@@ -332,7 +332,7 @@ function StasticsReport() {
                 chartdata.push(tempdata[index1].value)
               }
             }
-            datasets.push({ fill:charttype == 'area'?true:false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[j],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[j]) })
+            datasets.push({ fill:charttype == 'area'?true:false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           }
 
         }
