@@ -573,12 +573,12 @@ function HistoricalData() {
       return false;
     }
     document.getElementById('loader').style.display = "block";
-    let type = Interval.substr(Interval.length - 1);
     let Intervaltype;
-    if (type == 'H') {
-      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+   let Intervaltypesplit=Interval.split('-');
+    if (Intervaltypesplit[1] == 'H') {
+      Intervaltype = Intervaltypesplit[0] * 60;
     } else {
-      Intervaltype = Interval.substr(0, Interval.length - 1);
+      Intervaltype = Intervaltypesplit[0];
     }
     let isAvgData = false;
     if (Interval == '15-M') {
