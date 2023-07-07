@@ -113,12 +113,12 @@ function LiveData() {
   }
   }, [AllLookpdata]);
 
-  useEffect(() => {
+ /*  useEffect(() => {
     const interval = setInterval(() => {
       getdatareport('refresh');
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  })
+  }) */
 
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
@@ -223,7 +223,7 @@ function LiveData() {
       headers = Nestedheaders;
     }
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true, });
+    layout.push({ name: "CreatedTime", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
@@ -243,7 +243,7 @@ function LiveData() {
       }
     }
     
-    for (var k = 0; k < ListReportData.length; k++) {
+  /*   for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
 
@@ -278,7 +278,8 @@ function LiveData() {
           dataForGrid.push(obj);
         } 
       }
-    }
+    } */
+    dataForGrid=ListReportData;
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -287,10 +288,10 @@ function LiveData() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
-     // lazyLoading: true,
-     // loadingSpin: true,
-      onselection: selectionActive,
-      onload: loadtable,
+      lazyLoading: true,
+      loadingSpin: true,
+     // onselection: selectionActive,
+      //onload: loadtable,
     });
     
   }
@@ -366,7 +367,8 @@ function LiveData() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-            let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+         // let data2 = JSON.parse(data);
+            let data1 = data.Table1.map((x) => { x.CreatedTime = x.CreatedTime.replace('T', ' '); return x; });
             setListReportData(data1);
             setLoadjsGridData(true);
             getchartdata(data1, "line", "Raw");
