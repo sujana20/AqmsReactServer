@@ -344,9 +344,9 @@ function LiveData() {
     let type = Interval.split('-');
     let Intervaltype;
     if (type[1] == 'H') {
-      Intervaltype = Interval[0] * 60;
+      Intervaltype = type[0] * 60;
     } else {
-      Intervaltype = Interval[0];
+      Intervaltype = type[0];
     }
     let isAvgData=false;
     if(Interval=='15-M'){
