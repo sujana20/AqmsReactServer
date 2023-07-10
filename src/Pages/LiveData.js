@@ -279,6 +279,7 @@ function LiveData() {
         } 
       }
     }
+
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -778,7 +779,7 @@ function LiveData() {
                   <option value="" selected>Select Interval</option>
                   <option value="15-M" selected>15-M</option>
                   {Criteria.map((x, y) =>
-                    <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
+                    <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
                 </select>
               </div>
