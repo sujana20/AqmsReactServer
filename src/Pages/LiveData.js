@@ -371,7 +371,7 @@ function LiveData() {
             let data1 = data.map((x) => { x.createdTime = x.createdTime.replace('T', ' '); return x; });
             setListReportData(data1);
             setLoadjsGridData(true);
-            getchartdata(data1, "line", "Raw");
+            //getchartdata(data1, "line", "Raw");
         }
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
