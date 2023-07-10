@@ -368,7 +368,7 @@ function LiveData() {
       .then((data) => {
         if (data) {
          // let data2 = JSON.parse(data);
-            let data1 = data.Table1.map((x) => { x.CreatedTime = x.CreatedTime.replace('T', ' '); return x; });
+            let data1 = data.map((x) => { x.CreatedTime = x.CreatedTime.replace('T', ' '); return x; });
             setListReportData(data1);
             setLoadjsGridData(true);
             getchartdata(data1, "line", "Raw");
