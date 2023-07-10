@@ -1195,13 +1195,13 @@ function DataProcessing() {
 
     Scaleslist["x"] = {
       type: 'time',
-      time: {
+      /* time: {
         unit: 'minutes',
         stepSize: 'auto',
         displayFormats: {
           minutes: 'YYYY-MM-DD HH:mm'
         }
-      }
+      } */
     };
     /*   setChartOptions({
         responsive: true,
@@ -1440,8 +1440,8 @@ function DataProcessing() {
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
-              <div className="chartmaindiv">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} />
+              <div className="chartmaindiv" >
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100}/>
               </div>
             )}
           </div>
