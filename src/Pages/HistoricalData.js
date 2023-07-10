@@ -942,13 +942,13 @@ function HistoricalData() {
 
     Scaleslist["x"] = {
       type: 'time',
-      time: {
+      /* time: {
         unit: 'minutes',
         stepSize: 'auto',
         displayFormats: {
           minutes: 'YYYY-MM-DD HH:mm'
         }
-      }
+      } */
     };
     /*   setChartOptions({
         responsive: true,
