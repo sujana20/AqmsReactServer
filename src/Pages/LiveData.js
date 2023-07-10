@@ -290,8 +290,8 @@ function LiveData() {
       nestedHeaders: headers,
       lazyLoading: true,
       loadingSpin: true,
-     // onselection: selectionActive,
-      //onload: loadtable,
+      onselection: selectionActive,
+      onload: loadtable,
     });
     
   }
