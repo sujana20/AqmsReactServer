@@ -366,7 +366,7 @@ function LiveData() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-            let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
             setListReportData(data1);
             setLoadjsGridData(true);
             //getchartdata(data1, "line", "Raw");
