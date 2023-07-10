@@ -54,7 +54,7 @@ function ServerDashBoard() {
           return $.grep(this.data, function (item) {
             return ((!filter.StationName || item.StationName.toUpperCase().indexOf(filter.StationName.toUpperCase()) >= 0)
               && (!filter.Description || item.Description.toUpperCase().indexOf(filter.Description.toUpperCase()) >= 0)
-              && (!filter.lastData1 || item.lastData.toUpperCase().indexOf(filter.lastData1.toUpperCase()) >= 0)
+              && (!filter.lastData || item.lastData.toUpperCase().indexOf(filter.lastData.toUpperCase()) >= 0)
               && (!filter.alarmcnt || item.alarmcnt.toUpperCase().indexOf(filter.alarmcnt.toUpperCase()) >= 0)
               && (!filter.failurecnt || item.failurecnt.toUpperCase().indexOf(filter.failurecnt.toUpperCase()) >= 0)
               && (!filter.lastData || item.lastData.toUpperCase().indexOf(filter.lastData.toUpperCase()) >= 0)
@@ -67,7 +67,7 @@ function ServerDashBoard() {
       fields: [
         { name: "StationName", title: "Measurement Site", type: "text" },
         { name: "Description", title: "Station Label", type: "text" },
-        { name: "lastData1", title: "Communication", type: "text" },
+        { name: "lastData", title: "Communication", type: "text" },
         { name: "alarmcnt", title: "Alarms", type: "text" },
         { name: "failurecnt", title: "Failures", type: "text" },
         { name: "lastData", title: "Last Data", type: "text" },
