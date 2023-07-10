@@ -492,9 +492,9 @@ function HistoricalData() {
     let type = Interval.split('-');
     let Intervaltype;
     if (type[1] == 'H') {
-      Intervaltype = Interval[0] * 60;
+      Intervaltype = type[0] * 60;
     } else {
-      Intervaltype = Interval[0];
+      Intervaltype = type[0];
     }
     let isAvgData = false;
     if (Interval == '15-M') {
@@ -721,23 +721,64 @@ function HistoricalData() {
     // setPollutents([]);
     setcriteria([]);
     // setStations([]);
-    let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
-    var finalstationID = stationID.filter(function (item, pos) {
-      return stationID.indexOf(item) == pos;
-    });
-    let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+
     let filter2 = [];
-    for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
-      let station = Stations.filter(x => x.id == finalstationID[i]);
-      let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
-      headers.push(obj);
-      for (let j = 0; j < parameters.length; j++) {
-        let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-        let value = value1.length > 0 ? value1[0].parameterName : "";
-        filter2.push(value + "@_" + finalstationID[i]);
+    let filter1=[];
+    let stationID=[];
+    if(selectedGroup !=="all"){
+      stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+      var finalstationID = stationID.filter(function (item, pos) {
+        return stationID.indexOf(item) == pos;
+      });
+      filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+      for (let i = 0; i < finalstationID.length; i++) {
+        let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
+        let station = Stations.filter(x => x.id == finalstationID[i]);
+        let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+        headers.push(obj);
+        for (let j = 0; j < parameters.length; j++) {
+          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length>0?value1[0].parameterName:"";
+          filter2.push(value + "@_" + finalstationID[i]);
+        }
       }
     }
+    else{
+      stationID = Stations.map(a => a.id);
+      var finalstationID = stationID.filter(function (item, pos) {
+        return stationID.indexOf(item) == pos;
+      });
+      for (let i = 0; i < finalstationID.length; i++) {
+        let parameters = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i]).map(a => a.id);
+        let station = Stations.filter(x => x.id == finalstationID[i]);
+        let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+        headers.push(obj);
+        for (let j = 0; j < parameters.length; j++) {
+          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length>0?value1[0].parameterName:"";
+          filter2.push(value + "@_" + finalstationID[i]);
+        }
+      }
+    }
+
+
+    // let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+    // var finalstationID = stationID.filter(function (item, pos) {
+    //   return stationID.indexOf(item) == pos;
+    // });
+    // let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+    // let filter2 = [];
+    // for (let i = 0; i < finalstationID.length; i++) {
+    //   let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
+    //   let station = Stations.filter(x => x.id == finalstationID[i]);
+    //   let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+    //   headers.push(obj);
+    //   for (let j = 0; j < parameters.length; j++) {
+    //     let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+    //     let value = value1.length > 0 ? value1[0].parameterName : "";
+    //     filter2.push(value + "@_" + finalstationID[i]);
+    //   }
+    // }
     if (filter2.length < 10) {
       let obj = { title: "", colspan: 10 - filter2.length };
       headers.push(obj);
@@ -1103,6 +1144,7 @@ function HistoricalData() {
                 <label className="form-label">Group Name</label>
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                   <option value="" selected>None</option>
+                  <option value="all">All Stations</option>
                   {Groups.map((x, y) =>
                     <option value={x.groupID} key={y} >{x.groupName}</option>
                   )}
@@ -1140,7 +1182,7 @@ function HistoricalData() {
                   <option value="" selected>Select Interval</option>
                   <option value="15-M" selected>15-M</option>
                   {Criteria.map((x, y) =>
-                    <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
+                    <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
                 </select>
               </div>
