@@ -113,12 +113,12 @@ function LiveData() {
   }
   }, [AllLookpdata]);
 
- /*  useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       getdatareport('refresh');
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }) */
+  })
 
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
