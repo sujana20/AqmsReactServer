@@ -243,7 +243,7 @@ function LiveData() {
       }
     }
     
-  /*   for (var k = 0; k < ListReportData.length; k++) {
+    for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
 
@@ -278,8 +278,8 @@ function LiveData() {
           dataForGrid.push(obj);
         } 
       }
-    } */
-    dataForGrid=ListReportData;
+    }
+   // dataForGrid=ListReportData;
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -368,7 +368,7 @@ function LiveData() {
       .then((data) => {
         if (data) {
          // let data2 = JSON.parse(data);
-            let data1 = data.map((x) => { x.CreatedTime = x.CreatedTime.replace('T', ' '); return x; });
+            let data1 = data.map((x) => { x.createdTime = x.createdTime.replace('T', ' '); return x; });
             setListReportData(data1);
             setLoadjsGridData(true);
             getchartdata(data1, "line", "Raw");
