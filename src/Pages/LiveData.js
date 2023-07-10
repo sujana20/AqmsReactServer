@@ -545,12 +545,15 @@ function LiveData() {
   }
     setGroupSelected(selectedGroup);
     setcriteria([]);
-    let stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+    let filter2 = [];
+    let filter1=[];
+    let stationID=[];
+    if(selectedGroup !=="all"){
+     stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
     var finalstationID = stationID.filter(function (item, pos) {
       return stationID.indexOf(item) == pos;
     });
-    let filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
-    let filter2 = [];
+     filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
     for (let i = 0; i < finalstationID.length; i++) {
       let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
       let station = Stations.filter(x => x.id == finalstationID[i]);
@@ -560,6 +563,23 @@ function LiveData() {
         let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
         let value = value1.length>0?value1[0].parameterName:"";
         filter2.push(value + "@_" + finalstationID[i]);
+      }
+    }
+    }else{
+      stationID = Stations.map(a => a.id);
+      var finalstationID = stationID.filter(function (item, pos) {
+        return stationID.indexOf(item) == pos;
+      });
+      for (let i = 0; i < finalstationID.length; i++) {
+        let parameters = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i]).map(a => a.id);
+        let station = Stations.filter(x => x.id == finalstationID[i]);
+        let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+        headers.push(obj);
+        for (let j = 0; j < parameters.length; j++) {
+          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length>0?value1[0].parameterName:"";
+          filter2.push(value + "@_" + finalstationID[i]);
+        }
       }
     }
     if (filter2.length < 10) {
