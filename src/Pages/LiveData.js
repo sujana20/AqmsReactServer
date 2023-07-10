@@ -747,9 +747,10 @@ function LiveData() {
                 <label className="form-label">Group Name</label>
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                     <option value="">None</option>
+                    <option value="all" selected>All Stations</option>
                     {Groups.map((x, y) =>
-                       ///<option value={x.groupID} key={y} >{x.groupName}</option>
-                       <option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
+                       <option value={x.groupID} key={y} >{x.groupName}</option>
+                       //<option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
                     )}
                 </select>
               </div>
