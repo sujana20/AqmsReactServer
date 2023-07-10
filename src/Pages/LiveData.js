@@ -341,12 +341,12 @@ function LiveData() {
     }
 
     document.getElementById('loader').style.display = "block";
-    let type = Interval.substr(Interval.length - 1);
+    let type = Interval.split('-');
     let Intervaltype;
-    if (type == 'H') {
-      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+    if (type[1] == 'H') {
+      Intervaltype = Interval[0] * 60;
     } else {
-      Intervaltype = Interval.substr(0, Interval.length - 1);
+      Intervaltype = Interval[0];
     }
     let isAvgData=false;
     if(Interval=='15-M'){
