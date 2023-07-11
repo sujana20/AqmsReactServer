@@ -208,7 +208,7 @@ function Grouping() {
            
       var parameterArray=[];
       for(var u=0;u<checked.length;u++){
-        var parameter= checked[u][0].split("-");
+        var parameter= checked[u].split("-");
         parameterArray.push({GroupID:GroupId, GroupName: groupname, StationID :parameter[0], ParameterID: parameter[1], CreatedBy:currentUser.id, ModifiedBy:currentUser.id});
       }
       let validation = Groupingaddvalidation(groupname,checked);
