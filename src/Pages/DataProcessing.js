@@ -1500,17 +1500,19 @@ function DataProcessing() {
                 <div className="card">
                 <div className="card-body p-2">
                 <div className="row">
-                  <div className="col-md-12 mb-3">
+                  <div className="col-md-9 mb-3">
                     {AllLookpdata.listFlagCodes.map((x, y) =>
                       <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
                     )}
                   </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-12 mb-3">
+               {/*  </div>
+                <div className="row"> */}
+                  <div className="col-md-3 mb-3">
+                    <div className="float-end">
                     <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
                     <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
-                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}>Save</button>
+                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}><i class="bi bi-save"></i></button>
+                  </div>
                   </div>
                 </div>
 
@@ -1525,7 +1527,7 @@ function DataProcessing() {
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="chartmaindiv">
-                <div className="text-center">
+                <div className="text-center" style={{marginBottom:"-20px"}}>
                   <input
                     type="checkbox"
                     checked={allLegendsChecked}

@@ -1279,7 +1279,7 @@ function HistoricalData() {
             {ListReportData.length > 0 && ChartData && (
               <div className="card p-2" >
                 <div className="card-body">
-                 <div className="text-center">
+                 <div className="text-center" style={{marginBottom:"-20px"}}>
                   <input
                     type="checkbox"
                     checked={allLegendsChecked}
