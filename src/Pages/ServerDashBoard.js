@@ -21,8 +21,8 @@ function ServerDashBoard() {
             for(var i=0; i<data.Table1.length;i++){
                 data.Table1[i].lastData=  data.Table1[i].lastData.replace("T", " ").substring(0, 19);
                 data.Table1[i].pollingdata=  data.Table1[i].pollingdata.replace("T", " ").substring(0, 19);
-                data.Table1[i].alarmcnt = data.Table1[i].alarmcnt <= 0 ?  "Ok" : "Alarm";
-                data.Table1[i].failurecnt = data.Table1[i].failurecnt <= 0 ?  "Ok" : "Failure";
+                data.Table1[i].alarmcnt = data.Table1[i].alarmcnt <= 0 && data.Table1[i].alarmcnt ==null?  "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
+                data.Table1[i].failurecnt = data.Table1[i].failurecnt <= 0 &&  data.Table1[i].failurecnt ==null?  "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
             }
             setListStations(data.Table1);
         }
