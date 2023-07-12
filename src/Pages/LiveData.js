@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import { Line } from 'react-chartjs-2';
+import * as bootstrap from 'bootstrap';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import CommonFunctions from "../utils/CommonFunctions";
-import * as bootstrap from 'bootstrap';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,7 +32,7 @@ ChartJS.register(
 function LiveData() {
   const $ = window.jQuery;
   const chartRef = useRef();
-  const jspreadRef = useRef(null);
+  const jspreadRef = useRef();
   const [selectedStations, setselectedStations] = useState([]);
   const [ListReportData, setListReportData] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
@@ -280,6 +281,7 @@ function LiveData() {
       }
     }
 
+    if(dataForGrid.length>0){
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
@@ -293,7 +295,7 @@ function LiveData() {
       onselection: selectionActive,
       onload: loadtable,
     });
-    
+  }
   }
   const hexToRgbA = function (hex) {
     var c;
@@ -699,7 +701,7 @@ function LiveData() {
 
   return (
     <main id="main" className="main" >
-      <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -721,7 +723,7 @@ function LiveData() {
                   <tbody>
                     {ListHistory && (
                       ListHistory.map((x, y) =>
-                        <tr className="body_active">
+                        <tr className="body_active" key={y}>
                           <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0].parameterName}</td>
                           <td>{x.parameterValueOld}</td>
                           <td>{x.parameterValueNew}</td>
@@ -803,8 +805,8 @@ function LiveData() {
                 </div> */}
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    {AllLookpdata.listFlagCodes.map((i) =>
-                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                    {AllLookpdata.listFlagCodes.map((i,j) =>
+                      <button type="button" className="btn btn-primary flag mx-1" key={j} style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
                     )}                    
                   </div>
                 </div>

@@ -64,6 +64,7 @@ function HistoricalData() {
   const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
+  const [allLegendsChecked, setallLegendsChecked] = useState(true);
   const revertRef = useRef();
   revertRef.current = revert;
   const ReportDataListRef = useRef();
@@ -213,6 +214,7 @@ function HistoricalData() {
   }
   /* reported data start */
   const initializeJsGrid = function () {
+    setallLegendsChecked(true);
     dataForGrid = [];
     // var layout = [];
     // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
@@ -1089,7 +1091,37 @@ function HistoricalData() {
     }, 10);
   }
   /* Chart End */
+  const toggleAllLegends = function () {
+    let chartinstance=chartRef.current;
+    if (allLegendsChecked) {
+      chartinstance.data.datasets.forEach(function (ds) {
+        ds.hidden = true;
+      });
+     
+      chartinstance.legend.legendItems.forEach((legendItem) => {
+        const datasetIndex = legendItem.datasetIndex;
+            const meta = chartinstance.getDatasetMeta(datasetIndex);
+            meta.hidden = true;
 
+            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+            chartinstance.options.scales[yAxisID].display=false;
+      });
+    } else {
+      chartinstance.data.datasets.forEach(function (ds) {
+        ds.hidden = false;
+      });
+      chartRef.current.legend.legendItems.forEach((legendItem) => {
+        const datasetIndex = legendItem.datasetIndex;
+            const meta = chartinstance.getDatasetMeta(datasetIndex);
+            meta.hidden = false;
+
+            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+            chartinstance.options.scales[yAxisID].display=true;
+      });
+    }
+    setallLegendsChecked(!allLegendsChecked);
+    chartinstance.update();
+  }
   return (
     <main id="main" className="main" >
       {/* Same as */}
@@ -1238,6 +1270,14 @@ function HistoricalData() {
             )}
             {ListReportData.length > 0 && ChartData && (
               <div >
+                 <div className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={allLegendsChecked}
+                    onChange={toggleAllLegends}
+                  />
+                  <label>Select All</label>
+                </div>
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
               </div>
             )}

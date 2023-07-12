@@ -71,7 +71,7 @@ function DataProcessing() {
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
   const [LoadjsGridData, setLoadjsGridData] = useState(false);
-
+  const [allLegendsChecked, setallLegendsChecked] = useState(true);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
 
@@ -398,6 +398,7 @@ function DataProcessing() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
+    setallLegendsChecked(true);
     // var layout = [];
     // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
     // for (var i = 0; i < SelectedPollutents.length; i++) {
@@ -478,12 +479,12 @@ function DataProcessing() {
     //rowElement.scrollIntoView();
   }
 
-  const ScrolltoDrop=function(index){
+  const ScrolltoDrop = function (index) {
     const sheetcontainer = document.querySelector(".jexcel_content");
     const rowHeight = 25.6; // Height of a single row in pixels 
     const targetRowIndex = index; // Index of the target row
     const scrollOffset = targetRowIndex * rowHeight;
-    sheetcontainer.scrollTop = scrollOffset; 
+    sheetcontainer.scrollTop = scrollOffset;
   }
 
   const Getmaxvalue = function (visibleRecords, Key) {
@@ -614,7 +615,7 @@ function DataProcessing() {
     }
     // document.getElementById('loader').style.display = "block";
     let Intervaltype;
-   let Intervaltypesplit=Interval.split('-');
+    let Intervaltypesplit = Interval.split('-');
     if (Intervaltypesplit[1] == 'H') {
       Intervaltype = Intervaltypesplit[0] * 60;
     } else {
@@ -675,9 +676,9 @@ function DataProcessing() {
   }
 
   const handleScroll = function () {
-    if(!chartelementRef.current){
-    getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
-  }
+    if (!chartelementRef.current) {
+      getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
+    }
     if (startindex >= DataCount) {
       return false;
     }
@@ -912,9 +913,9 @@ function DataProcessing() {
     // setStations([]);
 
     let filter2 = [];
-    let filter1=[];
-    let stationID=[];
-    if(selectedGroup !=="all"){
+    let filter1 = [];
+    let stationID = [];
+    if (selectedGroup !== "all") {
       stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
       var finalstationID = stationID.filter(function (item, pos) {
         return stationID.indexOf(item) == pos;
@@ -926,13 +927,13 @@ function DataProcessing() {
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-          let value = value1.length>0?value1[0].parameterName:"";
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
           filter2.push(value + "@_" + finalstationID[i]);
         }
       }
     }
-    else{
+    else {
       stationID = Stations.map(a => a.id);
       var finalstationID = stationID.filter(function (item, pos) {
         return stationID.indexOf(item) == pos;
@@ -943,8 +944,8 @@ function DataProcessing() {
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-          let value = value1.length>0?value1[0].parameterName:"";
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
           filter2.push(value + "@_" + finalstationID[i]);
         }
       }
@@ -1078,7 +1079,7 @@ function DataProcessing() {
     return formattedDateTime;
   }
 
-  const findClosestTimeIndex=function(targetTime) {
+  const findClosestTimeIndex = function (targetTime) {
     // Convert the target time to a Date object
     const targetDate = new Date(targetTime);
 
@@ -1163,9 +1164,9 @@ function DataProcessing() {
         // Retrieve the corresponding x-axis scale value based on the pixel position
         const xminvalue = xAxis.getValueForPixel(xmin);
         const xmaxvalue = xAxis.getValueForPixel(xmax);
-        let index=findClosestTimeIndex(FormatedDate(xminvalue));
+        let index = findClosestTimeIndex(FormatedDate(xminvalue));
         ScrolltoDrop(index);
-       // console.log(findClosestTimeIndex(FormatedDate(xminvalue)),findClosestTimeIndex(FormatedDate(xmaxvalue)));
+        // console.log(findClosestTimeIndex(FormatedDate(xminvalue)),findClosestTimeIndex(FormatedDate(xmaxvalue)));
         return;
       }
     }
@@ -1272,6 +1273,7 @@ function DataProcessing() {
       plugins: {
         legend: {
           position: 'top',
+          align: 'start',
           onClick: function (event, legendItem) {
             let chart = chartRef.current;
             const datasetIndex = legendItem.datasetIndex;
@@ -1348,7 +1350,37 @@ function DataProcessing() {
       })
     }, 10);
   }
+  const toggleAllLegends = function () {
+    let chartinstance=chartRef.current;
+    if (allLegendsChecked) {
+      chartinstance.data.datasets.forEach(function (ds) {
+        ds.hidden = true;
+      });
+     
+      chartinstance.legend.legendItems.forEach((legendItem) => {
+        const datasetIndex = legendItem.datasetIndex;
+            const meta = chartinstance.getDatasetMeta(datasetIndex);
+            meta.hidden = true;
 
+            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+            chartinstance.options.scales[yAxisID].display=false;
+      });
+    } else {
+      chartinstance.data.datasets.forEach(function (ds) {
+        ds.hidden = false;
+      });
+      chartRef.current.legend.legendItems.forEach((legendItem) => {
+        const datasetIndex = legendItem.datasetIndex;
+            const meta = chartinstance.getDatasetMeta(datasetIndex);
+            meta.hidden = false;
+
+            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+            chartinstance.options.scales[yAxisID].display=true;
+      });
+    }
+    setallLegendsChecked(!allLegendsChecked);
+    chartinstance.update();
+  }
   return (
     <main id="main" className="main" >
       {/* Same as */}
@@ -1401,7 +1433,7 @@ function DataProcessing() {
             <div className="row">
               <div className="col-md-2">
                 <label className="form-label">Group Name</label>
-                <select className="form-select" id="groupid" onChange={ChangeGroupName}>                    
+                <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                   <option value="" selected>None</option>
                   <option value="all">All Stations</option>
                   {Groups.map((x, y) =>
@@ -1481,8 +1513,16 @@ function DataProcessing() {
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
-              <div className="chartmaindiv" >
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100}/>
+              <div className="chartmaindiv">
+                <div className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={allLegendsChecked}
+                    onChange={toggleAllLegends}
+                  />
+                  <label>Select All</label>
+                </div>
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
               </div>
             )}
           </div>
