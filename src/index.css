@@ -645,10 +645,15 @@ table.jexcel colgroup col:nth-child(1) {
 } */
 
 .btn.flag {
-  width: 3rem;
+  width: 2rem;
+  height: 2rem;
   color: #000 !important;
   cursor: default !important;
   margin-bottom: 0.5rem;
+  border-radius: 50px;
+  line-height: 1.0rem;
+  text-align: center;
+  padding: 0px;
 }
 
 .correct {
@@ -800,3 +805,17 @@ table.jexcel colgroup col:nth-child(1) {
   z-index: 9999;
 }
 
+
+
+
+/*--Newly Added by Vinny--*/
+
+
+.jexcel > thead > tr > td {
+
+  background-color: #7593E6 !important;
+  color: #ffffff !important;
+  font-weight: 900;
+  font-weight: bold;
+  font-size: 14px;
+}

@@ -566,6 +566,9 @@ function DetailedAnalysisReports() {
       <section>
         <div>
           <div>
+
+          <div className="card">
+              <div className="card-body">
             <div className="row filtergroup">
               <div className="col-md-3">
                 <label className="form-label">Station Name</label>
@@ -585,44 +588,72 @@ function DetailedAnalysisReports() {
                   )}
                 </select>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-6">
                 <div className="ion-slider-container pull-left" style={{ width: '100%' }}>
                   <input type="range" className="js-range-slider" value="3" data-orientation="vertical" />
                 </div>
               </div>
-              <div className="col-md-2 text-center my-3">
+              <div className="mt-3">
                 <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
               </div>
             </div>
-            <div className="row mt-5">
+            </div>
+            </div>
+
+
+            <div className="row mt-0">
               {ChartDataAvg && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Bar ref={chartRef} options={ChartOptionsAvg} data={ChartDataAvg} height={90} />
+                </div>
+                </div>
                 </div>
               )}
               {ChartDataMax && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Bar ref={chartRef} options={ChartOptionsMax} data={ChartDataMax} height={90} />
+                </div>
+                </div>
                 </div>
               )}
               {ChartData24h && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90} />
+                </div>
+                </div>
                 </div>
               )}
               {ChartOptionsh && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90} />
+                </div>
+                </div>
                 </div>
               )}
               {ChartOptionsExcedence24h && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Bar ref={chartRef} options={ChartOptionsExcedence24h} data={ChartDataExcedence24h} height={90} />
+                </div>
+                </div>
                 </div>
               )}
               {ChartOptionsExcedence1h && (
                 <div className="col-md-6">
+                   <div className="card">
+              <div className="card-body p-2">
                   <Bar ref={chartRef} options={ChartOptionsExcedence1h} data={ChartDataExcedence1h} height={90} />
+                </div>
+                </div>
                 </div>
               )}
             </div>

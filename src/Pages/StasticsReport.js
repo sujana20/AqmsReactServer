@@ -407,6 +407,8 @@ function StasticsReport() {
       <section>
         <div>
           <div>
+          <div className="card">
+              <div className="card-body">
             <div className="row filtergroup">
               <div className="col">
                 <label className="form-label">Station Name</label>
@@ -466,23 +468,37 @@ function StasticsReport() {
                 </select>
               </div>
 
-              <div className="col-md-12 text-center my-3">
+              <div className="col-md-12  mt-4">
                 <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
               </div>
             </div>
+            </div>
+            </div>
             {ChartData && ChartType == 'bar' && (
               <div className="col-md-12">
+                 <div className="card">
+              <div className="card-body p-2">
                  <Bar ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
+              </div>
+              </div>
               </div>
             )}
             {ChartData && ChartType == 'line' && (
               <div className="col-md-12">
+                <div className="card">
+              <div className="card-body p-2">
                 <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
+              </div>
+              </div>
               </div>
             )}
             {ChartData && ChartType == 'area' && (
               <div className="col-md-12">
+                <div className="card">
+              <div className="card-body p-2">
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+              </div>
+              </div>
               </div>
             )}
           </div>

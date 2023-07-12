@@ -739,7 +739,7 @@ function HistoricalData() {
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id  == parameters[j]);
           let value = value1.length>0?value1[0].parameterName:"";
           filter2.push(value + "@_" + finalstationID[i]);
         }
@@ -1171,9 +1171,11 @@ function HistoricalData() {
       <section>
         <div>
           <div>
+            <div className="card">
+              <div className="card-body">
             <div className="row">
               <div className="col-md-2">
-                <label className="form-label">Group Name</label>
+                <label className="form-label">Group -test</label>
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                   <option value="" selected>None</option>
                   <option value="all">All Stations</option>
@@ -1218,13 +1220,13 @@ function HistoricalData() {
                   )}
                 </select>
               </div>
-              <div className="row my-4">
-                <div class="col-md-2">
-                  <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
-                  <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+              <div className=" mt-4">
+                <div class="col-md-2 float-start">
+                  <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                  <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                 </div>
                 {ListReportData != 0 && (
-                  <div class="col-md-6">
+                  <div class="col-md-6 float-end text-end px-0">
 
                     <div class="form-check form-check-inline">
                       <label className="form-check-label" htmlFor="ValidCheck">
@@ -1238,7 +1240,7 @@ function HistoricalData() {
                       </label>
                       <input className="form-check-input" type="checkbox" id="invalidCheck" />
                     </div>
-                    <button type="button" className="btn btn-primary datashow me-4" onClick={DownloadExcel}>Download Excel</button>
+                    <button type="button" className="btn btn-primary datashow me-0" onClick={DownloadExcel}>Download Excel</button>
                   </div>
                 )}
 
@@ -1250,8 +1252,12 @@ function HistoricalData() {
               </div>
 
             </div>
+            </div>
+            </div>
             {ListReportData.length > 0 && (
               <div>
+                <div className="card">
+                  <div className="cad-body p-2">
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     {AllLookpdata.listFlagCodes.map((i) =>
@@ -1263,13 +1269,16 @@ function HistoricalData() {
 
                 <div className="jsGrid" ref={jspreadRef} data={ListReportData} />
               </div>
+              </div>
+              </div>
             )}
 
             {ListReportData.length == 0 && LoadjsGridData && (
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && (
-              <div >
+              <div className="card p-2" >
+                <div className="card-body">
                  <div className="text-center">
                   <input
                     type="checkbox"
@@ -1279,6 +1288,7 @@ function HistoricalData() {
                   <label>Select All</label>
                 </div>
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+              </div>
               </div>
             )}
           </div>

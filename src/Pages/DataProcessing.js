@@ -1430,6 +1430,10 @@ function DataProcessing() {
       <section>
         <div>
           <div>
+            <div className="card">
+              <div className="card-body">
+
+              
             <div className="row">
               <div className="col-md-2">
                 <label className="form-label">Group Name</label>
@@ -1478,9 +1482,9 @@ function DataProcessing() {
                   )}
                 </select>
               </div>
-              <div className="col-md-2 my-4">
+              <div className=" mt-4">
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
               <div className="col-md-4">
                 <div className="row">
@@ -1489,8 +1493,12 @@ function DataProcessing() {
               </div>
 
             </div>
+
+            </div>
+            </div>
             {ListReportData.length > 0 && (
-              <div>
+                <div className="card">
+                <div className="card-body p-2">
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     {AllLookpdata.listFlagCodes.map((x, y) =>
@@ -1507,6 +1515,9 @@ function DataProcessing() {
                 </div>
 
                 <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
+
+
+              </div>
               </div>
             )}
             {ListReportData.length == 0 && LoadjsGridData && (
