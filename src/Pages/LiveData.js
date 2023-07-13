@@ -807,7 +807,7 @@ function LiveData() {
                     <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
                   </div>
                 </div> */}
-                <div className="card">
+                <div className="card Livedata">
                   <div className="card-body p-2">
                 <div className="row">
                   <div className="col-md-12 mb-3">

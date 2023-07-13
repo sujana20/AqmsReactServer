@@ -1536,7 +1536,7 @@ function DataProcessing() {
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="chartmaindiv">
-                <div className="text-center" style={{marginBottom:"-20px"}}>
+                <div className="text-center">
                   <input
                     type="checkbox"
                     checked={allLegendsChecked}

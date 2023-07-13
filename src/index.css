@@ -787,10 +787,13 @@ table.jexcel colgroup col:nth-child(1) {
   z-index: 2;
 }
 .jexcel >thead>tr:nth-child(2)>td{
-  top: 25px !important;
+  top: 22px !important;
 }
 .jexcel > tbody > tr > td.readonly{
   color:#444444 !important;
+}
+.Livedata .jexcel_content {
+  max-height: calc(100vh - 300px) !important;
 }
 .rct-node-icon{
   display: none;
