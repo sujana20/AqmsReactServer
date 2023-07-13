@@ -55,8 +55,17 @@ function DetailedAnalysisReports() {
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
-  const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+
   useEffect(() => {
     var d = new Date();
     var currentyear = d.getFullYear();
@@ -298,7 +307,7 @@ function DetailedAnalysisReports() {
           chartdata.push({ x: pollutentdata[j].Interval, y: pollutentdata[j].PollutantValue });
         }
       }
-      datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
+      datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 1, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
     }
     //    chartdata.push(pollutentdata[k].PollutantValue)
     setChartOptions24h({
@@ -363,7 +372,7 @@ function DetailedAnalysisReports() {
           chartdata.push({ x: pollutentdata[j].Interval, y: pollutentdata[j].PollutantValue });
         }
       }
-      datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
+      datasets.push({ label: labels[i], data: chartdata, borderColor: colorArray[i], borderWidth: 1, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) });
     }
     //    chartdata.push(pollutentdata[k].PollutantValue)
     setChartOptionsh({
@@ -567,93 +576,93 @@ function DetailedAnalysisReports() {
         <div>
           <div>
 
-          <div className="card">
+            <div className="card">
               <div className="card-body">
-            <div className="row filtergroup">
-              <div className="col-md-3">
-                <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" onChange={Stationchange}>
-                  <option selected value="">Select Station</option>
-                  {Stations.map((x, y) =>
-                    <option value={x.id} key={y} >{x.stationName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid">
-                  <option selected value=""> Select Parameter</option>
-                  {Pollutents.map((x, y) =>
-                    <option value={x.parameterName} key={y} >{x.parameterName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-6">
-                <div className="ion-slider-container pull-left" style={{ width: '100%' }}>
-                  <input type="range" className="js-range-slider" value="3" data-orientation="vertical" />
+                <div className="row filtergroup">
+                  <div className="col-md-3">
+                    <label className="form-label">Station Name</label>
+                    <select className="form-select stationid" id="stationid" onChange={Stationchange}>
+                      <option selected value="">Select Station</option>
+                      {Stations.map((x, y) =>
+                        <option value={x.id} key={y} >{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid">
+                      <option selected value=""> Select Parameter</option>
+                      {Pollutents.map((x, y) =>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="ion-slider-container pull-left" style={{ width: '100%' }}>
+                      <input type="range" className="js-range-slider" value="3" data-orientation="vertical" />
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
+                  </div>
                 </div>
               </div>
-              <div className="mt-3">
-                <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
-              </div>
-            </div>
-            </div>
             </div>
 
 
             <div className="row mt-0">
               {ChartDataAvg && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Bar ref={chartRef} options={ChartOptionsAvg} data={ChartDataAvg} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Bar ref={chartRef} options={ChartOptionsAvg} data={ChartDataAvg} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
               {ChartDataMax && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Bar ref={chartRef} options={ChartOptionsMax} data={ChartDataMax} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Bar ref={chartRef} options={ChartOptionsMax} data={ChartDataMax} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
               {ChartData24h && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
               {ChartOptionsh && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
               {ChartOptionsExcedence24h && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Bar ref={chartRef} options={ChartOptionsExcedence24h} data={ChartDataExcedence24h} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Bar ref={chartRef} options={ChartOptionsExcedence24h} data={ChartDataExcedence24h} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
               {ChartOptionsExcedence1h && (
                 <div className="col-md-6">
-                   <div className="card">
-              <div className="card-body p-2">
-                  <Bar ref={chartRef} options={ChartOptionsExcedence1h} data={ChartDataExcedence1h} height={90} />
-                </div>
-                </div>
+                  <div className="card">
+                    <div className="card-body p-2">
+                      <Bar ref={chartRef} options={ChartOptionsExcedence1h} data={ChartDataExcedence1h} height={90} />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

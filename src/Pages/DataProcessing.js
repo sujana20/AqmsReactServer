@@ -1231,7 +1231,8 @@ function DataProcessing() {
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
           }
         }
-        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
+        let color='#' + Math.floor(Math.random()*16777215).toString(16);
+        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata,borderWidth:1, borderColor: color, backgroundColor: color, pointRadius: pointRadius, spanGaps: false, })
       }
     }
 
