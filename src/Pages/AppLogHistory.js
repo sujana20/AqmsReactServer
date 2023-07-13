@@ -114,7 +114,7 @@ function AppLogHistory() {
               </div>
               <div className="col-md-3 mt-4">
                 <button type="button" className="btn btn-primary mx-1" onClick={() => GetAppLog()}>Filter</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetAppLog('reset')}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetAppLog('reset')}>Reset</button>
               </div>
               </div>
               <div className="jsGrid" ref={gridRefLogHistoryreport} />

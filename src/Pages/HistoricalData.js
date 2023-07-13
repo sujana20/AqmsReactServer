@@ -1321,7 +1321,7 @@ const dragger = {
               <div className="card-body">
             <div className="row">
               <div className="col-md-2">
-                <label className="form-label">Group -test</label>
+                <label className="form-label">Group</label>
                 <select className="form-select" id="groupid" onChange={ChangeGroupName}>
                   <option value="" selected>None</option>
                   <option value="all">All Stations</option>

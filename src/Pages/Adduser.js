@@ -235,10 +235,10 @@ function Adduser() {
           <div className="container">
             <div className="me-2 mb-2 float-end">
               {UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                <span className="operation_class mx-2" onClick={() => Adduserchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New User</span></span>
               )}
               {!UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Users</span></span>
               )}
             </div>
             {!UserList && (

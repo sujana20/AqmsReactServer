@@ -126,7 +126,7 @@ function UserLogHistory() {
               </div>
               <div className="col-md-3 mt-4">
                 <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog()}>Filter</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
               </div>
               </div>
               <div className="jsGrid" ref={gridRefjsgridreport} />

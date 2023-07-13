@@ -108,7 +108,7 @@
             white-space: nowrap;
             overflow: hidden;
             cursor: default;
-            font-size: 0.75rem !important;
+            font-size: 12px !important;
             font-family: 'Roboto Light';
             letter-spacing: 0.5px;
         }
@@ -118,6 +118,7 @@
                 /* font-style: italic; */
                 background-color: #fff;
                 opacity: 1;
+                font-size: 12px!important;
             }
 
         .SumoSelect > .CaptionCont > label {
@@ -423,7 +424,7 @@
         padding: 8px 0 3px 35px;
        /*  height: 20px; */
         cursor: pointer;
-        font-size: 13px;
+        font-size: 12px;
     letter-spacing: 0.5px;
     }
 

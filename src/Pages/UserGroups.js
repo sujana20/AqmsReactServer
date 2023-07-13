@@ -263,10 +263,10 @@ function UserGroups(){
                     <div className="container">
                         <div className="me-2 mb-2 float-end">
                             {GroupList && (
-                                <span className="operation_class mx-2" onClick={() => Addusergroupchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                                <span className="operation_class mx-2" onClick={() => Addusergroupchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Group</span></span>
                             )}
                             {!GroupList && (
-                                <span className="operation_class mx-2" onClick={() => Addusergroupchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                                <span className="operation_class mx-2" onClick={() => Addusergroupchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Groups</span></span>
                             )}
                         </div>
                         {!GroupList && (

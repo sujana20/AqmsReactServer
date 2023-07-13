@@ -184,10 +184,11 @@ h6 {
 }
 
 .pagetitle h1 {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 0;
   font-weight: 600;
   color: #012970;
+  padding-left: 10px;
 }
 
 /*--------------------------------------------------------------
@@ -738,15 +739,17 @@ h6 {
 }
 .form-label{
   letter-spacing: 0.5px;
+  font-size: 12px;
 }
+
 .btn-primary,.btn-secondary
 {
-  font-size: 13px!important;
+  font-size: 12px!important;
   letter-spacing: 0.7px;
 }
 .jexcel > thead > tr > td{
   
-  font-size: 13px!important;
+  font-size: 12px!important;
   letter-spacing: 0.5px;
 }
 
@@ -947,11 +950,15 @@ h6 {
 .sidebar-nav .nav-content a {
   display: flex;
   align-items: center;
-  font-size: 0.77rem;
+  font-size: 12px;
   font-weight: 600;
   color: #ffffff;
   padding: 0.825rem 0rem;
   padding-left: 1.25rem;
+  letter-spacing: 0.5px;
+}
+.my-3 {
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav .nav_sub li {
@@ -1356,11 +1363,12 @@ button.nav-link{
   font-weight: 600;
 }
 .operation_class i{
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 .operation_class span{
   vertical-align: 0.2rem;
-  font-size: 1rem;
+  font-size: 12px;
+  font-weight: 700;
 }
 .btn{
   font-size: 0.875rem;
@@ -1410,7 +1418,7 @@ font-weight: 600;
 background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27%3e%3cpath fill=%27none%27 stroke=%27%23fff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%273%27 d=%27m6 10 3 3 6-6%27/%3e%3c/svg%3e");
 }
 .form-control,.form-select{
-  font-size: 0.75rem !important;
+  font-size: 12px !important;
   font-family: 'Roboto Light';
   letter-spacing: 0.5px;
 }
@@ -1461,11 +1469,30 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
   font-family: 'Roboto Light';
 }
 .form-check-label{
-  font-size: 0.75rem;
+  font-size: 12px;
 }
+.jsgrid-header-row>.jsgrid-header-cell {
+  background-color: #2a4068 !important;
+  color: #fff;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+}
+.jsgrid-cell
+{
+  letter-spacing: 0.5px;
+  font-size: 12px;
+}
+.jsgrid .jsgrid-mode-button {
+  width: 20px;
+  height: 20px;
+}
+
+
 
 .nodatamessage{
   position: absolute;
   left: 50%;
-  font-size: xx-large;
+  font-size: 15px;
+  color:green;
+  font-weight: 600;
 }

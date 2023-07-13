@@ -1492,7 +1492,7 @@ function DataProcessing() {
                 </select>
               </div>
               <div className=" mt-4">
-                <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
+                <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
                 <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
               <div className="col-md-4">
