@@ -41,8 +41,16 @@ function PredefinedCharts() {
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
-  const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+  '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+  '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+  '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+  '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+  '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+  '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+  '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+  '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+  '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
   useEffect(() => {
     GenarateChart();
   }, []);
@@ -109,8 +117,8 @@ function PredefinedCharts() {
           chartdata.push(pollutentdata[j].PollutantValue)
         }
       }
-      let color='#' + Math.floor(Math.random()*16777215).toString(16);
-      datasets.push({ label: Stations[i] + " - " + pollutent, data: chartdata, borderWidth:1,borderColor: color, backgroundColor: color })
+     // let color='#' + Math.floor(Math.random()*16777215).toString(16);
+      datasets.push({ label: Stations[i] + " - " + pollutent, data: chartdata, borderWidth:1,borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)] })
     }
 
 
