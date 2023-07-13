@@ -23,7 +23,7 @@ var StopBits=[1,1.5,2];
 var Typeofsequence=['Zero','Span']
 var UserRoles =[{SUPER_ADMIN: 'SUPER_ADMIN',ADMIN: 'ADMIN',MANAGER: 'MANAGER',CUSTOMER: 'CUSTOMER',GUEST: 'GUEST'}]
 
-
+var spreadsheetrowHeight=22.6;
 var nodes = [{
     value: 'Dashboard',
     label: 'Dashboard',
