@@ -1123,34 +1123,28 @@ const dragger = {
 
     Scaleslist["x"] = {
       type: 'time',
-      /* time: {
-        unit: 'minutes',
-        stepSize: 'auto',
-        displayFormats: {
-          minutes: 'YYYY-MM-DD HH:mm'
+      ticks: {
+        font: {
+          size: 11, // Adjust the font size for x-axis labels
+          family: 'Roboto Light' ,// Change the font type for x-axis labels
+          weight: 'bold',
+          color:'blue'
         }
-      } */
+      }
     };
-    /*   setChartOptions({
-        responsive: true,
-        dragData: true,
-        onDragStart: function (e) {
-          console.log(e)
-        },
-        onDrag: function (e, datasetIndex, index, value) {
-          console.log(datasetIndex, index, value)
-        },
+    Scaleslist["y"] = {
       
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-          },
-        },
-      }); */
+      ticks: {
+        font: {
+          size: 10, // Adjust the font size for x-axis labels
+          family: 'Roboto Light' ,// Change the font type for x-axis labels
+          weight: 'bold',
+          color:'blue'
+        }
+      }
+    };
 
+   
     setChartOptions({
       responsive: true,
       scales: Scaleslist,
@@ -1158,8 +1152,20 @@ const dragger = {
       // maintainAspectRatio: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: 'bottom',
           align: 'start',
+          fullSize:true,
+          labels: {
+            color: 'navy',
+            boxWidth:20,
+            padding:10,
+            //boxHeight:20
+            font: {
+              size: 11,
+              family:"Roboto Light",
+              weight:'bold'
+          }
+        },
           onClick: function (event, legendItem) {
             let chart = chartRef.current;
             const datasetIndex = legendItem.datasetIndex;
@@ -1425,15 +1431,16 @@ const dragger = {
             {ListReportData.length > 0 && ChartData && (
               <div className="card p-2" >
                 <div className="card-body">
-                 <div className="text-center">
+                
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
+                <div className="text-center">
                   <input className="form-check-input"
                     type="checkbox"
                     checked={allLegendsChecked}
                     onChange={toggleAllLegends}
                   />
-                  <label>Select All</label>
+                  <label className="checkboxStylelabel">Select All</label>
                 </div>
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
               </div>
               </div>
             )}
