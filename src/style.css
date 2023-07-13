@@ -868,6 +868,22 @@ h6 {
   letter-spacing: 0.7px;
 }
 
+.checkboxStyle
+{
+  margin-bottom: -20px;
+  z-index: 9999;
+  position: relative;
+}
+.checkboxStyle label
+{
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding-left: 5px;
+}
+.jexcel > thead > tr > td{
+  background-color: #2a4068 !important;
+}
+
 .sidebar-nav .nav-link {
   display: flex;
   align-items: center;

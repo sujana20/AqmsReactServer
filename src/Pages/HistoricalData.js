@@ -1279,8 +1279,8 @@ function HistoricalData() {
             {ListReportData.length > 0 && ChartData && (
               <div className="card p-2" >
                 <div className="card-body">
-                 <div className="text-center" style={{marginBottom:"-20px"}}>
-                  <input
+                 <div className="text-center checkboxStyle">
+                  <input className="form-check-input"
                     type="checkbox"
                     checked={allLegendsChecked}
                     onChange={toggleAllLegends}
