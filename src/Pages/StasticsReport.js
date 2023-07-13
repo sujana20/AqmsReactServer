@@ -12,7 +12,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  defaults 
+  defaults
 } from 'chart.js';
 import { Chart, Bar, Line, Scatter } from 'react-chartjs-2';
 ChartJS.register(
@@ -34,15 +34,23 @@ function StasticsReport() {
   const [selectedStations, setselectedStations] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
-  const [ChartData, setChartData] = useState({labels:[],datasets:[]});
+  const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
-  const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
@@ -124,7 +132,7 @@ function StasticsReport() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString(), DataFilterID:Intervaltype }),
+      body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString(), DataFilterID: Intervaltype }),
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -200,7 +208,7 @@ function StasticsReport() {
     return isvalid;
   }
   /* reported data end */
- 
+
   $('#stationid').change(function (event) {
     setPollutents([]);
     setcriteria([]);
@@ -213,19 +221,19 @@ function StasticsReport() {
       }
     });
     var finaldata1 = [];
-  /*   if (filter.length >= 2) { */
-      finaldata1 = finaldata.reduce((unique, o) => {
-        if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
-          unique.push(o);
-        }
-        return unique;
-      }, []);
+    /*   if (filter.length >= 2) { */
+    finaldata1 = finaldata.reduce((unique, o) => {
+      if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
+        unique.push(o);
+      }
+      return unique;
+    }, []);
     /* } else {
       finaldata1 = finaldata;
     } */
     setPollutents(finaldata1);
     setTimeout(function () {
-     // $('.pollutentid')[0].sumo.unSelectAll(); 
+      // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
     }, 10);
   })
@@ -271,7 +279,7 @@ function StasticsReport() {
       chartRef.current.data = {};
     }
     setChartType(charttype);
-    setChartData({labels:[],datasets:[]});
+    setChartData({ labels: [], datasets: [] });
     setChartOptions();
     let datasets = [];
     let chartdata = [];
@@ -332,7 +340,7 @@ function StasticsReport() {
                 chartdata.push(tempdata[index1].value)
               }
             }
-            datasets.push({ fill:charttype == 'area'?true:false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ fill: charttype == 'area' ? true : false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           }
 
         }
@@ -348,17 +356,17 @@ function StasticsReport() {
       if (criteria != 'MeanTimeseries') {
         if (charttype == 'bar') {
           if (criteria == 'Percentile') {
-            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
+            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           } else {
-            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           }
         } else if (charttype == 'line') {
           if (criteria == 'Percentile') {
-            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderWidth: 1, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
+            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderWidth: 1, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
           } else {
-            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i], data: chartdata, borderWidth: 1, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
           }
         } else if (charttype == 'area') {
           if (criteria == 'Percentile') {
@@ -376,7 +384,7 @@ function StasticsReport() {
         mode: 'index',
         intersect: false,
       }, */
-   //   maintainAspectRatio: true,
+      //   maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
@@ -407,98 +415,98 @@ function StasticsReport() {
       <section>
         <div>
           <div>
-          <div className="card">
+            <div className="card">
               <div className="card-body">
-            <div className="row filtergroup">
-              <div className="col">
-                <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" multiple="multiple">
+                <div className="row filtergroup">
+                  <div className="col">
+                    <label className="form-label">Station Name</label>
+                    <select className="form-select stationid" id="stationid" multiple="multiple">
 
-                  {Stations.map((x, y) =>
-                    <option value={x.id} key={y} selected={y==1}>{x.stationName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col">
-                <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid" multiple="multiple">
-                  {/* <option selected> Select Pollutents</option> */}
-                  {Pollutents.map((x, y) =>
-                    <option value={x.ID} key={y} >{x.parameterName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col">
-                <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
-              </div>
-              <div className="col">
-                <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
-              </div>
-              <div className="col">
-                <label className="form-label">Type of Chart</label>
-                <select className="form-select" id="charttypeid">
-                  <option value="bar">Bar Chart</option>
-                  <option value="line">Line Chart</option>
-                  <option value="area">Area Chart</option>
-                  {/*   <option value="scatter">Scatter Chart</option> */}
-                </select>
-              </div>
-              <div className="col">
-                <label className="form-label">Criteria</label>
-                <select className="form-select" id="criteriaid">
-                  <option value="Mean">Mean by Station</option>
-                  <option value="MeanTimeseries">Mean by Timeseries</option>
-                  <option value="Raw">Raw</option>
-                  <option value="Max">Maximum</option>
-                 {/*  <option value="Compliance">Compliance Percentage</option>
+                      {Stations.map((x, y) =>
+                        <option value={x.id} key={y} selected={y == 1}>{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid" multiple="multiple">
+                      {/* <option selected> Select Pollutents</option> */}
+                      {Pollutents.map((x, y) =>
+                        <option value={x.ID} key={y} >{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col">
+                    <label className="form-label">From Date</label>
+                    <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                  </div>
+                  <div className="col">
+                    <label className="form-label">To Date</label>
+                    <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Type of Chart</label>
+                    <select className="form-select" id="charttypeid">
+                      <option value="bar">Bar Chart</option>
+                      <option value="line">Line Chart</option>
+                      <option value="area">Area Chart</option>
+                      {/*   <option value="scatter">Scatter Chart</option> */}
+                    </select>
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Criteria</label>
+                    <select className="form-select" id="criteriaid">
+                      <option value="Mean">Mean by Station</option>
+                      <option value="MeanTimeseries">Mean by Timeseries</option>
+                      <option value="Raw">Raw</option>
+                      <option value="Max">Maximum</option>
+                      {/*  <option value="Compliance">Compliance Percentage</option>
                   <option value="Max %">Concentrations in % limit values</option>
                   <option value="AQL Exceed">Exceedences Numbers</option> */}
-                  <option value="Percentile">98 &amp; 50 Percentile </option>
-                </select>
-              </div>
-              <div className="col">
-                <label className="form-label">Interval</label>
-                <select className="form-select" id="intervalid">
-                  <option value="" selected>Select Interval</option>
-                  {Criteria.map((x, y) =>
-                    <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
-                  )}
-                </select>
-              </div>
+                      <option value="Percentile">98 &amp; 50 Percentile </option>
+                    </select>
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Interval</label>
+                    <select className="form-select" id="intervalid">
+                      <option value="" selected>Select Interval</option>
+                      {Criteria.map((x, y) =>
+                        <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
+                      )}
+                    </select>
+                  </div>
 
-              <div className="col-md-12  mt-4">
-                <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
+                  <div className="col-md-12  mt-4">
+                    <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
+                  </div>
+                </div>
               </div>
-            </div>
-            </div>
             </div>
             {ChartData && ChartType == 'bar' && (
               <div className="col-md-12">
-                 <div className="card">
-              <div className="card-body p-2">
-                 <Bar ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
-              </div>
-              </div>
+                <div className="card">
+                  <div className="card-body p-2">
+                    <Bar ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+                  </div>
+                </div>
               </div>
             )}
             {ChartData && ChartType == 'line' && (
               <div className="col-md-12">
                 <div className="card">
-              <div className="card-body p-2">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
-              </div>
-              </div>
+                  <div className="card-body p-2">
+                    <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+                  </div>
+                </div>
               </div>
             )}
             {ChartData && ChartType == 'area' && (
               <div className="col-md-12">
                 <div className="card">
-              <div className="card-body p-2">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
-              </div>
-              </div>
+                  <div className="card-body p-2">
+                    <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+                  </div>
+                </div>
               </div>
             )}
           </div>
