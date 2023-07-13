@@ -643,8 +643,9 @@ h6 {
 }
 
 .header-nav .nav-profile span {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .badge-number {
@@ -733,6 +734,20 @@ h6 {
   margin-bottom: 0;
   font-weight: 600;
   color: #444444;
+  letter-spacing: 0.5px;
+}
+.form-label{
+  letter-spacing: 0.5px;
+}
+.btn-primary,.btn-secondary
+{
+  font-size: 13px!important;
+  letter-spacing: 0.7px;
+}
+.jexcel > thead > tr > td{
+  
+  font-size: 13px!important;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .profile .dropdown-header span {
@@ -740,9 +755,10 @@ h6 {
 }
 
 .header-nav .profile .dropdown-item {
-  font-size: 14px;
+  font-size: 13px;
   padding: 10px 15px;
   transition: 0.3s;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .profile .dropdown-item i {
@@ -847,6 +863,9 @@ h6 {
   color: #899bbd;
   font-weight: 600;
   margin: 10px 0 5px 15px;
+}
+.sidebar-nav .nav-link span{
+  letter-spacing: 0.7px;
 }
 
 .sidebar-nav .nav-link {
@@ -1008,6 +1027,7 @@ h6 {
 
 .sidebar-nav .nav-content a span {
   margin-left: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav .nav-content a:hover,
@@ -1376,6 +1396,7 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
 .form-control,.form-select{
   font-size: 0.75rem !important;
   font-family: 'Roboto Light';
+  letter-spacing: 0.5px;
 }
 .form-control:focus{
   box-shadow: none !important;

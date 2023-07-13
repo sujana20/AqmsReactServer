@@ -105,7 +105,7 @@ function Sidenavbar() {
             <li>
               <NavLink to="/PredefinedCharts" className="nav-item animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
-                <span>Pre-Defned Charts</span>
+                <span>Pre Defined Charts</span>
               </NavLink >
             </li>
              <li>
