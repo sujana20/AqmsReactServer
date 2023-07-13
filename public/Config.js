@@ -22,3 +22,47 @@ var Parity =["None","Odd","Even","Mark","Space"];
 var StopBits=[1,1.5,2];
 var Typeofsequence=['Zero','Span']
 var UserRoles =[{SUPER_ADMIN: 'SUPER_ADMIN',ADMIN: 'ADMIN',MANAGER: 'MANAGER',CUSTOMER: 'CUSTOMER',GUEST: 'GUEST'}]
+
+
+var nodes = [{
+    value: 'Dashboard',
+    label: 'Dashboard',
+    url:'/Dashboard',
+    icon:'bi bi-grid',
+    children: [],
+},{
+    value: 'Configuration',
+    label: 'Configuration',
+    url:'#',
+    icon:'bi bi-menu-button-wide',
+    children: [
+        { value: 'Station', label: 'Station', url:'/AddStation', icon:'bi bi-circle' },
+        { value: 'Device', label: 'Device', url:'/AddDevice', icon:'bi bi-circle' },
+        { value: 'Parameter', label: 'Parameter', url:'/AddParameter', icon:'bi bi-circle'},
+        { value: 'Grouping', label: 'Grouping', url:'/GroupingParameter', icon:'bi bi-circle'},
+    ],
+},{
+    value: 'Admin',
+    label: 'Admin',
+    url:'#',
+    icon:'bi bi-menu-button-wide',
+    children: [
+        { value: 'Users', label: 'Users', url:'/Adduser', icon:'bi bi-circle' },
+        { value: 'Userlog', label: 'Users Log', url:'/UserLogHistory', icon:'bi bi-circle' },
+        { value: 'Applicationlog', label: 'Application Log', url:'/AppLogHistory', icon:'bi bi-circle'},
+        { value: 'UsersGroup', label: 'Users Group', url:'/UserGroups', icon:'bi bi-circle'},
+    ],
+},{
+    value: 'Reports',
+    label: 'Reports',
+    url:'#',
+    icon:'bi bi-bar-chart',
+    children: [
+        { value: 'Statisticalreports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
+        { value: 'Predefinedcharts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },
+        { value: 'Detailedanalysisreport', label: 'Detailed Analysis Report', url:'/DetailedAnalysisReports', icon:'bi bi-circle'},
+        { value: 'Datavalidation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
+        { value: 'Livedata', label: 'Live Data', url:'/LiveData', icon:'bi bi-circle' },
+        { value: 'Databrowsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
+    ],
+}];

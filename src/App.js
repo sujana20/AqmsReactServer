@@ -34,6 +34,7 @@ const HistoricalData=lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports=lazy(() => import("./Pages/LiveDataReports"));
 const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
 const ServerDashBoard=lazy(() => import("./Pages/ServerDashBoard"));
+const UserGroups=lazy(() => import("./Pages/UserGroups"));
 
 function App() {
    // const [location, setlocation] = useState(window.location.pathname);
@@ -74,6 +75,7 @@ function App() {
           <Route   path="/HistoricalData"  exact element={currentUser !=null ? <HistoricalData /> : (<Navigate to="/" />)}/>
           <Route   path="/LiveDataReports" exact element={currentUser !=null ? <LiveDataReports /> : (<Navigate to="/" />)} />
           <Route   path="/GroupingParameter" exact element={currentUser !=null ? <GroupingParameter /> : (<Navigate to="/" />)} />
+          <Route   path="/UserGroups" exact element={currentUser !=null ? <UserGroups /> : (<Navigate to="/" />)} />
         </Routes>
       </Suspense>
   {/* </BrowserRouter> */}

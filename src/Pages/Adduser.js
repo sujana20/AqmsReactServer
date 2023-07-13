@@ -9,7 +9,7 @@ function Adduser() {
   const [UserList, setUserList] = useState(true);
   const [UserId, setUserId] = useState(0);
   const [Notification, setNotification] = useState(true);
-  const Useraddvalidation = function (UserName, UserEmail, UserRole) {
+  const Useraddvalidation = function (UserName, UserEmail,Password, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
     if (UserName == "") {
@@ -19,6 +19,15 @@ function Adduser() {
     } else if (UserEmail == "") {
       //toast.warning('Please enter user email');
       form.classList.add('was-validated');
+      isvalid = false;
+    }
+    else if (Password == "") {
+      form.classList.add('was-validated');
+      isvalid = false;
+    } 
+    else if (Password.length < 8) {
+      form.classList.add('was-validated');
+      $('#lblsignpwd').css("display", "block");
       isvalid = false;
     } else if (UserRole == "") {
       //toast.warning('Please select user role');
@@ -30,8 +39,9 @@ function Adduser() {
   const Useradd = function () {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
+    let Password = document.getElementById("password").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail,Password, UserRole);
     if (!validation) {
       return false;
     }
@@ -41,7 +51,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Role: UserRole }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password: Password, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
@@ -62,6 +72,8 @@ function Adduser() {
     setTimeout(() => {
       document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
+      document.getElementById("password").value = param.password;
+      $('#password').addClass("disable");
      document.getElementById("userrole").value = param.role;
     }, 10);
    
@@ -70,8 +82,9 @@ function Adduser() {
   const UpdateUser=function(){
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
+    let Password = document.getElementById("password").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail,Password, UserRole);
     if (!validation) {
       return false;
     }
@@ -81,7 +94,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password:Password, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -159,6 +172,7 @@ function Adduser() {
           return $.grep(this.data, function (item) {
             return ((!filter.userName || item.userName.toUpperCase().indexOf(filter.userName.toUpperCase()) >= 0)
               && (!filter.userEmail || item.userEmail.toUpperCase().indexOf(filter.userEmail.toUpperCase()) >= 0)
+              && (!filter.password || item.password.toUpperCase().indexOf(filter.password.toUpperCase()) >= 0)
               && (!filter.role || item.role.toUpperCase().indexOf(filter.role.toUpperCase()) >= 0)
             );
           });
@@ -167,6 +181,7 @@ function Adduser() {
       fields: [
         { name: "userName", title: "User Name", type: "text" },
         { name: "userEmail", title: "User Email", type: "text" },
+        { name: "password", title: "Password", type: "text" },
         { name: "role", title: "Role", type: "text", },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
@@ -199,6 +214,7 @@ function Adduser() {
     } else {
       setUserList(false);
       setUserId(0);
+      $('#password').removeClass("disable");
     }
   }
   return (
@@ -236,6 +252,12 @@ function Adduser() {
                   <label for="useremail" className="form-label">User Email:</label>
                   <input type="text" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback">Please enter user email.</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="password" className="form-label">Password:</label>
+                  <input type="password" className="form-control" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password" required />
+                  {/* <div class="invalid-feedback">Please enter password.</div> */}
+                  <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>

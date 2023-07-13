@@ -29,6 +29,15 @@ function Sidenavbar() {
     <aside id="sidebar" className="sidebar">
       <ul className="sidebar-nav" id="sidebar-nav">
 
+      {/* {window.nodes.map((x, y) =>
+        <li className="nav-item" id={x.label + "-Panel"}>
+          <NavLink to={x.url} className="nav-link animation-forwards animate-delay-1" >
+            <i className={x.icon}></i>
+            <span>Dashboard</span>
+          </NavLink >
+        </li>
+      )} */}
+
         <li className="nav-item">
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
@@ -87,6 +96,12 @@ function Sidenavbar() {
               <NavLink to="/AppLogHistory" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Application Log</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/UserGroups" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>User Group</span>
               </NavLink >
             </li>
           </ul>
