@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,

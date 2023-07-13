@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import { Chart, Line } from 'react-chartjs-2';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
 //import { debounce } from 'lodash';
