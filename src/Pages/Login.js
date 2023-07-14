@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
   //const Navigate = useNavigate();
   const Login = ({ handleAuthentication }) => {
   const handleLogin = async(event) => {
+    GetGroupDetails();
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
@@ -59,6 +60,17 @@ import bcrypt from 'bcryptjs';
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     return encryptedPassword ;
+  }
+
+  const GetGroupDetails = function () {
+    fetch(process.env.REACT_APP_WSurl + "api/UsersGroup", {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+            setListUserGroup(data);
+        }
+      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
   }
 
   return (
