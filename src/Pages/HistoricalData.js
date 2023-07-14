@@ -1147,18 +1147,6 @@ const dragger = {
         }
       }
     };
-   /*  Scaleslist["y"] = {
-      
-      ticks: {
-        font: {
-          size: 10, // Adjust the font size for x-axis labels
-          family: 'Roboto Light' ,// Change the font type for x-axis labels
-          weight: 'bold',
-          color:'blue'
-        }
-      }
-    }; */
-
    
     setChartOptions({
       responsive: true,
@@ -1249,13 +1237,13 @@ const dragger = {
       },
     });
 
-    setTimeout(() => {
+   // setTimeout(() => {
 
       setChartData({
         // labels,
         datasets: datasets
       })
-    }, 10);
+   // }, 10);
   }
   /* Chart End */
   const toggleAllLegends = function () {
