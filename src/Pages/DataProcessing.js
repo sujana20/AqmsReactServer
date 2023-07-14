@@ -61,7 +61,7 @@ function DataProcessing() {
   const [Criteria, setcriteria] = useState([]);
   const [dataForGridcopy, setdataForGridcopy] = useState([]);
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [ChartOptions, setChartOptions] = useState();
+  const [ChartOptions, setChartOptions] = useState({});
   const [ListHistory, setListHistory] = useState([]);
   const [Flagcodelist, SetFlagcodelist] = useState([]);
   const [Nestedheaders, setNestedheaders] = useState([]);
@@ -76,7 +76,7 @@ function DataProcessing() {
   SelectedPollutentsRef.current = SelectedPollutents;
   
   const ChartOptionsRef = useRef();
-  ChartOptionsRef.current=ChartOptions;
+  //ChartOptionsRef.current=ChartOptions;
   const chartelementRef = useRef();
   const chartlastEventRef = useRef();
   const revertRef = useRef();
@@ -814,9 +814,9 @@ function DataProcessing() {
 
   const getdatareport = function () {
     currentPage = 1;
-    if (chartRef.current) {
+    /* if (chartRef.current) {
       chartRef.current.destroy();
-    }
+    } */
     setListReportData([]);
     setReportDataList([]);
     setLoadjsGridData(false);
@@ -824,6 +824,7 @@ function DataProcessing() {
     newdata = [];
     setNewData([]);
     setOldData([]);
+    //setChartOptions({});
     GetProcessingData(currentPage, true);
   }
 
@@ -1193,14 +1194,6 @@ function DataProcessing() {
   };
   /* Drag and drop end */
 
- /*  useEffect(() => {
-    if (chartRef.current != null) {
-      chartRef.current.options=ChartOptions;
-      chartRef.current.update();
-      }
-    
-   // ChartOptionsRef.current=ChartOptions;
-  },[ChartOptions]) */
   
   const getchartdata = function (data, pollutent, charttype, criteria) {
     /* if (chartRef.current != null) {
@@ -1208,8 +1201,7 @@ function DataProcessing() {
     } */
 
     /*  setChartData({ labels: [], datasets: [] });*/
-    //setChartOptions();
-    ChartOptionsRef.current={};
+   // setChartOptions({});
     let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
@@ -1394,13 +1386,12 @@ function DataProcessing() {
       
      // ChartOptionsRef.current=Finaloptions;
     setChartOptions(Finaloptions);
-    setTimeout(() => {
-
+    //setTimeout(() => {
       setChartData({
         // labels,
         datasets: datasets
       })
-    }, 10);
+   // }, 10);
   }
   const toggleAllLegends = function () {
     let chartinstance = chartRef.current;
