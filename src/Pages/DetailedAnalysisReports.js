@@ -598,7 +598,7 @@ function DetailedAnalysisReports() {
                     </select>
                   </div>
                   <div className="col-md-6">
-                    <div className="ion-slider-container pull-left" style={{ width: '100%' }}>
+                    <div className="ion-slider-container pull-left" style={{ width: '98%' }}>
                       <input type="range" className="js-range-slider" value="3" data-orientation="vertical" />
                     </div>
                   </div>
@@ -611,7 +611,7 @@ function DetailedAnalysisReports() {
 
 
             <div className="row mt-0">
-              {ChartDataAvg && (
+              {ChartOptionsAvg && (
                 <div className="col-md-6">
                   <div className="card">
                     <div className="card-body p-2">
@@ -620,7 +620,7 @@ function DetailedAnalysisReports() {
                   </div>
                 </div>
               )}
-              {ChartDataMax && (
+              {ChartOptionsMax && (
                 <div className="col-md-6">
                   <div className="card">
                     <div className="card-body p-2">
@@ -629,7 +629,7 @@ function DetailedAnalysisReports() {
                   </div>
                 </div>
               )}
-              {ChartData24h && (
+              {ChartOptions24h && (
                 <div className="col-md-6">
                   <div className="card">
                     <div className="card-body p-2">
