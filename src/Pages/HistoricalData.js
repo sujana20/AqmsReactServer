@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-adapter-moment';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
@@ -287,7 +287,7 @@ function HistoricalData() {
 
   const Visiblerecords = function (param) {
     const sheetcontainer = document.querySelector(".jexcel_content");
-    const rowHeight = 25.6; // Height of a single row in pixels 
+    const rowHeight = window.spreadsheetrowHeight; // Height of a single row in pixels 
     let records = 1;
     if (param != "") {
       records = 2;
@@ -308,7 +308,7 @@ function HistoricalData() {
 
   const ScrolltoDrop = function (index) {
     const sheetcontainer = document.querySelector(".jexcel_content");
-    const rowHeight = 25.6; // Height of a single row in pixels 
+    const rowHeight = window.spreadsheetrowHeight; // Height of a single row in pixels 
     const targetRowIndex = index; // Index of the target row
     const scrollOffset = targetRowIndex * rowHeight;
     sheetcontainer.scrollTop = scrollOffset;
@@ -318,7 +318,14 @@ function HistoricalData() {
     let max;
     let excludedKey = 'Date';
     if (Key != "") {
-      max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey]);
+     // max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey])[excludedKey];
+     max = visibleRecords.reduce((max, current) => {
+      if (current[excludedKey] > max[excludedKey]) {
+        return current;
+      } else {
+        return max;
+      }
+    })[excludedKey];
       return generateDatabaseDateTime16(max);
     } else {
 
@@ -1114,6 +1121,14 @@ const dragger = {
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
+          },
+          ticks: {
+            font: {
+              size: 10, // Adjust the font size for x-axis labels
+              family: 'Roboto Light' ,// Change the font type for x-axis labels
+              weight: 'bold',
+              color:'blue'
+            }
           }
         }
         let color='#' + Math.floor(Math.random()*16777215).toString(16);
@@ -1132,7 +1147,7 @@ const dragger = {
         }
       }
     };
-    Scaleslist["y"] = {
+   /*  Scaleslist["y"] = {
       
       ticks: {
         font: {
@@ -1142,7 +1157,7 @@ const dragger = {
           color:'blue'
         }
       }
-    };
+    }; */
 
    
     setChartOptions({

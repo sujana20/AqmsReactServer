@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import { Chart, Line } from 'react-chartjs-2';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
 //import { debounce } from 'lodash';
@@ -74,7 +74,9 @@ function DataProcessing() {
   const [allLegendsChecked, setallLegendsChecked] = useState(true);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
-
+  
+  const ChartOptionsRef = useRef();
+  ChartOptionsRef.current=ChartOptions;
   const chartelementRef = useRef();
   const chartlastEventRef = useRef();
   const revertRef = useRef();
@@ -94,16 +96,16 @@ function DataProcessing() {
   let startindex = 0;
   let isLoading = false;
   let requestId;
-  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
-		  '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-		  '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
-		  '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-		  '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', 
-		  '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-		  '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
-		  '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-		  '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
-		  '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
@@ -468,7 +470,7 @@ function DataProcessing() {
 
   const Visiblerecords = function (param) {
     const sheetcontainer = document.querySelector(".jexcel_content");
-    const rowHeight = 25.6; // Height of a single row in pixels 
+    const rowHeight = window.spreadsheetrowHeight; // Height of a single row in pixels 
     let records = 1;
     if (param != "") {
       records = 2;
@@ -489,7 +491,7 @@ function DataProcessing() {
 
   const ScrolltoDrop = function (index) {
     const sheetcontainer = document.querySelector(".jexcel_content");
-    const rowHeight = 25.6; // Height of a single row in pixels 
+    const rowHeight = window.spreadsheetrowHeight; // Height of a single row in pixels 
     const targetRowIndex = index; // Index of the target row
     const scrollOffset = targetRowIndex * rowHeight;
     sheetcontainer.scrollTop = scrollOffset;
@@ -499,7 +501,14 @@ function DataProcessing() {
     let max;
     let excludedKey = 'Date';
     if (Key != "") {
-      max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey]);
+      max = visibleRecords.reduce((max, current) => {
+        if (current[excludedKey] > max[excludedKey]) {
+          return current;
+        } else {
+          return max;
+        }
+      })[excludedKey];
+      //  max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey])[excludedKey];
       return generateDatabaseDateTime16(max);
     } else {
 
@@ -805,6 +814,9 @@ function DataProcessing() {
 
   const getdatareport = function () {
     currentPage = 1;
+    if (chartRef.current) {
+      chartRef.current.destroy();
+    }
     setListReportData([]);
     setReportDataList([]);
     setLoadjsGridData(false);
@@ -1181,14 +1193,23 @@ function DataProcessing() {
   };
   /* Drag and drop end */
 
-
+ /*  useEffect(() => {
+    if (chartRef.current != null) {
+      chartRef.current.options=ChartOptions;
+      chartRef.current.update();
+      }
+    
+   // ChartOptionsRef.current=ChartOptions;
+  },[ChartOptions]) */
+  
   const getchartdata = function (data, pollutent, charttype, criteria) {
     /* if (chartRef.current != null) {
       chartRef.current.data = {};
     } */
 
     /*  setChartData({ labels: [], datasets: [] });*/
-    setChartOptions({});
+    //setChartOptions();
+    ChartOptionsRef.current={};
     let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
@@ -1237,22 +1258,31 @@ function DataProcessing() {
           title: {
             display: true,
             text: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0]
+          },
+          ticks: {
+            font: {
+              size: 10, // Adjust the font size for x-axis labels
+              family: 'Roboto Light',// Change the font type for x-axis labels
+              weight: 'bold',
+              color: 'blue'
+            }
           }
         }
-        let color='#' + Math.floor(Math.random()*16777215).toString(16);
-        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata,borderWidth:1, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)], pointRadius: pointRadius, spanGaps: false, })
+        let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderWidth: 1, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)], pointRadius: pointRadius, spanGaps: false, })
       }
     }
 
     Scaleslist["x"] = {
       type: 'time',
-      /* time: {
-        unit: 'minutes',
-        stepSize: 'auto',
-        displayFormats: {
-          minutes: 'YYYY-MM-DD HH:mm'
+      ticks: {
+        font: {
+          size: 11, // Adjust the font size for x-axis labels
+          family: 'Roboto Light',// Change the font type for x-axis labels
+          weight: 'bold',
+          color: 'blue'
         }
-      } */
+      }
     };
     /*   setChartOptions({
         responsive: true,
@@ -1273,84 +1303,97 @@ function DataProcessing() {
           },
         },
       }); */
-
-    setChartOptions({
-      responsive: true,
-      scales: Scaleslist,
-      events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
-      // maintainAspectRatio: true,
-      plugins: {
-        legend: {
-          position: 'top',
-          align: 'start',
-          onClick: function (event, legendItem) {
-            let chart = chartRef.current;
-            const datasetIndex = legendItem.datasetIndex;
-            const meta = chart.getDatasetMeta(datasetIndex);
-            meta.hidden = !meta.hidden;
-
-            const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
-            const allHidden = chart.options.scales[yAxisID].display;
-
-            if (allHidden) {
-              chart.options.scales[yAxisID].display = false;
-            } else {
-              chart.options.scales[yAxisID].display = true;
-            }
-            // Determine the visible y-axes
-            const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
-              if (axis != 'x') {
-                return chart.options.scales[axis].display;
+      let Finaloptions={
+        responsive: true,
+        scales: Scaleslist,
+        events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
+        // maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            align: 'start',
+            fullSize: true,
+            labels: {
+              color: 'navy',
+              boxWidth: 20,
+              padding: 10,
+              //boxHeight:20
+              font: {
+                size: 11,
+                family: "Roboto Light",
+                weight: 'bold'
               }
-            });
-
-            // Update the positions of the visible y-axes
-            // const numVisibleAxes = visibleAxes.length;
-            // const yAxisPositions = ['left', 'right']; // Modify if needed
-
-            visibleAxes.forEach((axis, index) => {
-              chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
-            });
-            // Update the chart to reflect the visibility changes
-            chart.update();
-          },
-        },
-        title: {
-          display: true,
-        },
-        annotation: {
-          enter(ctx) {
-            chartelementRef.current = ctx.element;
-          },
-          leave() {
-            chartelementRef.current = undefined;
-            chartlastEventRef.current = undefined;
-          },
-          annotations: [
-            {
-              type: 'box',
-              id: 'dragabbleAnnotation',
-              mode: 'vertical',
-              drawTime: 'afterDraw',
-              xScaleID: 'x',
-              yScaleID: '1_SO2',
-              /* xMin: '2023-06-01 00:00',
-               xMax: '2023-06-01 2:15',
-                yMin: 0,
-               yMax: 2, */
-              xMin: Getminvalue(visibleRecords, "Date"),
-              xMax: Getmaxvalue(visibleRecords, "Date"),
-              yMin: Getminvalue(visibleRecords, ""),
-              yMax: Getmaxvalue(visibleRecords, ""),
-              borderWidth: 2,
-              borderColor: 'red',
-              backgroundColor: 'rgba(255,0,0,0.2)',
             },
-          ],
+            onClick: function (event, legendItem) {
+              let chart = chartRef.current;
+              const datasetIndex = legendItem.datasetIndex;
+              const meta = chart.getDatasetMeta(datasetIndex);
+              meta.hidden = !meta.hidden;
+  
+              const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
+              const allHidden = chart.options.scales[yAxisID].display;
+  
+              if (allHidden) {
+                chart.options.scales[yAxisID].display = false;
+              } else {
+                chart.options.scales[yAxisID].display = true;
+              }
+              // Determine the visible y-axes
+              const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
+                if (axis != 'x') {
+                  return chart.options.scales[axis].display;
+                }
+              });
+  
+              // Update the positions of the visible y-axes
+              // const numVisibleAxes = visibleAxes.length;
+              // const yAxisPositions = ['left', 'right']; // Modify if needed
+  
+              visibleAxes.forEach((axis, index) => {
+                chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
+              });
+              // Update the chart to reflect the visibility changes
+              chart.update();
+            },
+          },
+          title: {
+            display: true,
+          },
+          annotation: {
+            enter(ctx) {
+              chartelementRef.current = ctx.element;
+            },
+            leave() {
+              chartelementRef.current = undefined;
+              chartlastEventRef.current = undefined;
+            },
+            annotations: [
+              {
+                type: 'box',
+                id: 'dragabbleAnnotation',
+                mode: 'vertical',
+                drawTime: 'afterDraw',
+                xScaleID: 'x',
+                yScaleID: '1_SO2',
+                /* xMin: '2023-06-01 00:00',
+                 xMax: '2023-06-01 2:15',
+                  yMin: 0,
+                 yMax: 2, */
+                xMin: Getminvalue(visibleRecords, "Date"),
+                xMax: Getmaxvalue(visibleRecords, "Date"),
+                yMin: Getminvalue(visibleRecords, ""),
+                yMax: Getmaxvalue(visibleRecords, ""),
+                borderWidth: 2,
+                borderColor: 'red',
+                backgroundColor: 'rgba(255,0,0,0.2)',
+              },
+            ],
+          },
         },
-      },
-    });
-
+      };
+      
+     // ChartOptionsRef.current=Finaloptions;
+    setChartOptions(Finaloptions);
     setTimeout(() => {
 
       setChartData({
@@ -1360,19 +1403,19 @@ function DataProcessing() {
     }, 10);
   }
   const toggleAllLegends = function () {
-    let chartinstance=chartRef.current;
+    let chartinstance = chartRef.current;
     if (allLegendsChecked) {
       chartinstance.data.datasets.forEach(function (ds) {
         ds.hidden = true;
       });
-     
+
       chartinstance.legend.legendItems.forEach((legendItem) => {
         const datasetIndex = legendItem.datasetIndex;
-            const meta = chartinstance.getDatasetMeta(datasetIndex);
-            meta.hidden = true;
+        const meta = chartinstance.getDatasetMeta(datasetIndex);
+        meta.hidden = true;
 
-            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
-            chartinstance.options.scales[yAxisID].display=false;
+        const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+        chartinstance.options.scales[yAxisID].display = false;
       });
     } else {
       chartinstance.data.datasets.forEach(function (ds) {
@@ -1380,16 +1423,17 @@ function DataProcessing() {
       });
       chartRef.current.legend.legendItems.forEach((legendItem) => {
         const datasetIndex = legendItem.datasetIndex;
-            const meta = chartinstance.getDatasetMeta(datasetIndex);
-            meta.hidden = false;
+        const meta = chartinstance.getDatasetMeta(datasetIndex);
+        meta.hidden = false;
 
-            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
-            chartinstance.options.scales[yAxisID].display=true;
+        const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+        chartinstance.options.scales[yAxisID].display = true;
       });
     }
     setallLegendsChecked(!allLegendsChecked);
     chartinstance.update();
   }
+ 
   return (
     <main id="main" className="main" >
       {/* Same as */}
@@ -1442,93 +1486,93 @@ function DataProcessing() {
             <div className="card">
               <div className="card-body">
 
-              
-            <div className="row">
-              <div className="col-md-2">
-                <label className="form-label">Group Name</label>
-                <select className="form-select" id="groupid" onChange={ChangeGroupName}>
-                  <option value="" selected>None</option>
-                  <option value="all">All Stations</option>
-                  {Groups.map((x, y) =>
-                    <option value={x.groupID} key={y} >{x.groupName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Station Name</label>
-                {/*  <select className="form-select stationid" id="stationid" multiple="multiple" onChange={ChangeStation}> */}
-                <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
-                  <option value="" selected> Select Station</option>
-                  {Stations.map((x, y) =>
-                    <option value={x.id} key={y} >{x.stationName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
-                  {/* <option selected> Select Pollutents</option> */}
-                  {Pollutents.map((x, y) =>
-                    <option value={x.parameterName} key={y} >{x.parameterName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Interval</label>
-                <select className="form-select" id="criteriaid">
-                  <option value="" selected>Select Interval</option>
-                  <option value="15-M" selected>15-M</option>
-                  {Criteria.map((x, y) =>
-                    <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
-                  )}
-                </select>
-              </div>
-              <div className=" mt-4">
-                <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
-                <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
-              </div>
-              <div className="col-md-4">
+
                 <div className="row">
-                  <div id="loader" className="loader"></div>
+                  <div className="col-md-2">
+                    <label className="form-label">Group Name</label>
+                    <select className="form-select" id="groupid" onChange={ChangeGroupName}>
+                      <option value="" selected>None</option>
+                      <option value="all">All Stations</option>
+                      {Groups.map((x, y) =>
+                        <option value={x.groupID} key={y} >{x.groupName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Station Name</label>
+                    {/*  <select className="form-select stationid" id="stationid" multiple="multiple" onChange={ChangeStation}> */}
+                    <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
+                      <option value="" selected> Select Station</option>
+                      {Stations.map((x, y) =>
+                        <option value={x.id} key={y} >{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
+                      {/* <option selected> Select Pollutents</option> */}
+                      {Pollutents.map((x, y) =>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">From Date</label>
+                    <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">To Date</label>
+                    <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Interval</label>
+                    <select className="form-select" id="criteriaid">
+                      <option value="" selected>Select Interval</option>
+                      <option value="15-M" selected>15-M</option>
+                      {Criteria.map((x, y) =>
+                        <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className=" mt-4">
+                    <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                    <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="row">
+                      <div id="loader" className="loader"></div>
+                    </div>
+                  </div>
+
                 </div>
+
               </div>
-
-            </div>
-
-            </div>
             </div>
             {ListReportData.length > 0 && (
-                <div className="card">
+              <div className="card">
                 <div className="card-body p-2">
-                <div className="row">
-                  <div className="col-md-9 mb-3">
-                    {AllLookpdata.listFlagCodes.map((x, y) =>
-                      <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
-                    )}
-                  </div>
-               {/*  </div>
+                  <div className="row">
+                    <div className="col-md-9 mb-3">
+                      {AllLookpdata.listFlagCodes.map((x, y) =>
+                        <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
+                      )}
+                    </div>
+                    {/*  </div>
                 <div className="row"> */}
-                  <div className="col-md-3 mb-3">
-                    <div className="float-end">
-                    <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
-                    <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
-                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}><i class="bi bi-save"></i></button>
+                    <div className="col-md-3 mb-3">
+                      <div className="float-end">
+                        <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
+                        <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                        <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}><i class="bi bi-save"></i></button>
+                      </div>
+                    </div>
                   </div>
-                  </div>
+
+                  <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
+
+
                 </div>
-
-                <div className="jsGrid" id="jspreadRefid" ref={jspreadRef} />
-
-
-              </div>
               </div>
             )}
             {ListReportData.length == 0 && LoadjsGridData && (
@@ -1536,6 +1580,7 @@ function DataProcessing() {
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="chartmaindiv">
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
                 <div className="text-center">
                   <input
                     type="checkbox"
@@ -1544,7 +1589,6 @@ function DataProcessing() {
                   />
                   <label>Select All</label>
                 </div>
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
               </div>
             )}
           </div>
