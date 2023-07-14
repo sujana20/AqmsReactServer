@@ -13,12 +13,12 @@ function Sidenavbar() {
     if(currentUser.role.toUpperCase()==window.UserRoles[0].ADMIN.toUpperCase()){
       document.getElementById("Configuration-Panel").style.display="block";
       //document.getElementById("User-subpannel").style.display="block";
-      document.getElementById("Admin-Pannel").style.display="block";
+      document.getElementById("Admin-Panel").style.display="block";
     }
     else if(currentUser.role.toUpperCase()==window.UserRoles[0].GUEST.toUpperCase()){      
       document.getElementById("Configuration-Panel").style.display="none";
       //document.getElementById("User-subpannel").style.display="none";
-      document.getElementById("Admin-Pannel").style.display="none";
+      document.getElementById("Admin-Panel").style.display="none";
     }
   }
   useEffect(() => {
@@ -28,17 +28,27 @@ function Sidenavbar() {
   return (
     <aside id="sidebar" className="sidebar">
       <ul className="sidebar-nav" id="sidebar-nav">
+        {window.nodes.map((x, y) =>
+          <li className="nav-item" id={x.label + "-Panel"}>
+            <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#"+x.label +"-nav"} data-bs-toggle="collapse" href="#">
+              <i className={x.icon}></i><span>{x.label}</span><i className={x.expandicon}></i>
+            </a>               
+            <ul id={x.label +"-nav"} className="nav-content collapse" data-bs-parent="#sidebar-nav">                        
+              {x.children.map((x,y)=>
+                <li>
+                  <NavLink to={x.url} className="animation-forwards animate-delay-1" >
+                    <i className={x.icon}></i>
+                    <span>{x.label}</span>
+                  </NavLink >
+                </li>
+              )}
+            </ul>
+          </li>
+        )}   
 
-      {/* {window.nodes.map((x, y) =>
-        <li className="nav-item" id={x.label + "-Panel"}>
-          <NavLink to={x.url} className="nav-link animation-forwards animate-delay-1" >
-            <i className={x.icon}></i>
-            <span>Dashboard</span>
-          </NavLink >
-        </li>
-      )} */}
 
-        <li className="nav-item">
+          
+        {/* <li className="nav-item">
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
             <span>Dashboard</span>
@@ -148,7 +158,7 @@ function Sidenavbar() {
           </NavLink >
         </li>
           </ul>
-        </li>
+        </li> */}
       </ul>
     </aside>
   );

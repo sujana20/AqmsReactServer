@@ -29,11 +29,15 @@ var nodes = [{
     label: 'Dashboard',
     url:'/Dashboard',
     icon:'bi bi-grid',
-    children: [],
+    expandicon:'',
+    children: [
+        { value: 'Dashboard', label: 'Dashboard', url:'/Dashboard', icon:'bi bi-circle' },
+    ],
 },{
     value: 'Configuration',
     label: 'Configuration',
     url:'#',
+    expandicon:'bi bi-chevron-down ms-auto',
     icon:'bi bi-menu-button-wide',
     children: [
         { value: 'Station', label: 'Station', url:'/AddStation', icon:'bi bi-circle' },
@@ -45,6 +49,7 @@ var nodes = [{
     value: 'Admin',
     label: 'Admin',
     url:'#',
+    expandicon:'bi bi-chevron-down ms-auto',
     icon:'bi bi-menu-button-wide',
     children: [
         { value: 'Users', label: 'Users', url:'/Adduser', icon:'bi bi-circle' },
@@ -56,6 +61,7 @@ var nodes = [{
     value: 'Reports',
     label: 'Reports',
     url:'#',
+    expandicon:'bi bi-chevron-down ms-auto',
     icon:'bi bi-bar-chart',
     children: [
         { value: 'Statisticalreports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
