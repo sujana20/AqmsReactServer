@@ -5,8 +5,10 @@ import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
 //function Login() {
 
+  
   //const Navigate = useNavigate();
   const Login = ({ handleAuthentication }) => {
+    var DataforUserGroup;
   const handleLogin = async(event) => {
     GetGroupDetails();
     let form = document.querySelectorAll('#Loginform')[0];
@@ -27,6 +29,11 @@ import bcrypt from 'bcryptjs';
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
+            for(var i=0;i<DataforUserGroup.length;i++){
+              //sessionStorage.setItem("UserGroupData"+i, JSON.stringify(DataforUserGroup[i]));
+              sessionStorage.setItem("UserGroupData", JSON.stringify(DataforUserGroup[i]));
+            }
+           
             window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
              //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
@@ -68,7 +75,7 @@ import bcrypt from 'bcryptjs';
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-            setListUserGroup(data);
+            DataforUserGroup = data;
         }
       }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
   }

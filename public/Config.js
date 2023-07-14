@@ -25,7 +25,7 @@ var UserRoles =[{SUPER_ADMIN: 'SUPER_ADMIN',ADMIN: 'ADMIN',MANAGER: 'MANAGER',CU
 
 var spreadsheetrowHeight=22.6;
 var nodes = [{
-    value: 'Dashboard',
+    value: 'DashboardPannel',
     label: 'Dashboard',
     url:'/Dashboard',
     icon:'bi bi-grid',
