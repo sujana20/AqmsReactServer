@@ -62,10 +62,10 @@ function UserGroups(){
             }
           },
           fields: [
-            { name: "groupName", title: "User Name", type: "text" },
-            { name: "permissions", title: "Permission", type: "text" },            
+            { name: "groupName", title: "User Name", type: "text", width:"30px" },
+            { name: "permissions", title: "Permission", type: "text", width:"100px" },            
             {
-              type: "control", width: 100, editButton: false, deleteButton: false,
+              type: "control", width: 10, editButton: false, deleteButton: false,
               itemTemplate: function (value, item) {
                 var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
                   .click(function (e) {
