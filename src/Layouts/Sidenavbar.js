@@ -32,7 +32,7 @@ function Sidenavbar() {
 
   const ispermission=(param)=>{
     let parents=window.nodes.filter(x=>x.value==param);
-    permissions.map(function(x){ 
+    return permissions.map(function(x){ 
       var result= parents[0]?.children.filter(a1=> a1.value==x);
       if(result.length>0) 
       {
@@ -58,7 +58,7 @@ function Sidenavbar() {
                 <span>{x.label}</span>
               </NavLink>
             )}  
-            {x.children.length>0 && ispermission(x.value)  (              
+            {x.children.length>0 && ispermission(x.value) && (              
               <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#"+x.label +"-nav"} data-bs-toggle="collapse" href="#">
               <i className={x.icon}></i><span>{x.label}</span><i className={x.expandicon}></i>
               </a>
