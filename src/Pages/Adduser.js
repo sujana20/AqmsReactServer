@@ -9,7 +9,8 @@ function Adduser() {
   const [UserList, setUserList] = useState(true);
   const [UserId, setUserId] = useState(0);
   const [Notification, setNotification] = useState(true);
-  const Useraddvalidation = function (UserName, UserEmail,Password, UserRole) {
+  const [ListUserGroup, setListUserGroup] = useState([]);
+  const Useraddvalidation = function (UserName, UserEmail,Password, UserGroup, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
     if (UserName == "") {
@@ -29,7 +30,11 @@ function Adduser() {
       form.classList.add('was-validated');
       $('#lblsignpwd').css("display", "block");
       isvalid = false;
-    } else if (UserRole == "") {
+    } else if (UserGroup == "") {
+      //toast.error('Please select user group');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }else if (UserRole == "") {
       //toast.warning('Please select user role');
       form.classList.add('was-validated');
       isvalid = false;
@@ -40,8 +45,9 @@ function Adduser() {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let Password = document.getElementById("password").value;
+    let UserGroup=document.getElementById("usergroup").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail,Password, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail,Password, UserGroup, UserRole);
     if (!validation) {
       return false;
     }
@@ -51,7 +57,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password: Password, Role: UserRole }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password: Password, GroupID: UserGroup, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
@@ -73,8 +79,9 @@ function Adduser() {
       document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
       document.getElementById("password").value = param.password;
-      $('#password').addClass("disable");
-     document.getElementById("userrole").value = param.role;
+      document.getElementById("usergroup").value = param.groupID;
+      document.getElementById("userrole").value = param.role;
+      $('#password').addClass("disable");     
     }, 10);
    
   }
@@ -83,8 +90,9 @@ function Adduser() {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let Password = document.getElementById("password").value;
+    let UserGroup=document.getElementById("usergroup").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail,Password, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail,Password, UserGroup, UserRole);
     if (!validation) {
       return false;
     }
@@ -94,7 +102,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password:Password, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password:Password,GroupID: UserGroup, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -146,11 +154,22 @@ function Adduser() {
         }
       }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
   }
+  const GetGroupDetails = function () {
+    fetch(process.env.REACT_APP_WSurl + "api/UsersGroup", {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setListUserGroup(data);
+        }
+      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
+  }
   useEffect(() => {
     initializeJsGrid();
   });
   useEffect(() => {
     GetUser();
+    GetGroupDetails();
   }, [])
   const initializeJsGrid = function () {
     window.jQuery(gridRefjsgridreport.current).jsGrid({
@@ -255,16 +274,26 @@ function Adduser() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="password" className="form-label">Password:</label>
-                  <input type="password" className="form-control" id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password" required />
+                  <input type="password" className="form-control" id="password" placeholder="Enter Password" required />
                   {/* <div class="invalid-feedback">Please enter password.</div> */}
                   <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="Group" className="form-label">User Group:</label>
+                  <select className="form-select" id="usergroup" required>
+                    <option value="" selected>None</option>
+                    {ListUserGroup.map((x, y) =>
+                      <option value={x.id} key={y}>{x.groupName}</option>
+                    )}
+                  </select>
+                  <div class="invalid-feedback">Please select group name.</div>                  
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
                   <select className="form-select" id="userrole" required>
                     <option value="" selected>select user role</option>
-                    <option value="admin">Admin</option>
-                    <option value="guest">Guest</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Guest">Guest</option>
                    {/*  <option value="dataentry">Data Entry</option> */}
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>

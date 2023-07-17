@@ -8,9 +8,7 @@ import bcrypt from 'bcryptjs';
   
   //const Navigate = useNavigate();
   const Login = ({ handleAuthentication }) => {
-    var DataforUserGroup;
   const handleLogin = async(event) => {
-    GetGroupDetails();
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
@@ -29,11 +27,6 @@ import bcrypt from 'bcryptjs';
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            for(var i=0;i<DataforUserGroup.length;i++){
-              //sessionStorage.setItem("UserGroupData"+i, JSON.stringify(DataforUserGroup[i]));
-              sessionStorage.setItem("UserGroupData", JSON.stringify(DataforUserGroup[i]));
-            }
-           
             window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
              //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
@@ -67,17 +60,6 @@ import bcrypt from 'bcryptjs';
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     return encryptedPassword ;
-  }
-
-  const GetGroupDetails = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/UsersGroup", {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-            DataforUserGroup = data;
-        }
-      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
   }
 
   return (
