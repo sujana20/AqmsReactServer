@@ -52,7 +52,7 @@ function Sidenavbar() {
 
           <li className="nav-item" id={x.label + "-Panel"}>   
             
-            {x.children.length==0 && (              
+            {x.children==false && (              
               <NavLink to={x.url} className="nav-link animation-forwards animate-delay-1" >
                 <i className={x.icon}></i>
                 <span>{x.label}</span>

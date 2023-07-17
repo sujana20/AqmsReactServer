@@ -30,7 +30,7 @@ var nodes = [{
     url:'/Dashboard',
     icon:'bi bi-grid',
     expandicon:'',
-    children:[],
+    children:false,
 },{
     value: 'Configuration',
     label: 'Configuration',
