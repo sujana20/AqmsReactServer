@@ -15,6 +15,8 @@ function UserGroups(){
     const [expanded, setExpanded] = useState([]); 
     const [ListUserGroup, setListUserGroup] = useState([]);
 
+    
+
 
     useEffect(() => {
         initializeJsGrid();
@@ -228,6 +230,7 @@ function UserGroups(){
   
     const nodes=window.nodes;
 
+    
     const handleCheck = (checked) => {
         setChecked(checked);
     };
@@ -235,13 +238,23 @@ function UserGroups(){
     const handleExpand = (expanded) => {
         setExpanded(expanded);
     };
+    function getNodeIds(nodes) {
+      let ids = [];    
+      nodes.forEach(function({ value, children }) {
+        ids = [...ids, value];
+      });
+      return ids;
+    }
 
     const Addusergroupchange = function (param) {
         if (param) {
             setGroupList(true);
         } else {
-            setGroupList(false);
-            setGroupId(0);
+          setChecked([]);
+          var parentnodes=getNodeIds(nodes);
+          setExpanded(parentnodes);
+          setGroupList(false);
+          setGroupId(0);
         }
     }
 
@@ -278,13 +291,16 @@ function UserGroups(){
                                 </div>
                                 <div>                        
                                     <label for="stationparameterlist" className="form-label">Permissions List :</label>
-                                    <CheckboxTree 
+                                      <CheckboxTree 
                                         nodes={nodes}
                                         checked={checked}
+                                        //expanded={getNodeIds(nodes)}
                                         expanded={expanded}
                                         onCheck={handleCheck}
                                         onExpand={handleExpand}
-                                    />    
+                                      /> 
+                                    
+                                      
                                 </div>
                                 <div className="col-md-12 text-center">
                                     {!GroupList && GroupId==0 && (

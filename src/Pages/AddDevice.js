@@ -249,7 +249,8 @@ function AddDevice() {
               && (!filter.deviceModel || item.deviceModel === filter.deviceModel)
               && (!filter.deviceName || item.deviceName.toUpperCase().indexOf(filter.deviceName.toUpperCase()) >= 0)
               && (!filter.ipAddress || item.ipAddress.toUpperCase().indexOf(filter.ipAddress.toUpperCase()) >= 0)
-              && (!filter.port || item.port.toUpperCase().indexOf(filter.port.toUpperCase()) >= 0)
+              && (!filter.port || item.port == filter.port)
+              //&& (!filter.port || item.port.toUpperCase().indexOf(filter.port.toUpperCase()) >= 0)
               && (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
             );
           });
