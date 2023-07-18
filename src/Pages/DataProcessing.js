@@ -339,6 +339,7 @@ function DataProcessing() {
   }
 
   const reverttoprevious = function () {
+    if(OldData.length>0){
     revertRef.current = true;
     let changearr = dataForGridcopy[selectedgrid[1]];
     let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
@@ -377,6 +378,7 @@ function DataProcessing() {
         setNewData([]);
         setOldData([]);
       }
+    }
     }
     /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
        method: 'GET',
