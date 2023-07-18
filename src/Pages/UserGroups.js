@@ -157,7 +157,9 @@ function UserGroups(){
                 PermissionArray.push(previousvalues[j]);
               } 
             }                    
-          }         
+          }  
+          var parentnodes=getNodeIds(nodes);
+          setExpanded(parentnodes);       
           setChecked(PermissionArray);
         }, 100);  
     }
