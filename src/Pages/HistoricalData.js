@@ -88,17 +88,17 @@ function HistoricalData() {
   let requestId;
 
   //const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-   // "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
-   const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6', 
-		  '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-		  '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A', 
-		  '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-		  '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC', 
-		  '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-		  '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680', 
-		  '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-		  '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3', 
-		  '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
+  // "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  const colorArray = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
+    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
+    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
+    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
+    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
+    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
+    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
+    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
+    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
 
   useEffect(() => {
@@ -204,7 +204,12 @@ function HistoricalData() {
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
-      let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      let filnallist = [];
+      if (Parameterssplit.length > 1) {
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
+      } else {
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      }
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGridref.current.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
@@ -318,14 +323,14 @@ function HistoricalData() {
     let max;
     let excludedKey = 'Date';
     if (Key != "") {
-     // max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey])[excludedKey];
-     max = visibleRecords.reduce((max, current) => {
-      if (current[excludedKey] > max[excludedKey]) {
-        return current;
-      } else {
-        return max;
-      }
-    })[excludedKey];
+      // max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey])[excludedKey];
+      max = visibleRecords.reduce((max, current) => {
+        if (current[excludedKey] > max[excludedKey]) {
+          return current;
+        } else {
+          return max;
+        }
+      })[excludedKey];
       return generateDatabaseDateTime16(max);
     } else {
 
@@ -450,7 +455,7 @@ function HistoricalData() {
 
   const handleScroll = function () {
     if (!chartelementRef.current) {
-    getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
+      getchartdata(ReportDataListRef.current, SelectedPollutents, "line", "Raw");
     }
     if (startindex >= DataCount) {
       return false;
@@ -609,7 +614,7 @@ function HistoricalData() {
     }
     document.getElementById('loader').style.display = "block";
     let Intervaltype;
-   let Intervaltypesplit=Interval.split('-');
+    let Intervaltypesplit = Interval.split('-');
     if (Intervaltypesplit[1] == 'H') {
       Intervaltype = Intervaltypesplit[0] * 60;
     } else {
@@ -758,9 +763,9 @@ function HistoricalData() {
     // setStations([]);
 
     let filter2 = [];
-    let filter1=[];
-    let stationID=[];
-    if(selectedGroup !=="all"){
+    let filter1 = [];
+    let stationID = [];
+    if (selectedGroup !== "all") {
       stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
       var finalstationID = stationID.filter(function (item, pos) {
         return stationID.indexOf(item) == pos;
@@ -772,13 +777,13 @@ function HistoricalData() {
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id  == parameters[j]);
-          let value = value1.length>0?value1[0].parameterName:"";
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
           filter2.push(value + "@_" + finalstationID[i]);
         }
       }
     }
-    else{
+    else {
       stationID = Stations.map(a => a.id);
       var finalstationID = stationID.filter(function (item, pos) {
         return stationID.indexOf(item) == pos;
@@ -789,8 +794,8 @@ function HistoricalData() {
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-          let value = value1.length>0?value1[0].parameterName:"";
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
           filter2.push(value + "@_" + finalstationID[i]);
         }
       }
@@ -953,118 +958,118 @@ function HistoricalData() {
     setSelectedPollutents([]);
     setLoadjsGridData(false);
   }
-/* Drag and drop start */
+  /* Drag and drop start */
 
-const FormatedDate = function (timestamp) {
-  const date = new Date(timestamp);
+  const FormatedDate = function (timestamp) {
+    const date = new Date(timestamp);
 
-  // Extract the date components
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
-  const day = String(date.getDate()).padStart(2, '0');
+    // Extract the date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so add 1
+    const day = String(date.getDate()).padStart(2, '0');
 
-  // Extract the time components
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
+    // Extract the time components
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
 
-  // Format the date and time
-  const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
-  return formattedDateTime;
-}
+    // Format the date and time
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+    return formattedDateTime;
+  }
 
-const findClosestTimeIndex = function (targetTime) {
-  // Convert the target time to a Date object
-  const targetDate = new Date(targetTime);
+  const findClosestTimeIndex = function (targetTime) {
+    // Convert the target time to a Date object
+    const targetDate = new Date(targetTime);
 
-  // Find the index of the object with the closest time
-  let closestIndex = -1;
-  let closestDiff = Infinity;
+    // Find the index of the object with the closest time
+    let closestIndex = -1;
+    let closestDiff = Infinity;
 
-  for (let i = 0; i < dataForGridref.current.length; i++) {
-    const time = dataForGridref.current[i].Date;
-    const currentDate = new Date(time);
-    const diff = Math.abs(targetDate - currentDate);
+    for (let i = 0; i < dataForGridref.current.length; i++) {
+      const time = dataForGridref.current[i].Date;
+      const currentDate = new Date(time);
+      const diff = Math.abs(targetDate - currentDate);
 
-    if (diff < closestDiff) {
-      closestIndex = i;
-      closestDiff = diff;
+      if (diff < closestDiff) {
+        closestIndex = i;
+        closestDiff = diff;
+      }
     }
+
+    return closestIndex;
   }
 
-  return closestIndex;
-}
 
-
-const drag = function (moveX, moveY) {
-  chartelementRef.current.x += moveX;
-  //chartelementRef.current.y += moveY;
-  chartelementRef.current.x2 += moveX;
-  //chartelementRef.current.y2 += moveY;
-  chartelementRef.current.centerX += moveX;
-  // chartelementRef.current.centerY += moveY;
-  if (chartelementRef.current.elements && chartelementRef.current.elements.length) {
-    for (const subEl of chartelementRef.current.elements) {
-      subEl.x += moveX;
-      //subEl.y += moveY;
-      subEl.x2 += moveX;
-      //subEl.y2 += moveY;
-      subEl.centerX += moveX;
-      // subEl.centerY += moveY;
-      subEl.bX += moveX;
-      //  subEl.bY += moveY;
-      //const value = xAxis.getValueForPixel(subEl.x);
-      console.log(subEl.x, subEl.x2)
+  const drag = function (moveX, moveY) {
+    chartelementRef.current.x += moveX;
+    //chartelementRef.current.y += moveY;
+    chartelementRef.current.x2 += moveX;
+    //chartelementRef.current.y2 += moveY;
+    chartelementRef.current.centerX += moveX;
+    // chartelementRef.current.centerY += moveY;
+    if (chartelementRef.current.elements && chartelementRef.current.elements.length) {
+      for (const subEl of chartelementRef.current.elements) {
+        subEl.x += moveX;
+        //subEl.y += moveY;
+        subEl.x2 += moveX;
+        //subEl.y2 += moveY;
+        subEl.centerX += moveX;
+        // subEl.centerY += moveY;
+        subEl.bX += moveX;
+        //  subEl.bY += moveY;
+        //const value = xAxis.getValueForPixel(subEl.x);
+        console.log(subEl.x, subEl.x2)
+      }
     }
-  }
-};
+  };
 
-const handleElementDragging = function (event) {
-  if (!chartlastEventRef.current || !chartelementRef.current) {
-    return;
-  }
-  const moveX = event.x - chartlastEventRef.current.x;
-  const moveY = event.y - chartlastEventRef.current.y;
-  drag(moveX, moveY);
-  chartlastEventRef.current = event;
-  return true;
-};
-
-const handleDrag = function (event) {
-  if (chartelementRef.current) {
-    switch (event.type) {
-      case 'mousemove':
-        return handleElementDragging(event);
-      case 'mouseout':
-      case 'mouseup':
-        chartlastEventRef.current = undefined;
-        break;
-      case 'mousedown':
-        chartlastEventRef.current = event;
-        break;
-      default:
-    }
-  }
-};
-
-const dragger = {
-  id: 'dragger',
-  beforeEvent(chart, args, options) {
-    if (handleDrag(args.event)) {
-      args.changed = true;
-      const xAxis = chart.scales['x'];
-      let xmin = chartelementRef.current.x;
-      let xmax = chartelementRef.current.x2;
-      // Retrieve the corresponding x-axis scale value based on the pixel position
-      const xminvalue = xAxis.getValueForPixel(xmin);
-      const xmaxvalue = xAxis.getValueForPixel(xmax);
-      let index = findClosestTimeIndex(FormatedDate(xminvalue));
-      ScrolltoDrop(index);
-      // console.log(findClosestTimeIndex(FormatedDate(xminvalue)),findClosestTimeIndex(FormatedDate(xmaxvalue)));
+  const handleElementDragging = function (event) {
+    if (!chartlastEventRef.current || !chartelementRef.current) {
       return;
     }
-  }
-};
-/* Drag and drop end */
+    const moveX = event.x - chartlastEventRef.current.x;
+    const moveY = event.y - chartlastEventRef.current.y;
+    drag(moveX, moveY);
+    chartlastEventRef.current = event;
+    return true;
+  };
+
+  const handleDrag = function (event) {
+    if (chartelementRef.current) {
+      switch (event.type) {
+        case 'mousemove':
+          return handleElementDragging(event);
+        case 'mouseout':
+        case 'mouseup':
+          chartlastEventRef.current = undefined;
+          break;
+        case 'mousedown':
+          chartlastEventRef.current = event;
+          break;
+        default:
+      }
+    }
+  };
+
+  const dragger = {
+    id: 'dragger',
+    beforeEvent(chart, args, options) {
+      if (handleDrag(args.event)) {
+        args.changed = true;
+        const xAxis = chart.scales['x'];
+        let xmin = chartelementRef.current.x;
+        let xmax = chartelementRef.current.x2;
+        // Retrieve the corresponding x-axis scale value based on the pixel position
+        const xminvalue = xAxis.getValueForPixel(xmin);
+        const xmaxvalue = xAxis.getValueForPixel(xmax);
+        let index = findClosestTimeIndex(FormatedDate(xminvalue));
+        ScrolltoDrop(index);
+        // console.log(findClosestTimeIndex(FormatedDate(xminvalue)),findClosestTimeIndex(FormatedDate(xmaxvalue)));
+        return;
+      }
+    }
+  };
+  /* Drag and drop end */
   /* Chart Start */
   const getchartdata = function (data, pollutent, charttype, criteria) {
     /* if (chartRef.current != null) {
@@ -1125,14 +1130,14 @@ const dragger = {
           ticks: {
             font: {
               size: 10, // Adjust the font size for x-axis labels
-              family: 'Roboto Light' ,// Change the font type for x-axis labels
+              family: 'Roboto Light',// Change the font type for x-axis labels
               weight: 'bold',
-              color:'blue'
+              color: 'blue'
             }
           }
         }
-        let color='#' + Math.floor(Math.random()*16777215).toString(16);
-        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata,borderWidth:1, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)], pointRadius: pointRadius, spanGaps: false, })
+        let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+        datasets.push({ label: Stationname != "" ? Stationname + " - " + Parametersplit[0] : Parametersplit[0], yAxisID: Parametersplit[1] + "_" + Parametersplit[0], data: chartdata, borderWidth: 1, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)], pointRadius: pointRadius, spanGaps: false, })
       }
     }
 
@@ -1141,13 +1146,13 @@ const dragger = {
       ticks: {
         font: {
           size: 11, // Adjust the font size for x-axis labels
-          family: 'Roboto Light' ,// Change the font type for x-axis labels
+          family: 'Roboto Light',// Change the font type for x-axis labels
           weight: 'bold',
-          color:'blue'
+          color: 'blue'
         }
       }
     };
-   
+
     setChartOptions({
       responsive: true,
       scales: Scaleslist,
@@ -1157,18 +1162,18 @@ const dragger = {
         legend: {
           position: 'bottom',
           align: 'start',
-          fullSize:true,
+          fullSize: true,
           labels: {
             color: 'navy',
-            boxWidth:20,
-            padding:10,
+            boxWidth: 20,
+            padding: 10,
             //boxHeight:20
             font: {
               size: 11,
-              family:"Roboto Light",
-              weight:'bold'
-          }
-        },
+              family: "Roboto Light",
+              weight: 'bold'
+            }
+          },
           onClick: function (event, legendItem) {
             let chart = chartRef.current;
             const datasetIndex = legendItem.datasetIndex;
@@ -1237,29 +1242,29 @@ const dragger = {
       },
     });
 
-   // setTimeout(() => {
+    // setTimeout(() => {
 
-      setChartData({
-        // labels,
-        datasets: datasets
-      })
-   // }, 10);
+    setChartData({
+      // labels,
+      datasets: datasets
+    })
+    // }, 10);
   }
   /* Chart End */
   const toggleAllLegends = function () {
-    let chartinstance=chartRef.current;
+    let chartinstance = chartRef.current;
     if (allLegendsChecked) {
       chartinstance.data.datasets.forEach(function (ds) {
         ds.hidden = true;
       });
-     
+
       chartinstance.legend.legendItems.forEach((legendItem) => {
         const datasetIndex = legendItem.datasetIndex;
-            const meta = chartinstance.getDatasetMeta(datasetIndex);
-            meta.hidden = true;
+        const meta = chartinstance.getDatasetMeta(datasetIndex);
+        meta.hidden = true;
 
-            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
-            chartinstance.options.scales[yAxisID].display=false;
+        const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+        chartinstance.options.scales[yAxisID].display = false;
       });
     } else {
       chartinstance.data.datasets.forEach(function (ds) {
@@ -1267,11 +1272,11 @@ const dragger = {
       });
       chartRef.current.legend.legendItems.forEach((legendItem) => {
         const datasetIndex = legendItem.datasetIndex;
-            const meta = chartinstance.getDatasetMeta(datasetIndex);
-            meta.hidden = false;
+        const meta = chartinstance.getDatasetMeta(datasetIndex);
+        meta.hidden = false;
 
-            const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
-            chartinstance.options.scales[yAxisID].display=true;
+        const yAxisID = chartinstance.data.datasets[datasetIndex].yAxisID;
+        chartinstance.options.scales[yAxisID].display = true;
       });
     }
     setallLegendsChecked(!allLegendsChecked);
@@ -1328,103 +1333,103 @@ const dragger = {
           <div>
             <div className="card">
               <div className="card-body">
-            <div className="row">
-              <div className="col-md-2">
-                <label className="form-label">Group</label>
-                <select className="form-select" id="groupid" onChange={ChangeGroupName}>
-                  <option value="" selected>None</option>
-                  <option value="all">All Stations</option>
-                  {Groups.map((x, y) =>
-                    <option value={x.groupID} key={y} >{x.groupName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
-                  <option value="" selected> Select Station</option>
-                  {Stations.map((x, y) =>
-                    <option value={x.id} key={y} >{x.stationName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
-                  {/* <option selected> Select Pollutents</option> */}
-                  {Pollutents.map((x, y) =>
-                    <option value={x.parameterName} key={y} >{x.parameterName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Interval</label>
-                <select className="form-select" id="criteriaid">
-                  <option value="" selected>Select Interval</option>
-                  <option value="15-M" selected>15-M</option>
-                  {Criteria.map((x, y) =>
-                    <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
-                  )}
-                </select>
-              </div>
-              <div className=" mt-4">
-                <div class="col-md-2 float-start">
-                  <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
-                  <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
-                </div>
-                {ListReportData != 0 && (
-                  <div class="col-md-6 float-end text-end px-0">
-
-                    <div class="form-check form-check-inline">
-                      <label className="form-check-label" htmlFor="ValidCheck">
-                        Valid Records
-                      </label>
-                      <input className="form-check-input" type="checkbox" id="ValidCheck" />
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <label className="form-check-label" htmlFor="invalidCheck">
-                        Invalid Records
-                      </label>
-                      <input className="form-check-input" type="checkbox" id="invalidCheck" />
-                    </div>
-                    <button type="button" className="btn btn-primary datashow me-0" onClick={DownloadExcel}>Download Excel</button>
-                  </div>
-                )}
-
-              </div>
-              <div className="col-md-4">
                 <div className="row">
-                  <div id="loader" className="loader"></div>
+                  <div className="col-md-2">
+                    <label className="form-label">Group</label>
+                    <select className="form-select" id="groupid" onChange={ChangeGroupName}>
+                      <option value="" selected>None</option>
+                      <option value="all">All Stations</option>
+                      {Groups.map((x, y) =>
+                        <option value={x.groupID} key={y} >{x.groupName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Station Name</label>
+                    <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
+                      <option value="" selected> Select Station</option>
+                      {Stations.map((x, y) =>
+                        <option value={x.id} key={y} >{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
+                      {/* <option selected> Select Pollutents</option> */}
+                      {Pollutents.map((x, y) =>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">From Date</label>
+                    <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">To Date</label>
+                    <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Interval</label>
+                    <select className="form-select" id="criteriaid">
+                      <option value="" selected>Select Interval</option>
+                      <option value="15-M" selected>15-M</option>
+                      {Criteria.map((x, y) =>
+                        <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className=" mt-4">
+                    <div class="col-md-2 float-start">
+                      <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                      <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
+                    </div>
+                    {ListReportData != 0 && (
+                      <div class="col-md-6 float-end text-end px-0">
+
+                        <div class="form-check form-check-inline">
+                          <label className="form-check-label" htmlFor="ValidCheck">
+                            Valid Records
+                          </label>
+                          <input className="form-check-input" type="checkbox" id="ValidCheck" />
+                        </div>
+                        <div class="form-check form-check-inline">
+                          <label className="form-check-label" htmlFor="invalidCheck">
+                            Invalid Records
+                          </label>
+                          <input className="form-check-input" type="checkbox" id="invalidCheck" />
+                        </div>
+                        <button type="button" className="btn btn-primary datashow me-0" onClick={DownloadExcel}>Download Excel</button>
+                      </div>
+                    )}
+
+                  </div>
+                  <div className="col-md-4">
+                    <div className="row">
+                      <div id="loader" className="loader"></div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
-            </div>
-            </div>
             </div>
             {ListReportData.length > 0 && (
               <div>
                 <div className="card">
                   <div className="cad-body p-2">
-                <div className="row">
-                  <div className="col-md-12 mb-3">
-                    {AllLookpdata.listFlagCodes.map((i) =>
-                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
-                    )}
+                    <div className="row">
+                      <div className="col-md-12 mb-3">
+                        {AllLookpdata.listFlagCodes.map((i) =>
+                          <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                        )}
+                      </div>
+                    </div>
+
+
+                    <div className="jsGrid" ref={jspreadRef} data={ListReportData} />
                   </div>
                 </div>
-
-
-                <div className="jsGrid" ref={jspreadRef} data={ListReportData} />
-              </div>
-              </div>
               </div>
             )}
 
@@ -1434,17 +1439,17 @@ const dragger = {
             {ListReportData.length > 0 && ChartData && (
               <div className="card p-2" >
                 <div className="card-body">
-                
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
-                <div className="text-center">
-                  <input className="form-check-input"
-                    type="checkbox"
-                    checked={allLegendsChecked}
-                    onChange={toggleAllLegends}
-                  />
-                  <label className="checkboxStylelabel">Select All</label>
+
+                  <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
+                  <div className="text-center">
+                    <input className="form-check-input"
+                      type="checkbox"
+                      checked={allLegendsChecked}
+                      onChange={toggleAllLegends}
+                    />
+                    <label className="checkboxStylelabel">Select All</label>
+                  </div>
                 </div>
-              </div>
               </div>
             )}
           </div>

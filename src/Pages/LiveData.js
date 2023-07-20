@@ -193,6 +193,10 @@ function LiveData() {
         }
       }
     }
+    const spreadsheetcontainer = document.querySelector(".jexcel_content");
+    if(spreadsheetcontainer != null){
+      spreadsheetcontainer.scrollTop = spreadsheetcontainer.scrollHeight;
+    }
   }
 
   const gethistory = function () {
@@ -295,6 +299,7 @@ function LiveData() {
       onselection: selectionActive,
       onload: loadtable,
     });
+
   }
   }
   const hexToRgbA = function (hex) {

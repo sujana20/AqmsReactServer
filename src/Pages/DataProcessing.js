@@ -74,7 +74,7 @@ function DataProcessing() {
   const [allLegendsChecked, setallLegendsChecked] = useState(true);
   const SelectedPollutentsRef = useRef();
   SelectedPollutentsRef.current = SelectedPollutents;
-  
+
   const ChartOptionsRef = useRef();
   //ChartOptionsRef.current=ChartOptions;
   const chartelementRef = useRef();
@@ -299,7 +299,12 @@ function DataProcessing() {
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
-      let filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      let filnallist = [];
+      if (Parameterssplit.length > 1) {
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
+      } else {
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+      }
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGridref.current.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
@@ -339,46 +344,46 @@ function DataProcessing() {
   }
 
   const reverttoprevious = function () {
-    if(OldData.length>0){
-    revertRef.current = true;
-    let changearr = dataForGridcopy[selectedgrid[1]];
-    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
-    // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-    let filtered = null;
-    if (Parametersplit.length > 1) {
-      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
-    } else {
-      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-    }
+    if (OldData.length > 0) {
+      revertRef.current = true;
+      let changearr = dataForGridcopy[selectedgrid[1]];
+      let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
+      // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      let filtered = null;
+      if (Parametersplit.length > 1) {
+        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+      } else {
+        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      }
 
-    let params = new URLSearchParams({ id: filtered[0].id });
-    if (filtered.length > 0) {
-      let value = 0;
-      if (window.TruncateorRound == "RoundOff") {
-        value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
+      let params = new URLSearchParams({ id: filtered[0].id });
+      if (filtered.length > 0) {
+        let value = 0;
+        if (window.TruncateorRound == "RoundOff") {
+          value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
+        }
+        else {
+          value = filtered[0].parametervalue == null ? filtered[0].parametervalue : CommonFunctions.truncateNumber(filtered[0].parametervalue, digit)
+        }
+        jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
+        let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
+        let classname = CommonFunctions.SetFlagColor(filtered[0].loggerFlags == null ? window.Okflag : filtered[0].loggerFlags, Flagcodelist);
+        if (cell != undefined) {
+          cell.style.backgroundColor = classname;
+        }
+        let dataold = OldData;
+        let index = dataold.findIndex(x => x.ID === filtered[0].id);
+        if (index > -1) {
+          dataold.splice(index, 1);
+        }
+        setOldData(dataold);
+        if (dataold.length == 0) {
+          olddata = [];
+          newdata = [];
+          setNewData([]);
+          setOldData([]);
+        }
       }
-      else {
-        value = filtered[0].parametervalue == null ? filtered[0].parametervalue : CommonFunctions.truncateNumber(filtered[0].parametervalue, digit)
-      }
-      jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
-      let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
-      let classname = CommonFunctions.SetFlagColor(filtered[0].loggerFlags == null ? window.Okflag : filtered[0].loggerFlags, Flagcodelist);
-      if (cell != undefined) {
-        cell.style.backgroundColor = classname;
-      }
-      let dataold = OldData;
-      let index = dataold.findIndex(x => x.ID === filtered[0].id);
-      if (index > -1) {
-        dataold.splice(index, 1);
-      }
-      setOldData(dataold);
-      if (dataold.length == 0) {
-        olddata = [];
-        newdata = [];
-        setNewData([]);
-        setOldData([]);
-      }
-    }
     }
     /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
        method: 'GET',
@@ -1196,14 +1201,14 @@ function DataProcessing() {
   };
   /* Drag and drop end */
 
-  
+
   const getchartdata = function (data, pollutent, charttype, criteria) {
     /* if (chartRef.current != null) {
       chartRef.current.data = {};
     } */
 
     /*  setChartData({ labels: [], datasets: [] });*/
-   // setChartOptions({});
+    // setChartOptions({});
     let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
@@ -1297,103 +1302,103 @@ function DataProcessing() {
           },
         },
       }); */
-      let Finaloptions={
-        responsive: true,
-        scales: Scaleslist,
-        events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
-        // maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            align: 'start',
-            fullSize: true,
-            labels: {
-              color: 'navy',
-              boxWidth: 20,
-              padding: 10,
-              //boxHeight:20
-              font: {
-                size: 11,
-                family: "Roboto Light",
-                weight: 'bold'
-              }
-            },
-            onClick: function (event, legendItem) {
-              let chart = chartRef.current;
-              const datasetIndex = legendItem.datasetIndex;
-              const meta = chart.getDatasetMeta(datasetIndex);
-              meta.hidden = !meta.hidden;
-  
-              const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
-              const allHidden = chart.options.scales[yAxisID].display;
-  
-              if (allHidden) {
-                chart.options.scales[yAxisID].display = false;
-              } else {
-                chart.options.scales[yAxisID].display = true;
-              }
-              // Determine the visible y-axes
-              const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
-                if (axis != 'x') {
-                  return chart.options.scales[axis].display;
-                }
-              });
-  
-              // Update the positions of the visible y-axes
-              // const numVisibleAxes = visibleAxes.length;
-              // const yAxisPositions = ['left', 'right']; // Modify if needed
-  
-              visibleAxes.forEach((axis, index) => {
-                chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
-              });
-              // Update the chart to reflect the visibility changes
-              chart.update();
-            },
+    let Finaloptions = {
+      responsive: true,
+      scales: Scaleslist,
+      events: ['mousedown', 'mouseup', 'mousemove', 'mouseout'],
+      // maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          align: 'start',
+          fullSize: true,
+          labels: {
+            color: 'navy',
+            boxWidth: 20,
+            padding: 10,
+            //boxHeight:20
+            font: {
+              size: 11,
+              family: "Roboto Light",
+              weight: 'bold'
+            }
           },
-          title: {
-            display: true,
-          },
-          annotation: {
-            enter(ctx) {
-              chartelementRef.current = ctx.element;
-            },
-            leave() {
-              chartelementRef.current = undefined;
-              chartlastEventRef.current = undefined;
-            },
-            annotations: [
-              {
-                type: 'box',
-                id: 'dragabbleAnnotation',
-                mode: 'vertical',
-                drawTime: 'afterDraw',
-                xScaleID: 'x',
-                yScaleID: '1_SO2',
-                /* xMin: '2023-06-01 00:00',
-                 xMax: '2023-06-01 2:15',
-                  yMin: 0,
-                 yMax: 2, */
-                xMin: Getminvalue(visibleRecords, "Date"),
-                xMax: Getmaxvalue(visibleRecords, "Date"),
-                yMin: Getminvalue(visibleRecords, ""),
-                yMax: Getmaxvalue(visibleRecords, ""),
-                borderWidth: 2,
-                borderColor: 'red',
-                backgroundColor: 'rgba(255,0,0,0.2)',
-              },
-            ],
+          onClick: function (event, legendItem) {
+            let chart = chartRef.current;
+            const datasetIndex = legendItem.datasetIndex;
+            const meta = chart.getDatasetMeta(datasetIndex);
+            meta.hidden = !meta.hidden;
+
+            const yAxisID = chart.data.datasets[datasetIndex].yAxisID;
+            const allHidden = chart.options.scales[yAxisID].display;
+
+            if (allHidden) {
+              chart.options.scales[yAxisID].display = false;
+            } else {
+              chart.options.scales[yAxisID].display = true;
+            }
+            // Determine the visible y-axes
+            const visibleAxes = Object.keys(chart.options.scales).filter((axis) => {
+              if (axis != 'x') {
+                return chart.options.scales[axis].display;
+              }
+            });
+
+            // Update the positions of the visible y-axes
+            // const numVisibleAxes = visibleAxes.length;
+            // const yAxisPositions = ['left', 'right']; // Modify if needed
+
+            visibleAxes.forEach((axis, index) => {
+              chart.options.scales[axis].position = index % 2 === 0 ? 'left' : 'right';
+            });
+            // Update the chart to reflect the visibility changes
+            chart.update();
           },
         },
-      };
-      
-     // ChartOptionsRef.current=Finaloptions;
+        title: {
+          display: true,
+        },
+        annotation: {
+          enter(ctx) {
+            chartelementRef.current = ctx.element;
+          },
+          leave() {
+            chartelementRef.current = undefined;
+            chartlastEventRef.current = undefined;
+          },
+          annotations: [
+            {
+              type: 'box',
+              id: 'dragabbleAnnotation',
+              mode: 'vertical',
+              drawTime: 'afterDraw',
+              xScaleID: 'x',
+              yScaleID: '1_SO2',
+              /* xMin: '2023-06-01 00:00',
+               xMax: '2023-06-01 2:15',
+                yMin: 0,
+               yMax: 2, */
+              xMin: Getminvalue(visibleRecords, "Date"),
+              xMax: Getmaxvalue(visibleRecords, "Date"),
+              yMin: Getminvalue(visibleRecords, ""),
+              yMax: Getmaxvalue(visibleRecords, ""),
+              borderWidth: 2,
+              borderColor: 'red',
+              backgroundColor: 'rgba(255,0,0,0.2)',
+            },
+          ],
+        },
+      },
+    };
+
+    // ChartOptionsRef.current=Finaloptions;
     setChartOptions(Finaloptions);
     //setTimeout(() => {
-      setChartData({
-        // labels,
-        datasets: datasets
-      })
-   // }, 10);
+    setChartData({
+      // labels,
+      datasets: datasets
+    })
+    // }, 10);
   }
   const toggleAllLegends = function () {
     let chartinstance = chartRef.current;
@@ -1426,7 +1431,7 @@ function DataProcessing() {
     setallLegendsChecked(!allLegendsChecked);
     chartinstance.update();
   }
- 
+
   return (
     <main id="main" className="main" >
       {/* Same as */}

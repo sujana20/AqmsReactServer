@@ -9,28 +9,39 @@ function ServerDashBoard() {
   const [StationList, setStationList] = useState(true);
   const [StationId, setStationId] = useState(0);
   const [Status, setStatus] = useState(true);
+  const [RefreshGrid, setRefreshGrid] = useState(false);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const getDuration = window.DashboardRefreshtime;
 
-  
   const GetStation = function () {
+    document.getElementById('loader').style.display = "block";
     fetch(process.env.REACT_APP_WSurl + "api/StationsDashBoardData", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-            for(var i=0; i<data.Table1.length;i++){
-                data.Table1[i].lastData=  data.Table1[i].lastData.replace("T", " ").substring(0, 19);
-                data.Table1[i].pollingdata=  data.Table1[i].pollingdata.replace("T", " ").substring(0, 19);
-                data.Table1[i].alarmcnt = data.Table1[i].alarmcnt <= 0 && data.Table1[i].alarmcnt ==null?  "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
-                data.Table1[i].failurecnt = data.Table1[i].failurecnt <= 0 &&  data.Table1[i].failurecnt ==null?  "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
-            }
-            setListStations(data.Table1);
+          setRefreshGrid(RefreshGrid ? false : true);
+          for (var i = 0; i < data.Table1.length; i++) {
+            data.Table1[i].lastData = data.Table1[i].lastData.replace("T", " ").substring(0, 19);
+            data.Table1[i].pollingdata = data.Table1[i].pollingdata.replace("T", " ").substring(0, 19);
+            data.Table1[i].alarmcnt = data.Table1[i].alarmcnt <= 0 && data.Table1[i].alarmcnt == null ? "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
+            data.Table1[i].failurecnt = data.Table1[i].failurecnt <= 0 && data.Table1[i].failurecnt == null ? "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
+          }
+          setListStations(data.Table1);
         }
+        document.getElementById('loader').style.display = "none";
       }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
   }
   useEffect(() => {
     initializeJsGrid();
-  });
+  },[RefreshGrid]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      GetStation('refresh');
+    }, getDuration);
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  })
   useEffect(() => {
     GetStation();
   }, [])
@@ -59,8 +70,8 @@ function ServerDashBoard() {
               && (!filter.failurecnt || item.failurecnt.toUpperCase().indexOf(filter.failurecnt.toUpperCase()) >= 0)
               && (!filter.lastData || item.lastData.toUpperCase().indexOf(filter.lastData.toUpperCase()) >= 0)
               && (!filter.pollingdata || item.pollingdata.toUpperCase().indexOf(filter.pollingdata.toUpperCase()) >= 0)
-              
-              );
+
+            );
           });
         }
       },
@@ -75,10 +86,13 @@ function ServerDashBoard() {
       ]
     });
   }
-  
+
   return (
     <main id="main" className="main" >
       <div className="container">
+        <div className="row">
+          <div id="loader" className="loader"></div>
+        </div>
         <div className="pagetitle">
           {StationList && (
             <h1>Measurement Site Status</h1>
