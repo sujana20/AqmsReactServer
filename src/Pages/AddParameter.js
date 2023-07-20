@@ -280,7 +280,7 @@ function AddParameter() {
           itemTemplate: function (value, item) {
             const filteredData = Listparameters.filter(a => a.stationID== item["stationID"] && a.deviceID==item["deviceID"] && a.parameterID==item['parameterID'] );
             const filteredData1 = Listparameters.filter(a => a.stationID== item["stationID"] && a.deviceID==item["deviceID"] && a.parameterID==item['parameterID'] && a.isCalculated == 1);
-            if(filteredData.length==1 && filteredData1.length==0){
+            if(filteredData.length==1 && filteredData1.length==0 && currentUser.role=='Admin'){
               var $customAddButton = $("<button>").attr({ class: "customGridInsertbutton jsgrid-button jsgrid-insert-button" })
                 .click(function (e) {
                   Insertparameter(item);

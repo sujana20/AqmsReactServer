@@ -1,99 +1,109 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import Roles from "../config/Roles";
 
 function Sidenavbar() {
   let Params = useParams();
   console.log(Params);
-  const [permissions,setpermisssions]=useState([]);
-  
+  const [permissions, setpermisssions] = useState([]);
 
-  const getUserRole = function ()  {
-    
 
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));  
-    
-    if(currentUser.role.toUpperCase()==window.UserRoles[0].ADMIN.toUpperCase()){
+  const getUserRole = function () {
+
+
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+
+    if (currentUser.role.toUpperCase() == window.UserRoles[0].ADMIN.toUpperCase()) {
       //document.getElementById("Configuration-Panel").style.display="block";
       //document.getElementById("User-subpannel").style.display="block";
       //document.getElementById("Admin-Panel").style.display="block";
     }
-    else if(currentUser.role.toUpperCase()==window.UserRoles[0].GUEST.toUpperCase()){      
+    else if (currentUser.role.toUpperCase() == window.UserRoles[0].GUEST.toUpperCase()) {
       //document.getElementById("Configuration-Panel").style.display="none";
       //document.getElementById("User-subpannel").style.display="none";
       //document.getElementById("Admin-Panel").style.display="none";
-    }   
-    
+    }
+
     setpermisssions(currentUser.permissions.split(","));
   }
   useEffect(() => {
     getUserRole();
-  },[]);
+  }, []);
 
-  const ispermission=(param)=>{
-    let parents=window.nodes.filter(x=>x.value==param);
-    return permissions.map(function(x){ 
-      var result= parents[0]?.children.filter(a1=> a1.value==x);
-      if(result.length>0) 
-      {
-         return true 
+  const ispermission = (param) => {
+   // let parents = window.nodes.filter(x => x.value == param.value);
+    const parents = window.nodes.filter(x => x.value === param.value);
+  if (parents.length > 0) {
+  if(!Array.isArray(parents[0].children)){
+    return true;
+  }
+    return parents[0].children.some((child) => permissions.includes(child.value));
+  }
+  return false;
+    /* if (parents[0]?.children != false) {
+      
+      const matchedObjects = parents[0]?.children.filter((obj) => permissions.includes(obj.value));
+      if (matchedObjects.length > 0) {
+        return true;
+      }else{
+        return false;
       }
-      else{
-      return false 
-      }
-    })
+    } */
   }
 
   return (
     <aside id="sidebar" className="sidebar">
       <ul className="sidebar-nav" id="sidebar-nav">
-      {permissions.length>0 && (
-        window.nodes.map((x, y) =>
+        {permissions.length > 0 && (
+          window.nodes.map((x, y) =>
 
-          <li className="nav-item" id={x.label + "-Panel"}>   
-            
-            {x.children==false && (              
-              <NavLink to={x.url} className="nav-link animation-forwards animate-delay-1" >
-                <i className={x.icon}></i>
-                <span>{x.label}</span>
-              </NavLink>
-            )}  
-            {x.children.length>0 && (              
-              <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#"+x.label +"-nav"} data-bs-toggle="collapse" href="#">
-              <i className={x.icon}></i><span>{x.label}</span><i className={x.expandicon}></i>
-              </a>
-            )}   
+            <li className="nav-item" id={x.label + "-Panel"}>
+              {ispermission(x) && (
+                x.children == false && (
+                  <NavLink to={x.url} className="nav-link animation-forwards animate-delay-1" >
+                    <i className={x.icon}></i>
+                    <span>{x.label}</span>
+                  </NavLink>
+                )
+              )}
+               {ispermission(x) && (
+              x.children.length > 0 && (
+                <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#" + x.label + "-nav"} data-bs-toggle="collapse" href="#">
+                  <i className={x.icon}></i><span>{x.label}</span><i className={x.expandicon}></i>
+                </a>
+              )
+              )}
 
-            {x.children.length > 0 &&(                       
+              {x.children.length > 0 && (
 
-              <ul id={x.label +"-nav"} className="nav-content collapse" data-bs-parent="#sidebar-nav">                        
-                {x.children.map((x,y)=>                
-                  permissions.indexOf(x.value)>=0 && (                  
-                    <li id={x.value + "-SubPanel"}>
-                      <NavLink to={x.url} className="animation-forwards animate-delay-1" >
-                        <i className={x.icon}></i>
-                        <span>{x.label}</span>
-                      </NavLink>
-                    </li> 
-                  )
-                )}
-              </ul>
-            )}            
-          </li>
-        )
-      )}  
-
-
-
-
-
+                <ul id={x.label + "-nav"} className="nav-content collapse" data-bs-parent="#sidebar-nav">
+                  {x.children.map((x, y) =>
+                    permissions.indexOf(x.value) >= 0 && (
+                      <li id={x.value + "-SubPanel"}>
+                        <NavLink to={x.url} className="animation-forwards animate-delay-1" >
+                          <i className={x.icon}></i>
+                          <span>{x.label}</span>
+                        </NavLink>
+                      </li>
+                    )
+                  )}
+                </ul>
+              )}
+            </li>
+          )
+        )}
 
 
 
 
 
 
-          {/* <li className="nav-item" id={x.label + "-Panel"}>
+
+
+
+
+
+        {/* <li className="nav-item" id={x.label + "-Panel"}>
             <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#"+x.label +"-nav"} data-bs-toggle="collapse" href="#">
               <i className={x.icon}></i><span>{x.label}</span><i className={x.expandicon}></i>
             </a>               
@@ -110,10 +120,10 @@ function Sidenavbar() {
               )}
             </ul>
           </li> */}
-       
 
 
-          
+
+
         {/* <li className="nav-item">
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
