@@ -215,9 +215,9 @@ function DataProcessing() {
         //cell.classList.add(classname);
       }
     }
+    let filtered = null;
     if (!revertRef.current) {
       let Parametersplit = SelectedPollutents[x - 1].split("@_");
-      let filtered = null;
       if (Parametersplit.length > 1) {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
       } else {
@@ -227,12 +227,14 @@ function DataProcessing() {
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
+      //filtered[0].parametervalue=value
       setOldData(olddata);
       setNewData(newdata);
     }
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
-    chartdata.datasets[x - 1].data[y] = value;
+    chartdata.datasets[x - 1].data[y].y = value;
+    chart.options.animation = false;
     chart.update();
     revertRef.current = false;
   }
@@ -291,6 +293,30 @@ function DataProcessing() {
               setNewData([]);
               setOldData([]);
               revertRef.current = false;
+            }
+          }
+        }
+      })
+  }
+  const UpdateFlag = function (param) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: ("You want to update this flag !"),
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false
+    })
+      .then(function (isConfirm) {
+        if (isConfirm.isConfirmed) {
+          for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
+            for (var k = selectedgrid[0]; k <= selectedgrid[2]; k++) {
+              var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+              //cellnames.push(cellName);
+              if (cellName) {
+                jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor=param.colorCode;
+              }
             }
           }
         }
@@ -485,7 +511,7 @@ function DataProcessing() {
     const visibleRowCount = Math.ceil(sheetcontainer.clientHeight / rowHeight) - records;
     const scrollPosition = sheetcontainer.scrollTop;
     const firstVisibleRow = Math.floor(scrollPosition / rowHeight);
-    console.log(visibleRowCount, firstVisibleRow);
+   // console.log(visibleRowCount, firstVisibleRow);
     const visibleRecords = dataForGridref.current.slice(firstVisibleRow, firstVisibleRow + visibleRowCount); // Perform operations with the visibleRecords data, such as updating the display // or executing any other desired actions
     return visibleRecords;
     /* const targetRowIndex = 15; // Index of the target row
@@ -663,14 +689,14 @@ function DataProcessing() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-          console.log(new Date());
+          //console.log(new Date());
           //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           appendDataToSpreadsheet(data1, GroupId);
         }
         //      document.getElementById('loader').style.display = "none";
       }).catch((error) => {
-        console.log(error)
+        //console.log(error)
         return [];
       });
 
@@ -1031,7 +1057,7 @@ function DataProcessing() {
 
   const Changepollutent = function (e) {
     setcriteria([]);
-    console.log(selectedStations);
+    //console.log(selectedStations);
     let stationID = document.getElementById("stationid").val();
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     if (finaldata.length > 0) {
@@ -1148,7 +1174,7 @@ function DataProcessing() {
         subEl.bX += moveX;
         //  subEl.bY += moveY;
         //const value = xAxis.getValueForPixel(subEl.x);
-        console.log(subEl.x, subEl.x2)
+       // console.log(subEl.x, subEl.x2)
       }
     }
   };
@@ -1553,7 +1579,7 @@ function DataProcessing() {
                   <div className="row">
                     <div className="col-md-9 mb-3">
                       {AllLookpdata.listFlagCodes.map((x, y) =>
-                        <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
+                        <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} onClick={()=>UpdateFlag(x)} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
                       )}
                     </div>
                     {/*  </div>
