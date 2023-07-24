@@ -301,6 +301,7 @@ function DataProcessing() {
   const UpdateFlag = function (param) {
     let index = window.ExcludeFlags.findIndex(x => x === param.id);
     if (index > -1) {
+      toast.error('Unable to update this flag because this flag in excluded flags list. Please try with another flag')
       return false;
     }
     Swal.fire({
