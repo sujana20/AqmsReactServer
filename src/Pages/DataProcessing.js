@@ -70,6 +70,7 @@ function DataProcessing() {
   const [revert, setrevert] = useState(false);
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
+  const [ReportDataListCopy, setReportDataListCopy] = useState([]);
   const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const [allLegendsChecked, setallLegendsChecked] = useState(true);
   const SelectedPollutentsRef = useRef();
@@ -193,7 +194,7 @@ function DataProcessing() {
       chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 2; return x });
     }
     for (let k = startcolindex; k <= endcolindex; k++) {
-      for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
+      for (var i = 0; i < chartdata.datasets[k - 1]?.data.length; i++) {
         // const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
         const index = finalarr.findIndex(x => x.Date == chartdata.datasets[k - 1].data[i].x);
         if (index > -1) {
@@ -227,14 +228,13 @@ function DataProcessing() {
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
       newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
-      //filtered[0].parametervalue=value
+      filtered[0].parametervalue = value == null ? value : parseFloat(value);
       setOldData(olddata);
       setNewData(newdata);
     }
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
     chartdata.datasets[x - 1].data[y].y = value;
-    chart.options.animation = false;
     chart.update();
     revertRef.current = false;
   }
@@ -299,6 +299,10 @@ function DataProcessing() {
       })
   }
   const UpdateFlag = function (param) {
+    let index = window.ExcludeFlags.findIndex(x => x === param.id);
+    if (index > -1) {
+      return false;
+    }
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to update this flag !"),
@@ -310,17 +314,50 @@ function DataProcessing() {
     })
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
+          let flagdata = [];
           for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
+            let changearr = dataForGridref.current[i];
             for (var k = selectedgrid[0]; k <= selectedgrid[2]; k++) {
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
-              //cellnames.push(cellName);
+              let filtered = null;
+              let Parametersplit = SelectedPollutents[k - 1].split("@_");
+              if (Parametersplit.length > 1) {
+                filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+              } else {
+                filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
+              }
+              const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+              let ModifyBy = currentUser.id;
+              if (param.id!=1 || filtered[0].loggerFlags!=14) {
+                flagdata.push({ ID: filtered[0].id, parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, loggerFlags: param.id });
+
+              }//cellnames.push(cellName);
               if (cellName) {
-                jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor=param.colorCode;
+                jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = param.colorCode;
+                jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
               }
             }
           }
+          if(flagdata.length>0){
+          fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingUpdateflag', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(flagdata),
+          }).then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson == 1) {
+
+              } else {
+                toast.error('Unable to update the parameter. Please contact adminstrator')
+              }
+            }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
         }
+      }
       })
+      
   }
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
@@ -373,6 +410,7 @@ function DataProcessing() {
     if (OldData.length > 0) {
       revertRef.current = true;
       let changearr = dataForGridcopy[selectedgrid[1]];
+      let Parametername = SelectedPollutents[selectedgrid[0] - 1];
       let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
       // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
       let filtered = null;
@@ -382,15 +420,23 @@ function DataProcessing() {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
       }
 
-      let params = new URLSearchParams({ id: filtered[0].id });
+      //  let params = new URLSearchParams({ id: filtered[0].id });
       if (filtered.length > 0) {
         let value = 0;
-        if (window.TruncateorRound == "RoundOff") {
+        value = changearr[Parametername] == null ? changearr[Parametername] : parseFloat(changearr[Parametername]);
+        /* if (window.TruncateorRound == "RoundOff") {
           value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
         }
         else {
           value = filtered[0].parametervalue == null ? filtered[0].parametervalue : CommonFunctions.truncateNumber(filtered[0].parametervalue, digit)
+        } */
+        if (window.TruncateorRound == "RoundOff") {
+          value = value == null ? value : value.toFixed(digit);
         }
+        else {
+          value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+        }
+
         jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
         let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
         let classname = CommonFunctions.SetFlagColor(filtered[0].loggerFlags == null ? window.Okflag : filtered[0].loggerFlags, Flagcodelist);
@@ -511,7 +557,7 @@ function DataProcessing() {
     const visibleRowCount = Math.ceil(sheetcontainer.clientHeight / rowHeight) - records;
     const scrollPosition = sheetcontainer.scrollTop;
     const firstVisibleRow = Math.floor(scrollPosition / rowHeight);
-   // console.log(visibleRowCount, firstVisibleRow);
+    // console.log(visibleRowCount, firstVisibleRow);
     const visibleRecords = dataForGridref.current.slice(firstVisibleRow, firstVisibleRow + visibleRowCount); // Perform operations with the visibleRecords data, such as updating the display // or executing any other desired actions
     return visibleRecords;
     /* const targetRowIndex = 15; // Index of the target row
@@ -852,6 +898,7 @@ function DataProcessing() {
     } */
     setListReportData([]);
     setReportDataList([]);
+    setReportDataListCopy([]);
     setLoadjsGridData(false);
     olddata = [];
     newdata = [];
@@ -1174,7 +1221,7 @@ function DataProcessing() {
         subEl.bX += moveX;
         //  subEl.bY += moveY;
         //const value = xAxis.getValueForPixel(subEl.x);
-       // console.log(subEl.x, subEl.x2)
+        // console.log(subEl.x, subEl.x2)
       }
     }
   };
@@ -1579,7 +1626,7 @@ function DataProcessing() {
                   <div className="row">
                     <div className="col-md-9 mb-3">
                       {AllLookpdata.listFlagCodes.map((x, y) =>
-                        <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} onClick={()=>UpdateFlag(x)} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
+                        <button type="button" className={y == 0 ? "btn btn-primary flag" : "btn btn-primary flag mx-1"} style={{ backgroundColor: x.colorCode, borderColor: x.colorCode }} onClick={() => UpdateFlag(x)} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={x.name} >{x.code}</button>
                       )}
                     </div>
                     {/*  </div>
