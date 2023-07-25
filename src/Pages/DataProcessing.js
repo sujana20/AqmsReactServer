@@ -227,7 +227,7 @@ function DataProcessing() {
       olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
       const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
       let ModifyBy = currentUser.id;
-      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, loggerFlags: window.Editflag });
+      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
       filtered[0].parametervalue = value == null ? value : parseFloat(value);
       setOldData(olddata);
       setNewData(newdata);
@@ -298,6 +298,7 @@ function DataProcessing() {
         }
       })
   }
+
   const UpdateFlag = function (param) {
     let index = window.ExcludeFlags.findIndex(x => x === param.id);
     if (index > -1) {
@@ -329,8 +330,8 @@ function DataProcessing() {
               }
               const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
               let ModifyBy = currentUser.id;
-              if (param.id!=1 || filtered[0].loggerFlags!=14) {
-                flagdata.push({ ID: filtered[0].id, parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, loggerFlags: param.id });
+              if (param.id != 1 || filtered[0].loggerFlags != 14) {
+                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
 
               }//cellnames.push(cellName);
               if (cellName) {
@@ -339,26 +340,26 @@ function DataProcessing() {
               }
             }
           }
-          if(flagdata.length>0){
-          fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingUpdateflag', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(flagdata),
-          }).then((response) => response.json())
-            .then((responseJson) => {
-              if (responseJson == 1) {
+          if (flagdata.length > 0) {
+            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(flagdata),
+            }).then((response) => response.json())
+              .then((responseJson) => {
+                if (responseJson == 1) {
 
-              } else {
-                toast.error('Unable to update the parameter. Please contact adminstrator')
-              }
-            }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+                } else {
+                  toast.error('Unable to update the parameter. Please contact adminstrator')
+                }
+              }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+          }
         }
-      }
       })
-      
+
   }
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
@@ -485,6 +486,7 @@ function DataProcessing() {
   const generateDatabaseDateTime16 = function (date) {
     return date.replace("T", " ").substring(0, 16);
   }
+
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
@@ -507,10 +509,12 @@ function DataProcessing() {
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
+      let Iscalculated = filter[0].isCalculated;
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 ? true : false, sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
+          console.log(item);
           return $("<td>").css("background-color", bgcolor).append(item);
         }
       });
@@ -900,6 +904,7 @@ function DataProcessing() {
     setListReportData([]);
     setReportDataList([]);
     setReportDataListCopy([]);
+    setselectedgrid([]);
     setLoadjsGridData(false);
     olddata = [];
     newdata = [];
@@ -1512,7 +1517,7 @@ function DataProcessing() {
       {/* <section className="section grid_section h100 w100">
         <div className="h100 w100"> */}
       <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel">Parameter History</h1>
@@ -1526,7 +1531,9 @@ function DataProcessing() {
                       <th>Parameter Name</th>
                       <th>Old Value </th>
                       <th>New Value</th>
-                      {/* <th>Modified By</th> */}
+                      <th>Old Flag </th>
+                      <th>New Flag</th>
+                      <th>Modified By</th> 
                       <th>Modified On</th>
                     </tr>
                   </thead>
@@ -1534,13 +1541,20 @@ function DataProcessing() {
                     {ListHistory && (
                       ListHistory.map((x, y) =>
                         <tr className="body_active">
-                          <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0].parameterName}</td>
-                          <td>{x.oldValue}</td>
-                          <td>{x.newValue}</td>
-                          {/* <td>{x.ModifyBy}</td> */}
+                          <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0]?.parameterName}</td>
+                          <td>{CommonFunctions.truncateNumber(x.oldValue, 5)}</td>
+                          <td>{CommonFunctions.truncateNumber(x.newValue, 5)}</td>
+                          <td style={{ backgroundColor: x.oldLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.oldLoggerFlags)[0].colorCode : "#FFFFFF" }} >{x.oldLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.oldLoggerFlags)[0]?.name : ""}</td>
+                          <td style={{ backgroundColor: x.newLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.newLoggerFlags)[0].colorCode : "#FFFFFF" }} >{x.newLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.newLoggerFlags)[0]?.name : ""}</td>
+                           <td>{x.modifyUserName}</td> 
                           <td>{x.modifyOn != null ? generateDatabaseDateTime(x.modifyOn) : x.modifyOn}</td>
                         </tr>
                       )
+                    )}
+                    {ListHistory.length==0 && (
+                      <tr className="text-center">
+                        <td colspan="6"><b>No History</b></td>
+                      </tr>
                     )}
                   </tbody>
                 </table>

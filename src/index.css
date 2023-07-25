@@ -483,6 +483,10 @@ h6 {
   font-size: 0.75rem;
   width: 10%;
 }
+.dashboard_dmodal table.table tr th:last-child,
+.dashboard_dmodal table.table tr td:last-child{
+  width: 12%;
+}
 .dashboard_dmodal .modal-title {
   font-size: 1rem !important;
   font-weight: 700;
