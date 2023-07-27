@@ -6,6 +6,7 @@ import DatePicker from "react-datepicker";
 import { Chart, Line } from 'react-chartjs-2';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import 'jsuites/dist/jsuites.css'; // Import jsuites CSS
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
@@ -90,6 +91,8 @@ function DataProcessing() {
   let cellnames = [];
   let dataForGrid = [];
   let olddata = [];
+  let dataold=[];
+  let datanew=[];
   let newdata = [];
   let flagdata = [];
   let digit = window.decimalDigit
@@ -208,53 +211,53 @@ function DataProcessing() {
     }
     chart.update();
   }
-  const Calculateparameter=function(Calculatedparameter,calparamname,value,y,Parameter){
-    let Iscalculated=AllLookpdata.listPollutents.filter(x=>x.parameterName==Calculatedparameter[0].parameterName && x.isCalculated==1);
-      if(Iscalculated.length>0){
-    let findcolumn=SelectedPollutents.findIndex(x=>x==calparamname);
-        let calvaluefilter=AllLookpdata.listConversionfactors.filter(x=>x.parameter == Parameter);
-        let calvalue=value==null || calvaluefilter[0].conversionFactor==null?null:value*calvaluefilter[0].conversionFactor;
-        let calvalue1=null;
-        if (window.TruncateorRound == "RoundOff") {
-          calvalue1 = calvalue == null ? calvalue : calvalue.toFixed(digit);
-        }
-        else {
-          calvalue1 = calvalue == null ? calvalue : CommonFunctions.truncateNumber(calvalue, digit)
-        }
-        let index=olddata.findIndex(x=>x.ID==Calculatedparameter[0].id);
-        let index1=newdata.findIndex(x=>x.ID==Calculatedparameter[0].id);
-        if(index == -1 ){
-          olddata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn+1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null });
-        }
-        let ModifyBy = currentUser.id;
-        if(index1 == -1 ){
-          newdata.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
-        }else{
-          newdata[index1].Parametervalue= calvalue;
-        }
-     if(findcolumn !=-1){
-        jspreadRef.current.jexcel.updateCell(findcolumn+1, y, calvalue1, true);
+  const Calculateparameter = function (Calculatedparameter, calparamname, value, y, Parameter) {
+    let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
+    if (Iscalculated.length > 0) {
+      let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
+      let calvaluefilter = AllLookpdata.listConversionfactors.filter(x => x.parameter == Parameter);
+      let calvalue = value == null || calvaluefilter[0].conversionFactor == null ? null : value * calvaluefilter[0].conversionFactor;
+      let calvalue1 = null;
+      if (window.TruncateorRound == "RoundOff") {
+        calvalue1 = calvalue == null ? calvalue : calvalue.toFixed(digit);
       }
-         }
+      else {
+        calvalue1 = calvalue == null ? calvalue : CommonFunctions.truncateNumber(calvalue, digit)
+      }
+      let index = olddata.findIndex(x => x.ID == Calculatedparameter[0].id);
+      let index1 = newdata.findIndex(x => x.ID == Calculatedparameter[0].id);
+      if (index == -1) {
+        olddata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null });
+      }
+      let ModifyBy = currentUser.id;
+      if (index1 == -1) {
+        newdata.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
+      } else {
+        newdata[index1].Parametervalue = calvalue;
+      }
+      if (findcolumn != -1) {
+        jspreadRef.current.jexcel.updateCell(findcolumn + 1, y, calvalue1, true);
+      }
+    }
   }
 
-  const CalculateparameterUpdateFlag=function(Calculatedparameter,calparamname,i,param){
-    let Iscalculated=AllLookpdata.listPollutents.filter(x=>x.parameterName==Calculatedparameter[0].parameterName && x.isCalculated==1);
-      if(Iscalculated.length>0){
-        let ModifyBy = currentUser.id;
-        let findcolumn=SelectedPollutents.findIndex(x=>x==calparamname);
-        if (param.id != 1 || Calculatedparameter[0].loggerFlags != 14) {
-          flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
+  const CalculateparameterUpdateFlag = function (Calculatedparameter, calparamname, i, param) {
+    let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
+    if (Iscalculated.length > 0) {
+      let ModifyBy = currentUser.id;
+      let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
+      if (param.id != 1 || Calculatedparameter[0].loggerFlags != 14) {
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
 
-        }//cellnames.push(cellName);
-        if(findcolumn !=-1){
-          let cellName=jspreadsheet.helpers.getColumnNameFromCoords(findcolumn+1, i);
+      }//cellnames.push(cellName);
+      if (findcolumn != -1) {
+        let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
         if (cellName) {
           jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = param.colorCode;
           jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
         }
-         }
-        }
+      }
+    }
   }
   const changed = function (instance, cell, x, y, value) {
     let changearr = dataForGridref.current[y];
@@ -269,39 +272,39 @@ function DataProcessing() {
     let filtered = null;
     if (!revertRef.current) {
       let Parametersplit = SelectedPollutents[x - 1].split("@_");
-      let Calculatedparameter=[];
+      let Calculatedparameter = [];
       if (Parametersplit.length > 1) {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
-        Calculatedparameter=ReportDataListRef.current.filter(row =>row.interval===filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID===filtered[0].stationID && row.parameterName != filtered[0].parameterName);
-      if(Calculatedparameter.length>0){
-        let calparamname=Calculatedparameter[0].parameterName+"@_"+Calculatedparameter[0].stationID;
-        Calculateparameter(Calculatedparameter,calparamname,value,y,Parametersplit[0]);
-         }
+        Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+        if (Calculatedparameter.length > 0) {
+          let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
+          Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
+        }
       } else {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
-        Calculatedparameter=ReportDataListRef.current.filter(row =>row.interval===filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID===filtered[0].stationID && row.parameterName != filtered[0].parameterName);
-      if(Calculatedparameter.length>0){
-        let calparamname=Calculatedparameter[0].parameterName;
-          Calculateparameter(Calculatedparameter,calparamname,value,y,Parametersplit[0]);
+        Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+        if (Calculatedparameter.length > 0) {
+          let calparamname = Calculatedparameter[0].parameterName;
+          Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
+        }
       }
-      }
-      let index=olddata.findIndex(x=>x.ID==filtered[0].id);
-      let index1=newdata.findIndex(x=>x.ID==filtered[0].id);
-      if(index == -1 ){
+      let index = olddata.findIndex(x => x.ID == filtered[0].id);
+      let index1 = newdata.findIndex(x => x.ID == filtered[0].id);
+      if (index == -1) {
         olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
       }
       let ModifyBy = currentUser.id;
-      if(index1 == -1 ){
+      if (index1 == -1) {
         newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
-      }else{
-        newdata[index1].Parametervalue= value;
+      } else {
+        newdata[index1].Parametervalue = value;
       }
 
       filtered[0].parametervalue = value == null ? value : parseFloat(value);
       filtered[0].loggerFlags = window.Editflag;
       let Parametername = SelectedPollutents[x - 1];
-     // changearr[Parametername] = value == null ? value : parseFloat(value);
-     dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
+      // changearr[Parametername] = value == null ? value : parseFloat(value);
+      dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
       setOldData(olddata);
       setNewData(newdata);
     }
@@ -389,7 +392,7 @@ function DataProcessing() {
     })
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
-           flagdata = [];
+          flagdata = [];
           let ModifyBy = currentUser.id;
           for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
             let changearr = dataForGridref.current[i];
@@ -397,26 +400,27 @@ function DataProcessing() {
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               let filtered = null;
               let Parametersplit = SelectedPollutents[k - 1].split("@_");
-              let Calculatedparameter=[];
+              let Calculatedparameter = [];
               if (Parametersplit.length > 1) {
                 filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
-                Calculatedparameter=ReportDataListRef.current.filter(row =>row.interval===filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID===filtered[0].stationID && row.parameterName != filtered[0].parameterName);
-                if(Calculatedparameter.length>0){
-                  let calparamname=Calculatedparameter[0].parameterName+"@_"+Calculatedparameter[0].stationID;
-                  CalculateparameterUpdateFlag(Calculatedparameter,calparamname,i,param);
-                   }
+                Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+                if (Calculatedparameter.length > 0) {
+                  let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
+                  CalculateparameterUpdateFlag(Calculatedparameter, calparamname, i, param);
+                }
               } else {
                 filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
-                Calculatedparameter=ReportDataListRef.current.filter(row =>row.interval===filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID===filtered[0].stationID && row.parameterName != filtered[0].parameterName);
-                if(Calculatedparameter.length>0){
-                  let calparamname=Calculatedparameter[0].parameterName;
-                  CalculateparameterUpdateFlag(Calculatedparameter,calparamname,i,param);
-                   }
+                Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+                if (Calculatedparameter.length > 0) {
+                  let calparamname = Calculatedparameter[0].parameterName;
+                  CalculateparameterUpdateFlag(Calculatedparameter, calparamname, i, param);
+                }
               }
               if (param.id != 1 || filtered[0].loggerFlags != 14) {
                 flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
 
               }//cellnames.push(cellName);
+              
               if (cellName) {
                 jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = param.colorCode;
                 jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
@@ -491,81 +495,204 @@ function DataProcessing() {
     $('#historymodal').modal('show');
   }
 
-  const reverttoprevious = function () {
-    if (OldData.length > 0) {
-      revertRef.current = true;
-      let changearr = dataForGridcopy[selectedgrid[1]];
-      let Parametername = SelectedPollutents[selectedgrid[0] - 1];
-      let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
-      // let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-      let filtered = null;
-      if (Parametersplit.length > 1) {
-        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
-      } else {
-        filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
-      }
-
-      //  let params = new URLSearchParams({ id: filtered[0].id });
-      if (filtered.length > 0) {
-        let value = 0;
-        //value = changearr[Parametername] == null ? changearr[Parametername] : parseFloat(changearr[Parametername]);
-        if(OldData.filter(x=>x.ID==filtered[0].id).length>0){
-        value=OldData.filter(x=>x.ID==filtered[0].id)[0].Parametervalue;
-        /* if (window.TruncateorRound == "RoundOff") {
-          value = filtered[0].parametervalue == null ? filtered[0].parametervalue : filtered[0].parametervalue.toFixed(digit);
-        }
-        else {
-          value = filtered[0].parametervalue == null ? filtered[0].parametervalue : CommonFunctions.truncateNumber(filtered[0].parametervalue, digit)
-        } */
+  const revertfromolddata=function(filtered,k,i){
+    if (filtered.length > 0) {
+      let value = 0;
+      let data=OldData.filter(x => x.ID == filtered[0].id);
+      if (data.length > 0) {
+        value = data[0].Parametervalue;
         if (window.TruncateorRound == "RoundOff") {
           value = value == null ? value : value.toFixed(digit);
         }
         else {
           value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
         }
+      jspreadRef.current.jexcel.updateCell(k, i,value , true);
+      var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+      if (cellName) {
+        let color=CommonFunctions.SetFlagColor(data[0].loggerFlags == null ? window.Okflag : data[0].loggerFlags, Flagcodelist);
+        jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color;
+        jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
+      }
 
-        jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
-        let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
-        let classname = CommonFunctions.SetFlagColor(filtered[0].loggerFlags == null ? window.Okflag : filtered[0].loggerFlags, Flagcodelist);
-        if (cell != undefined) {
-          cell.style.backgroundColor = classname;
-        }
-        let dataold = OldData;
-        let index = dataold.findIndex(x => x.ID === filtered[0].id);
-        if (index > -1) {
-          dataold.splice(index, 1);
-        }
-        setOldData(dataold);
-        if (dataold.length == 0) {
-          olddata = [];
-          newdata = [];
-          setNewData([]);
-          setOldData([]);
+      let index = dataold.findIndex(x => x.ID === filtered[0].id);
+      if (index > -1) {
+        dataold.splice(index, 1);
+        datanew.splice(index, 1);
+      }
+      setOldData(dataold);
+      setNewData(datanew);
+    }
+    }
+  }
+  const reverttoprevious = function () {
+     dataold = OldData;
+     datanew = NewData;
+    if (OldData.length > 0) {
+      for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
+        let changearr = dataForGridref.current[i];
+        for (var k = selectedgrid[0]; k <= selectedgrid[2]; k++) {
+          let filtered = [];
+          let Parametersplit = SelectedPollutents[k - 1].split("@_");
+          let Calculatedparameter = [];
+          revertRef.current=true;
+          if (Parametersplit.length > 1) {
+            filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+            Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+            if (Calculatedparameter.length > 0) {
+              let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
+              RevertCalculateparameter(Calculatedparameter, calparamname, i);
+            }
+          } else {
+            filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
+            Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+            if (Calculatedparameter.length > 0) {
+              let calparamname = Calculatedparameter[0].parameterName;
+              RevertCalculateparameter(Calculatedparameter, calparamname, i);
+            }
+          }
+          revertRef.current=true;
+          revertfromolddata(filtered,k,i);
+          }
+      }
+      if (dataold.length == 0) {
+        olddata = [];
+        newdata = [];
+        setNewData([]);
+        setOldData([]);
+      }
+    }
+  }
+
+  const RestoreCalculateparameter=function(Calculatedparameter,calparamname,i,ModifyBy){
+    let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
+    if (Iscalculated.length > 0) {
+      let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
+      let value=Calculatedparameter[0].parametervalueOrginal;
+      if (window.TruncateorRound == "RoundOff") {
+        value = value == null ? value : value.toFixed(digit);
+      }
+      else {
+        value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+      }
+      jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal });
+      
+        if (findcolumn != -1) {
+        let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
+        if (cellName) {
+          let color=AllLookpdata.listFlagCodes.filter(x=>x.id==Calculatedparameter[0].loggerFlagsOriginal)
+          jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
+          jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
         }
       }
     }
-    }
-    /*  fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
-       method: 'GET',
-     }).then((response) => response.json())
-       .then((originaldata) => {
-         if (originaldata) {
-           let value = 0;
-           if (window.TruncateorRound == "RoundOff") {
-             value = originaldata.oldValue == null ? originaldata.oldValue : originaldata.oldValue.toFixed(digit);
-           }
-           else {
-             value = originaldata.oldValue == null ? originaldata.oldValue : CommonFunctions.truncateNumber(originaldata.oldValue, digit)
-           }
-           jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], value, true);
-           let cell = jspreadRef.current.jexcel.getCellFromCoords(selectedgrid[0], selectedgrid[1]);
-           let classname = CommonFunctions.SetFlagColor(originaldata.loggerFlags == null ? window.Okflag : originaldata.loggerFlags, Flagcodelist);
-           if (cell != undefined) {
-             cell.style.backgroundColor = classname;
-           }
-         }
-       }); */
   }
+
+  const RevertCalculateparameter=function(Calculatedparameter,calparamname,i){
+    let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
+    if (Iscalculated.length > 0) {
+      let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
+      /* let value=Calculatedparameter[0].parametervalue;
+      if (window.TruncateorRound == "RoundOff") {
+        value = value == null ? value : value.toFixed(digit);
+      }
+      else {
+        value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+      }
+      jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
+        if (findcolumn != -1) {
+        let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
+        if (cellName) {
+          let color=AllLookpdata.listFlagCodes.filter(x=>x.id==Calculatedparameter[0].loggerFlags)
+          jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
+          jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
+        }
+      } */
+      revertfromolddata(Calculatedparameter,findcolumn+1,i);
+    }
+  }
+  const RestoretoOriginal = function (rows,columns) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: ("You want to restore to original values!"),
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false
+    })
+      .then(function (isConfirm) {
+        if (isConfirm.isConfirmed) {
+          let rowindex1=rows[0];
+          let rowindex2=rows[rows.length-1];
+          let colindex1=columns[0];
+          let colindex2=columns[columns.length-1];
+          let ModifyBy = currentUser.id;
+          flagdata=[];
+          for (var i = rowindex1; i <= rowindex2; i++) {
+            let changearr = dataForGridref.current[i];
+            for (var k = colindex1; k <= colindex2; k++) {
+              let filtered = [];
+              let Parametersplit = SelectedPollutents[k - 1].split("@_");
+              let Calculatedparameter = [];
+              revertRef.current=true;
+              if (Parametersplit.length > 1) {
+                filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+                Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+                if (Calculatedparameter.length > 0) {
+                  let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
+                  RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
+                }
+              } else {
+                filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
+                Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+                if (Calculatedparameter.length > 0) {
+                  let calparamname = Calculatedparameter[0].parameterName;
+                  RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
+                }
+              }
+              revertRef.current=true;
+              let value=filtered[0].parametervalueOrginal;
+              if (window.TruncateorRound == "RoundOff") {
+                value = value == null ? value : value.toFixed(digit);
+              }
+              else {
+                value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+              }
+              jspreadRef.current.jexcel.updateCell(k, i,value , true);
+
+              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal });
+              var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+              if (cellName) {
+                let color=AllLookpdata.listFlagCodes.filter(x=>x.id==Calculatedparameter[0].loggerFlagsOriginal)
+                jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
+                jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
+              }
+            }
+          }
+          if (flagdata.length > 0) {
+            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(flagdata),
+            }).then((response) => response.json())
+              .then((responseJson) => {
+                if (responseJson == 1) {
+
+                } else {
+                  toast.error('Unable to update the parameter. Please contact adminstrator')
+                }
+              }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+          }
+        }
+      })
+
+  }
+
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
@@ -624,6 +751,20 @@ function DataProcessing() {
       freezeColumns: 1,
       columns: layout,
       nestedHeaders: headers,
+      allowComments: true,
+      contextMenu: function (obj, x, y, e) {
+        var items = [];
+        let rows=obj.getSelectedRows(true);
+        let columns=obj.getSelectedColumns(true);
+        items.push({
+          title: "Restore to Original",
+          onclick: function () {
+            RestoretoOriginal(rows,columns);
+          }
+        });
+
+        return items;
+      },
       //  lazyLoading: true,
       // loadingSpin: true,
       onselection: selectionActive,
@@ -1619,7 +1760,7 @@ function DataProcessing() {
                       <th>New Value</th>
                       <th>Old Flag </th>
                       <th>New Flag</th>
-                      <th>Modified By</th> 
+                      <th>Modified By</th>
                       <th>Modified On</th>
                     </tr>
                   </thead>
@@ -1632,12 +1773,12 @@ function DataProcessing() {
                           <td>{CommonFunctions.truncateNumber(x.newValue, 5)}</td>
                           <td style={{ backgroundColor: x.oldLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.oldLoggerFlags)[0].colorCode : "#FFFFFF" }} >{x.oldLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.oldLoggerFlags)[0]?.name : ""}</td>
                           <td style={{ backgroundColor: x.newLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.newLoggerFlags)[0].colorCode : "#FFFFFF" }} >{x.newLoggerFlags != null ? Flagcodelist.filter(z => z.id == x.newLoggerFlags)[0]?.name : ""}</td>
-                           <td>{x.modifyUserName}</td> 
+                          <td>{x.modifyUserName}</td>
                           <td>{x.modifyOn != null ? generateDatabaseDateTime(x.modifyOn) : x.modifyOn}</td>
                         </tr>
                       )
                     )}
-                    {ListHistory.length==0 && (
+                    {ListHistory.length == 0 && (
                       <tr className="text-center">
                         <td colspan="6"><b>No History</b></td>
                       </tr>
