@@ -281,6 +281,7 @@ function Grouping() {
         if (param) {
             setGroupList(true);
         } else {
+            setChecked([]);
             setGroupList(false);
             setGroupId(0);
         }
