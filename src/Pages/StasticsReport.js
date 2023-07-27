@@ -423,7 +423,7 @@ function StasticsReport() {
                     <select className="form-select stationid" id="stationid" multiple="multiple">
 
                       {Stations.map((x, y) =>
-                        <option value={x.id} key={y} selected={y == 1}>{x.stationName}</option>
+                        <option value={x.id} key={y}>{x.stationName}</option>
                       )}
                     </select>
                   </div>
@@ -470,6 +470,7 @@ function StasticsReport() {
                     <label className="form-label">Interval</label>
                     <select className="form-select" id="intervalid">
                       <option value="" selected>Select Interval</option>
+                      <option value="15M">15-M</option>
                       {Criteria.map((x, y) =>
                         <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                       )}
