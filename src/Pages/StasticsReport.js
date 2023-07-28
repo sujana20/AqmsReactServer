@@ -223,7 +223,7 @@ function StasticsReport() {
     var finaldata1 = [];
     /*   if (filter.length >= 2) { */
     finaldata1 = finaldata.reduce((unique, o) => {
-      if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
+      if (!unique.some(obj => obj.parameterName === o.parameterName)) {
         unique.push(o);
       }
       return unique;
@@ -233,8 +233,8 @@ function StasticsReport() {
     } */
     setPollutents(finaldata1);
     setTimeout(function () {
-      // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
+     // $('.pollutentid')[0].sumo.unSelectAll(); 
     }, 10);
   })
 
@@ -461,8 +461,8 @@ function StasticsReport() {
                       <option value="Raw">Raw</option>
                       <option value="Max">Maximum</option>
                       {/*  <option value="Compliance">Compliance Percentage</option>
-                  <option value="Max %">Concentrations in % limit values</option>
-                  <option value="AQL Exceed">Exceedences Numbers</option> */}
+                  <option value="Max %">Concentrations in % limit values</option>*/}
+                     <option value="Exceed">Exceedences Numbers</option> 
                       <option value="Percentile">98 &amp; 50 Percentile </option>
                     </select>
                   </div>

@@ -61,7 +61,8 @@ function LiveData() {
   var lastSelectedRow;
   let cellnames = [];
   var dataForGrid = [];
-
+  let spreadsheetcontainer = document.querySelector(".jexcel_content");
+  let hasScrolledToBottom = false;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
@@ -198,11 +199,32 @@ function LiveData() {
         }
       }
     }
-    const spreadsheetcontainer = document.querySelector(".jexcel_content");
+     spreadsheetcontainer = document.querySelector(".jexcel_content");
     if(spreadsheetcontainer != null){
       spreadsheetcontainer.scrollTop = spreadsheetcontainer.scrollHeight;
     }
   }
+
+  useEffect(() => {
+    // const jspreadsheetContainer = document.getElementById('my-jspreadsheet');
+    if (ListReportData.length > 0 && spreadsheetcontainer) {
+      spreadsheetcontainer.addEventListener('mousedown', handleScroll);
+
+      return () => {
+        // Clean up the scroll event listener when the component is unmounted
+        spreadsheetcontainer.removeEventListener('mousedown', handleScroll);
+      };
+    }
+  }, [ListReportData, spreadsheetcontainer]);
+
+  const handleScroll = (event) => {
+    // Prevent scrolling to the top when clicking on the scrollbar
+    const container = event.target;
+    const atBottom = container.scrollHeight - container.clientHeight - container.scrollTop <= 1;
+    if (atBottom) {
+      event.preventDefault();;
+    }
+  };
 
   const gethistory = function () {
     let changearr = dataForGridcopy[selectedgrid[1]];
@@ -827,7 +849,7 @@ function LiveData() {
                   </div>
                 </div>
                 
-                <div className="jsGrid" ref={jspreadRef} />
+                <div className="jsGrid" ref={jspreadRef}  />
               </div>
               </div>
                 </div>
