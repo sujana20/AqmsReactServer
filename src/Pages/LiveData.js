@@ -219,11 +219,7 @@ function LiveData() {
 
   const handleScroll = (event) => {
     // Prevent scrolling to the top when clicking on the scrollbar
-    const container = event.target;
-    const atBottom = container.scrollHeight - container.clientHeight - container.scrollTop <= 1;
-    if (atBottom) {
-      event.preventDefault();;
-    }
+      event.preventDefault();
   };
 
   const gethistory = function () {
