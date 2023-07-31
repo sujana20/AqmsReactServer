@@ -70,7 +70,7 @@ function ServerDashBoard() {
               && (!filter.failurecnt || item.failurecnt.toUpperCase().indexOf(filter.failurecnt.toUpperCase()) >= 0)
               && (!filter.lastData || item.lastData.toUpperCase().indexOf(filter.lastData.toUpperCase()) >= 0)
               && (!filter.pollingdata || item.pollingdata.toUpperCase().indexOf(filter.pollingdata.toUpperCase()) >= 0)
-
+              && (!filter.CommunicationStatus || item.CommunicationStatus.toUpperCase().indexOf(filter.CommunicationStatus.toUpperCase()) >= 0)
             );
           });
         }
@@ -83,6 +83,7 @@ function ServerDashBoard() {
         { name: "failurecnt", title: "Failures", type: "text" },
         { name: "lastData", title: "Last Data", type: "text" },
         { name: "pollingdata", title: "Next Polling", type: "text" },
+        { name: "CommunicationStatus",title:"Communication Status", type:"text"}
       ]
     });
   }
