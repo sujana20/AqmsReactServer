@@ -565,8 +565,8 @@ function DataProcessing() {
   }
 
   const RestoreCalculateparameter=function(Calculatedparameter,calparamname,i,ModifyBy){
-    let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
-    if (Iscalculated.length > 0) {
+    //let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
+    if (Calculatedparameter.length > 0) {
       let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
       let value=Calculatedparameter[0].parametervalueOrginal;
       if (window.TruncateorRound == "RoundOff") {
@@ -665,7 +665,7 @@ function DataProcessing() {
               flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal });
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
-                let color=AllLookpdata.listFlagCodes.filter(x=>x.id==Calculatedparameter[0].loggerFlagsOriginal)
+                let color=AllLookpdata.listFlagCodes.filter(x=>x.id==filtered[0].loggerFlagsOriginal)
                 jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
                 jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
               }
@@ -1460,12 +1460,18 @@ function DataProcessing() {
   };
 
   const handleElementDragging = function (event) {
+    let visibleRecords = Visiblerecords();
     if (!chartlastEventRef.current || !chartelementRef.current) {
       return;
     }
     const moveX = event.x - chartlastEventRef.current.x;
     const moveY = event.y - chartlastEventRef.current.y;
     drag(moveX, moveY);
+    ChartOptions.plugins.annotation.annotations[0].xMin = Getminvalue(visibleRecords, "Date");
+    ChartOptions.plugins.annotation.annotations[0].xMax = Getmaxvalue(visibleRecords, "Date");
+    ChartOptions.plugins.annotation.annotations[0].yMin = Getminvalue(visibleRecords, "");
+    ChartOptions.plugins.annotation.annotations[0].yMax = Getmaxvalue(visibleRecords, "");
+    setChartOptions(ChartOptions);
     chartlastEventRef.current = event;
     return true;
   };

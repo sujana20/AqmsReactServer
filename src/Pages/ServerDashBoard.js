@@ -26,6 +26,7 @@ function ServerDashBoard() {
             data.Table1[i].pollingdata = data.Table1[i].pollingdata.replace("T", " ").substring(0, 19);
             data.Table1[i].alarmcnt = data.Table1[i].alarmcnt <= 0 && data.Table1[i].alarmcnt == null ? "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
             data.Table1[i].failurecnt = data.Table1[i].failurecnt <= 0 && data.Table1[i].failurecnt == null ? "<span class='text-success'>Ok</span>" : "<span class='text-danger'>Active</span>";
+            data.Table1[i].CommunicationStatus = data.Table1[i].CommunicationStatus== 'Failed' ? "<span class='text-danger'>Failed</span>" : "<span>Ok</span>";
           }
           setListStations(data.Table1);
         }
