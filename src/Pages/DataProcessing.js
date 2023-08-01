@@ -56,7 +56,7 @@ function DataProcessing() {
   const [Groups, setGroups] = useState([]);
   const [StationGroups, setStationGroups] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
-  const [selectedgrid, setselectedgrid] = useState([]);
+  //const [selectedgrid, setselectedgrid] = useState([]);
   const [GroupSelected, setGroupSelected] = useState("");
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
@@ -66,8 +66,9 @@ function DataProcessing() {
   const [ListHistory, setListHistory] = useState([]);
   const [Flagcodelist, SetFlagcodelist] = useState([]);
   const [Nestedheaders, setNestedheaders] = useState([]);
-  const [OldData, setOldData] = useState([]);
-  const [NewData, setNewData] = useState([]);
+  //const [OldData, setOldData] = useState([]);
+  //const [NewData, setNewData] = useState([]);
+  const [SaveData, setSaveData] = useState([]);
   const [revert, setrevert] = useState(false);
   const [DataCount, setDataCount] = useState(0);
   const [ReportDataList, setReportDataList] = useState([]);
@@ -87,6 +88,9 @@ function DataProcessing() {
   const ReportDataListRef = useRef();
   ReportDataListRef.current = ReportDataList;
   const dataForGridref = useRef();
+  const selectedgrid=useRef([]);
+  const OldData=useRef([]);
+  const NewData=useRef([]);
   const olddata = useRef([]);
   //olddata.current = [];
   const newdata = useRef([]);
@@ -170,7 +174,8 @@ function DataProcessing() {
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    setselectedgrid([startcolindex, stratrowindex, endcolindex, endrowidex])
+    //setselectedgrid([startcolindex, stratrowindex, endcolindex, endrowidex])
+    selectedgrid.current=[startcolindex, stratrowindex, endcolindex, endrowidex];
     setdataForGridcopy(dataForGridref.current)
     let cellnames1 = [];
     for (var i = stratrowindex; i <= endrowidex; i++) {
@@ -316,8 +321,11 @@ function DataProcessing() {
       let Parametername = SelectedPollutents[x - 1];
       // changearr[Parametername] = value == null ? value : parseFloat(value);
       dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
-      setOldData(olddata.current);
-      setNewData(newdata.current);
+      //setOldData(olddata.current);
+      //setNewData(newdata.current);
+      setSaveData(olddata.current);
+      OldData.current=olddata.current;
+      NewData.current=newdata.current
     }
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
@@ -345,40 +353,46 @@ function DataProcessing() {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify(NewData),
+            body: JSON.stringify(NewData.current),
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
                 revertRef.current = false;
                 olddata.current = [];
                 newdata.current = [];
-                setNewData([]);
-                setOldData([]);
+                //setNewData([]);
+               // setOldData([]);
+               setSaveData([]);
+               OldData.current=[];
+               NewData.current=[]
               }
             }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
         } else {
-          for (let i = 0; i < OldData.length; i++) {
+          for (let i = 0; i < OldData.current.length; i++) {
             revertRef.current = true;
             let value = 0;
             if (window.TruncateorRound == "RoundOff") {
-              value = OldData[i].Parametervalue == null ? OldData[i].Parametervalue : OldData[i].Parametervalue.toFixed(digit);
+              value = OldData.current[i].Parametervalue == null ? OldData.current[i].Parametervalue : OldData.current[i].Parametervalue.toFixed(digit);
             }
             else {
-              value = OldData[i].Parametervalue == null ? OldData[i].Parametervalue : CommonFunctions.truncateNumber(OldData[i].Parametervalue, digit)
+              value = OldData.current[i].Parametervalue == null ? OldData.current[i].Parametervalue : CommonFunctions.truncateNumber(OldData.current[i].Parametervalue, digit)
             }
-            jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, value, true);
-            let cell = jspreadRef.current.jexcel.getCellFromCoords(OldData[i].col, OldData[i].row);
-            let classname = CommonFunctions.SetFlagColor(OldData[i].loggerFlags == null ? window.Okflag : OldData[i].loggerFlags, Flagcodelist);
+            jspreadRef.current.jexcel.updateCell(OldData.current[i].col, OldData.current[i].row, value, true);
+            let cell = jspreadRef.current.jexcel.getCellFromCoords(OldData.current[i].col, OldData.current[i].row);
+            let classname = CommonFunctions.SetFlagColor(OldData.current[i].loggerFlags == null ? window.Okflag : OldData.current[i].loggerFlags, Flagcodelist);
             if (cell != undefined) {
               cell.style.backgroundColor = classname;
               //cell.classList.add(classname);
             }
 
-            if (i == (OldData.length - 1)) {
+            if (i == (OldData.current.length - 1)) {
               olddata.current = [];
               newdata.current = [];
-              setNewData([]);
-              setOldData([]);
+              //setNewData([]);
+              //setOldData([]);
+              setSaveData([]);
+              OldData.current=[];
+              NewData.current=[];
               revertRef.current = false;
             }
           }
@@ -405,9 +419,9 @@ function DataProcessing() {
         if (isConfirm.isConfirmed) {
           flagdata = [];
           let ModifyBy = currentUser.id;
-          for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
+          for (var i = selectedgrid.current[1]; i <= selectedgrid.current[3]; i++) {
             let changearr = dataForGridref.current[i];
-            for (var k = selectedgrid[0]; k <= selectedgrid[2]; k++) {
+            for (var k = selectedgrid.current[0]; k <= selectedgrid.current[2]; k++) {
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               let filtered = null;
               let Parametersplit = SelectedPollutents[k - 1].split("@_");
@@ -486,13 +500,13 @@ function DataProcessing() {
   }
 
   const gethistory = function () {
-    let changearr = dataForGridcopy[selectedgrid[1]];
-    let Parametersplit = SelectedPollutents[selectedgrid[0] - 1].split("@_");
+    let changearr = dataForGridcopy[selectedgrid.current[1]];
+    let Parametersplit = SelectedPollutents[selectedgrid.current[0] - 1].split("@_");
     let filtered = null;
     if (Parametersplit.length > 1) {
       filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
     } else {
-      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+      filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid.current[0] - 1]);
     }
     let params = new URLSearchParams({ id: filtered[0].id });
 
@@ -510,9 +524,11 @@ function DataProcessing() {
   const revertfromolddata=function(filtered,k,i){
     if (filtered.length > 0) {
       let value = 0;
-      let data=OldData.filter(x => x.ID == filtered[0].id);
+      let data=OldData.current.filter(x => x.ID == filtered[0].id);
       if (data.length > 0) {
         value = data[0].Parametervalue;
+        filtered[0].parametervalue=data[0].Parametervalue;
+        filtered[0].loggerFlags=data[0].LoggerFlags;
         if (window.TruncateorRound == "RoundOff") {
           value = value == null ? value : value.toFixed(digit);
         }
@@ -532,18 +548,21 @@ function DataProcessing() {
         dataold.current.splice(index, 1);
         datanew.current.splice(index, 1);
       }
-      setOldData(dataold.current);
-      setNewData(datanew.current);
+      //setOldData(dataold.current);
+      //setNewData(datanew.current);
+      setSaveData(dataold.current);
+      OldData.current=dataold.current;
+      NewData.current=datanew.current;
     }
     }
   }
   const reverttoprevious = function () {
-     dataold.current = OldData;
-     datanew.current = NewData;
-    if (OldData.length > 0) {
-      for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
+     dataold.current = OldData.current;
+     datanew.current = NewData.current;
+    if (OldData.current.length > 0) {
+      for (var i = selectedgrid.current[1]; i <= selectedgrid.current[3]; i++) {
         let changearr = dataForGridref.current[i];
-        for (var k = selectedgrid[0]; k <= selectedgrid[2]; k++) {
+        for (var k = selectedgrid.current[0]; k <= selectedgrid.current[2]; k++) {
           let filtered = [];
           let Parametersplit = SelectedPollutents[k - 1].split("@_");
           let Calculatedparameter = [];
@@ -570,8 +589,11 @@ function DataProcessing() {
       if (dataold.current.length == 0) {
         olddata.current = [];
         newdata.current = [];
-        setNewData([]);
-        setOldData([]);
+        OldData.current=[];
+        NewData.current=[];
+        //setNewData([]);
+        //setOldData([]);
+        setSaveData([]);
       }
     }
   }
@@ -652,33 +674,46 @@ function DataProcessing() {
               let Parametersplit = SelectedPollutents[k - 1].split("@_");
               let Calculatedparameter = [];
               revertRef.current=true;
+              let index=null;
               if (Parametersplit.length > 1) {
                 filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+                index =olddata.current.findIndex(x=>x.ID==filtered[0].id);
+               if(index !=-1 ){
+                reverttoprevious();
+               }else{
                 Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
                 if (Calculatedparameter.length > 0) {
                   let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
                   RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
                 }
+               }
+               
               } else {
                 filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
+                 index =olddata.current.findIndex(x=>x.ID==filtered[0].id);
+               if(index !=-1 ){
+                reverttoprevious();
+               }else{
                 Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
                 if (Calculatedparameter.length > 0) {
                   let calparamname = Calculatedparameter[0].parameterName;
                   RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
                 }
               }
-              revertRef.current=true;
-              let value=filtered[0].parametervalueOrginal;
-              if (window.TruncateorRound == "RoundOff") {
-                value = value == null ? value : value.toFixed(digit);
               }
-              else {
-                value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
-              }
-              jspreadRef.current.jexcel.updateCell(k, i,value , true);
+              if(index == -1){
               if(filtered[0].parametervalueOrginal !=filtered[0].parametervalue || filtered[0].loggerFlags !=filtered[0].loggerFlagsOriginal){
-              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
-
+                revertRef.current=true;
+                let value=filtered[0].parametervalueOrginal;
+                if (window.TruncateorRound == "RoundOff") {
+                  value = value == null ? value : value.toFixed(digit);
+                }
+                else {
+                  value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+                }
+                jspreadRef.current.jexcel.updateCell(k, i,value , true);
+                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+              
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
                 let color=AllLookpdata.listFlagCodes.filter(x=>x.id==filtered[0].loggerFlagsOriginal)
@@ -686,7 +721,8 @@ function DataProcessing() {
                 jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
               }
             }
-            }
+                  }
+                }
           }
           if (flagdata.length > 0) {
             fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingRestoretoOriginal', {
@@ -1199,12 +1235,16 @@ function DataProcessing() {
     setListReportData([]);
     setReportDataList([]);
     setReportDataListCopy([]);
-    setselectedgrid([]);
+    //setselectedgrid([]);
+    selectedgrid.current=[];
     setLoadjsGridData(false);
     olddata.current = [];
     newdata.current = [];
-    setNewData([]);
-    setOldData([]);
+    OldData.current=[];
+    NewData.current=[];
+    setSaveData([]);
+   // setNewData([]);
+    //setOldData([]);
     //setChartOptions({});
     GetProcessingData(currentPage, true);
   }
@@ -1981,7 +2021,7 @@ function DataProcessing() {
                       <div className="float-end">
                         <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
                         <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
-                        <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}><i class="bi bi-save"></i></button>
+                        <button type="button" className={SaveData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}><i class="bi bi-save"></i></button>
                       </div>
                     </div>
                   </div>
