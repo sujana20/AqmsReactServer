@@ -87,13 +87,17 @@ function DataProcessing() {
   const ReportDataListRef = useRef();
   ReportDataListRef.current = ReportDataList;
   const dataForGridref = useRef();
+  const olddata = useRef();
+  olddata.current = [];
+  const newdata = useRef();
+  newdata.current = [];
   let jsptable = null;
   let cellnames = [];
   let dataForGrid = [];
-  let olddata = [];
+ // let olddata = [];
   let dataold=[];
   let datanew=[];
-  let newdata = [];
+  //let newdata = [];
   let flagdata = [];
   let digit = window.decimalDigit
   const spreadsheetcontainer = document.querySelector(".jexcel_content");
@@ -224,16 +228,16 @@ function DataProcessing() {
       else {
         calvalue1 = calvalue == null ? calvalue : CommonFunctions.truncateNumber(calvalue, digit)
       }
-      let index = olddata.findIndex(x => x.ID == Calculatedparameter[0].id);
+      let index = olddata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
       let index1 = newdata.findIndex(x => x.ID == Calculatedparameter[0].id);
       if (index == -1) {
-        olddata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
+        olddata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
+        newdata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
       } else {
-        newdata[index1].Parametervalue = calvalue;
+        newdata.current[index1].Parametervalue = calvalue;
       }
       if (findcolumn != -1) {
         jspreadRef.current.jexcel.updateCell(findcolumn + 1, y, calvalue1, true);
@@ -288,16 +292,16 @@ function DataProcessing() {
           Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
         }
       }
-      let index = olddata.findIndex(x => x.ID == filtered[0].id);
-      let index1 = newdata.findIndex(x => x.ID == filtered[0].id);
+      let index = olddata.current.findIndex(x => x.ID == filtered[0].id);
+      let index1 = newdata.current.findIndex(x => x.ID == filtered[0].id);
       if (index == -1) {
-        olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
+        olddata.current.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
+        newdata.current.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
       } else {
-        newdata[index1].Parametervalue = value;
+        newdata.current[index1].Parametervalue = value;
       }
 
       filtered[0].parametervalue = value == null ? value : parseFloat(value);
@@ -305,8 +309,8 @@ function DataProcessing() {
       let Parametername = SelectedPollutents[x - 1];
       // changearr[Parametername] = value == null ? value : parseFloat(value);
       dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
-      setOldData(olddata);
-      setNewData(newdata);
+      setOldData(olddata.current);
+      setNewData(newdata.current);
     }
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
@@ -339,8 +343,8 @@ function DataProcessing() {
             .then((responseJson) => {
               if (responseJson == 1) {
                 revertRef.current = false;
-                olddata = [];
-                newdata = [];
+                olddata.current = [];
+                newdata.current = [];
                 setNewData([]);
                 setOldData([]);
               }
@@ -364,8 +368,8 @@ function DataProcessing() {
             }
 
             if (i == (OldData.length - 1)) {
-              olddata = [];
-              newdata = [];
+              olddata.current = [];
+              newdata.current = [];
               setNewData([]);
               setOldData([]);
               revertRef.current = false;
@@ -556,8 +560,8 @@ function DataProcessing() {
           }
       }
       if (dataold.length == 0) {
-        olddata = [];
-        newdata = [];
+        olddata.current = [];
+        newdata.current = [];
         setNewData([]);
         setOldData([]);
       }
@@ -1138,8 +1142,8 @@ function DataProcessing() {
     setReportDataListCopy([]);
     setselectedgrid([]);
     setLoadjsGridData(false);
-    olddata = [];
-    newdata = [];
+    olddata.current = [];
+    newdata.current = [];
     setNewData([]);
     setOldData([]);
     //setChartOptions({});
