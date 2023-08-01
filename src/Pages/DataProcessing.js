@@ -87,16 +87,22 @@ function DataProcessing() {
   const ReportDataListRef = useRef();
   ReportDataListRef.current = ReportDataList;
   const dataForGridref = useRef();
-  const olddata = useRef();
-  olddata.current = [];
-  const newdata = useRef();
-  newdata.current = [];
+  const olddata = useRef([]);
+  //olddata.current = [];
+  const newdata = useRef([]);
+  //newdata.current = [];
+  const dataold= useRef([]);
+ // dataold.current=[];
+  const datanew= useRef([]);
+ // datanew.current=[];
+ const batchrows= useRef();
+ const batchcolumns= useRef();
   let jsptable = null;
   let cellnames = [];
   let dataForGrid = [];
  // let olddata = [];
-  let dataold=[];
-  let datanew=[];
+  //let dataold=[];
+  //let datanew=[];
   //let newdata = [];
   let flagdata = [];
   let digit = window.decimalDigit
@@ -229,13 +235,13 @@ function DataProcessing() {
         calvalue1 = calvalue == null ? calvalue : CommonFunctions.truncateNumber(calvalue, digit)
       }
       let index = olddata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
-      let index1 = newdata.findIndex(x => x.ID == Calculatedparameter[0].id);
+      let index1 = newdata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
       if (index == -1) {
-        olddata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
+        olddata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
+        newdata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       } else {
         newdata.current[index1].Parametervalue = calvalue;
       }
@@ -251,7 +257,8 @@ function DataProcessing() {
       let ModifyBy = currentUser.id;
       let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
       if (param.id != 1 || Calculatedparameter[0].loggerFlags != 14) {
-        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
+        Calculatedparameter[0].loggerFlags = param.id;
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
 
       }//cellnames.push(cellName);
       if (findcolumn != -1) {
@@ -295,11 +302,11 @@ function DataProcessing() {
       let index = olddata.current.findIndex(x => x.ID == filtered[0].id);
       let index1 = newdata.current.findIndex(x => x.ID == filtered[0].id);
       if (index == -1) {
-        olddata.current.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
+        olddata.current.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.current.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
+        newdata.current.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
       } else {
         newdata.current[index1].Parametervalue = value;
       }
@@ -421,7 +428,8 @@ function DataProcessing() {
                 }
               }
               if (param.id != 1 || filtered[0].loggerFlags != 14) {
-                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id });
+                filtered[0].loggerFlags=param.id;
+                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
 
               }//cellnames.push(cellName);
               
@@ -519,19 +527,19 @@ function DataProcessing() {
         jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
       }
 
-      let index = dataold.findIndex(x => x.ID === filtered[0].id);
+      let index = dataold.current.findIndex(x => x.ID === filtered[0].id);
       if (index > -1) {
-        dataold.splice(index, 1);
-        datanew.splice(index, 1);
+        dataold.current.splice(index, 1);
+        datanew.current.splice(index, 1);
       }
-      setOldData(dataold);
-      setNewData(datanew);
+      setOldData(dataold.current);
+      setNewData(datanew.current);
     }
     }
   }
   const reverttoprevious = function () {
-     dataold = OldData;
-     datanew = NewData;
+     dataold.current = OldData;
+     datanew.current = NewData;
     if (OldData.length > 0) {
       for (var i = selectedgrid[1]; i <= selectedgrid[3]; i++) {
         let changearr = dataForGridref.current[i];
@@ -559,7 +567,7 @@ function DataProcessing() {
           revertfromolddata(filtered,k,i);
           }
       }
-      if (dataold.length == 0) {
+      if (dataold.current.length == 0) {
         olddata.current = [];
         newdata.current = [];
         setNewData([]);
@@ -581,7 +589,7 @@ function DataProcessing() {
       }
       jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
       if(Calculatedparameter[0].parametervalueOrginal !=Calculatedparameter[0].parametervalue || Calculatedparameter[0].loggerFlags !=Calculatedparameter[0].loggerFlagsOriginal){
-        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       
         if (findcolumn != -1) {
         let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
@@ -669,7 +677,7 @@ function DataProcessing() {
               }
               jspreadRef.current.jexcel.updateCell(k, i,value , true);
               if(filtered[0].parametervalueOrginal !=filtered[0].parametervalue || filtered[0].loggerFlags !=filtered[0].loggerFlagsOriginal){
-              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
+              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
 
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
@@ -702,6 +710,47 @@ function DataProcessing() {
 
   }
 
+    const EditMultipleValues = function(rows,columns){
+     document.getElementById("multiplier").value=null;
+    document.getElementById("constant").value=null;
+    batchrows.current=rows;
+    batchcolumns.current=columns;
+     $("#batchedit").modal("show"); 
+    }
+    const UpdateValues = function(){
+      let rows=batchrows.current;
+      let columns=batchcolumns.current;
+        let rowindex1=rows[0];
+        let rowindex2=rows[rows.length-1];
+        let colindex1=columns[0];
+        let colindex2=columns[columns.length-1];
+        let ModifyBy = currentUser.id;
+        let multiplier=document.getElementById("multiplier").value;
+        let constant=document.getElementById("constant").value;
+        flagdata=[];
+        let restore=true;
+        for (var i = rowindex1; i <= rowindex2; i++) {
+          let changearr = dataForGridref.current[i];
+          for (var k = colindex1; k <= colindex2; k++) {
+            let filtered = [];
+            let Parametersplit = SelectedPollutents[k - 1].split("@_");
+            let Calculatedparameter = [];
+            if (Parametersplit.length > 1) {
+              filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
+            } else {
+              filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
+            }
+            let value=multiplier==null || constant==null ? null : filtered[0].parametervalue*parseFloat(multiplier)+parseFloat(constant);
+            if (window.TruncateorRound == "RoundOff") {
+              value = value == null ? value : value.toFixed(digit);
+            }
+            else {
+              value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+            }
+            jspreadRef.current.jexcel.updateCell(k, i,value , true);
+          }
+        }
+    }
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
@@ -769,6 +818,13 @@ function DataProcessing() {
           title: "Restore to Original",
           onclick: function () {
             RestoretoOriginal(rows,columns);
+          }
+        });
+
+        items.push({
+          title: "Batch Edit",
+          onclick: function () {
+            EditMultipleValues(rows,columns);
           }
         });
 
@@ -1808,13 +1864,43 @@ function DataProcessing() {
           </div>
         </div>
       </div>
+
+      <div className="modal fade zoom dashboard_dmodal" id="batchedit" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" aria-labelledby="batchedit">
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h1 className="modal-title fs-5">Batch Edit</h1>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div className="modal-body">
+          <div className="row">
+          <div className="col">
+          <label for="multiplier" className="form-label">Orginal Value</label>
+          </div>
+          (&nbsp;
+          <div className="col">
+          <label for="multiplier" className="form-label">Multiplier</label>
+          <input type="number" className="form-control" id="multiplier"/>
+        </div>
+        &nbsp;)
+        &nbsp; + &nbsp;
+        <div className="col">
+          <label for="constant" className="form-label">Constant</label>
+        <input type="number" className="form-control" id="constant"/>
+        </div>
+          </div>
+          </div>
+          <div className="modal-footer">
+            <button className="btn btn-primary" data-bs-target="#batchedit" data-bs-toggle="modal" onClick={UpdateValues}>Ok</button>
+          </div>
+        </div>
+      </div>
+    </div>
       <section>
         <div>
           <div>
             <div className="card">
               <div className="card-body">
-
-
                 <div className="row">
                   <div className="col-md-2">
                     <label className="form-label">Group Name</label>
