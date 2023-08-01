@@ -740,7 +740,10 @@ function DataProcessing() {
             } else {
               filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
             }
-            let value=multiplier==null || constant==null ? filtered[0].parametervalue : filtered[0].parametervalue*parseFloat(multiplier)+parseFloat(constant);
+            if(multiplier==null || constant==null || multiplier=="" || constant==""){
+              return false;
+            }
+            let value=filtered[0].parametervalue*parseFloat(multiplier)+parseFloat(constant);
             if (window.TruncateorRound == "RoundOff") {
               value = value == null ? value : value.toFixed(digit);
             }
