@@ -635,7 +635,7 @@ function HistoricalData() {
       if (GroupId != "") {
         let Parameterssplit = SelectedPollutents[i].split("@_");
         let stationName = AllLookpdata.listStations.filter(x => x.id == Parameterssplit[1]);
-        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
+        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1]);
         unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
         if (paramUnitnames == undefined) {
           paramUnitnames = stationName[0].stationName + "-" + filter[0].parameterName + "-" + unitname[0].unitName + ",";
@@ -645,7 +645,7 @@ function HistoricalData() {
         }
       }
       else {
-        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i] && x.stationID == selectedStations);
         unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
         if (paramUnitnames == undefined) {
           paramUnitnames = filter[0].parameterName + "-" + unitname[0].unitName + ",";
