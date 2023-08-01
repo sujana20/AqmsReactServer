@@ -254,7 +254,7 @@ function HistoricalData() {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
-      gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
+      gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       layout.push({
         name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
@@ -1024,12 +1024,18 @@ function HistoricalData() {
   };
 
   const handleElementDragging = function (event) {
+    let visibleRecords = Visiblerecords();
     if (!chartlastEventRef.current || !chartelementRef.current) {
       return;
     }
     const moveX = event.x - chartlastEventRef.current.x;
     const moveY = event.y - chartlastEventRef.current.y;
     drag(moveX, moveY);
+    ChartOptions.plugins.annotation.annotations[0].xMin = Getminvalue(visibleRecords, "Date");
+    ChartOptions.plugins.annotation.annotations[0].xMax = Getmaxvalue(visibleRecords, "Date");
+    ChartOptions.plugins.annotation.annotations[0].yMin = Getminvalue(visibleRecords, "");
+    ChartOptions.plugins.annotation.annotations[0].yMax = Getmaxvalue(visibleRecords, "");
+    setChartOptions(ChartOptions);
     chartlastEventRef.current = event;
     return true;
   };

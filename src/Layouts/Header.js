@@ -54,9 +54,9 @@ function Header() {
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li className="dropdown-header">
                 <h6>{user.userName}</h6>
-                <span>Web Designer</span>
+                <span>User</span>
               </li>
-              <li>
+             {/*  <li>
                 <hr className="dropdown-divider" />
               </li>
               <li>
@@ -82,7 +82,7 @@ function Header() {
                   <i className="bi bi-question-circle"></i>
                   <span>Need Help?</span>
                 </a>
-              </li>
+              </li> */}
               <li>
                 <hr className="dropdown-divider" />
               </li>

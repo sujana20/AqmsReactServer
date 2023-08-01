@@ -461,8 +461,8 @@ function StasticsReport() {
                       <option value="Raw">Raw</option>
                       <option value="Max">Maximum</option>
                       {/*  <option value="Compliance">Compliance Percentage</option>
-                  <option value="Max %">Concentrations in % limit values</option>*/}
-                     <option value="Exceed">Exceedences Numbers</option> 
+                  <option value="Max %">Concentrations in % limit values</option>
+                     <option value="Exceed">Exceedences Numbers</option> */}
                       <option value="Percentile">98 &amp; 50 Percentile </option>
                     </select>
                   </div>

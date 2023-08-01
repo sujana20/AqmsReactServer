@@ -227,11 +227,11 @@ function DataProcessing() {
       let index = olddata.findIndex(x => x.ID == Calculatedparameter[0].id);
       let index1 = newdata.findIndex(x => x.ID == Calculatedparameter[0].id);
       if (index == -1) {
-        olddata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null });
+        olddata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
+        newdata.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
       } else {
         newdata[index1].Parametervalue = calvalue;
       }
@@ -291,11 +291,11 @@ function DataProcessing() {
       let index = olddata.findIndex(x => x.ID == filtered[0].id);
       let index1 = newdata.findIndex(x => x.ID == filtered[0].id);
       if (index == -1) {
-        olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null });
+        olddata.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
       }
       let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag });
+        newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
       } else {
         newdata[index1].Parametervalue = value;
       }
@@ -576,7 +576,8 @@ function DataProcessing() {
         value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
       }
       jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
-        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal });
+      if(Calculatedparameter[0].parametervalueOrginal !=Calculatedparameter[0].parametervalue || Calculatedparameter[0].loggerFlags !=Calculatedparameter[0].loggerFlagsOriginal){
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef });
       
         if (findcolumn != -1) {
         let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
@@ -586,6 +587,7 @@ function DataProcessing() {
           jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
         }
       }
+    }
     }
   }
 
@@ -630,6 +632,7 @@ function DataProcessing() {
           let colindex2=columns[columns.length-1];
           let ModifyBy = currentUser.id;
           flagdata=[];
+          let restore=true;
           for (var i = rowindex1; i <= rowindex2; i++) {
             let changearr = dataForGridref.current[i];
             for (var k = colindex1; k <= colindex2; k++) {
@@ -661,8 +664,9 @@ function DataProcessing() {
                 value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
               }
               jspreadRef.current.jexcel.updateCell(k, i,value , true);
+              if(filtered[0].parametervalueOrginal !=filtered[0].parametervalue || filtered[0].loggerFlags !=filtered[0].loggerFlagsOriginal){
+              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef });
 
-              flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal });
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
                 let color=AllLookpdata.listFlagCodes.filter(x=>x.id==filtered[0].loggerFlagsOriginal)
@@ -670,15 +674,16 @@ function DataProcessing() {
                 jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
               }
             }
+            }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingRestoretoOriginal', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify(flagdata),
+              body: JSON.stringify(flagdata,{restore:restore}),
             }).then((response) => response.json())
               .then((responseJson) => {
                 if (responseJson == 1) {
@@ -716,12 +721,12 @@ function DataProcessing() {
       headers = Nestedheaders;
     }
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly: true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
-      gridheadertitle = Parameterssplit[0] + "-" + unitname[0].unitName
+      gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       let Iscalculated = filter[0].isCalculated;
       layout.push({
         name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 ? true : false, sorting: false, cellRenderer: function (item, value) {
