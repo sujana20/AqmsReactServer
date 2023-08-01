@@ -1499,3 +1499,7 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
   color:green;
   font-weight: 600;
 }
+.resizable tr td
+{
+  white-space: pre-line;
+}
