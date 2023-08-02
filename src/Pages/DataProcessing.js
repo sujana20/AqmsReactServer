@@ -10,6 +10,7 @@ import 'jsuites/dist/jsuites.css'; // Import jsuites CSS
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
+import { saveAs } from 'file-saver'
 //import { debounce } from 'lodash';
 
 import {
@@ -1826,6 +1827,18 @@ function DataProcessing() {
     })
     // }, 10);
   }
+  
+
+  const saveCanvas=function() {
+    var a = document.createElement('a');
+    a.href = chartRef.current.toBase64Image();
+    a.download = 'chart.png';
+    a.click();
+    return;
+   
+}
+
+
   const toggleAllLegends = function () {
     let chartinstance = chartRef.current;
     if (allLegendsChecked) {
@@ -2042,15 +2055,21 @@ function DataProcessing() {
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
+              
               <div className="chartmaindiv">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
-                <div className="text-center">
+                <div className="float-end">
+                <button type="button" className="btn btn-primary"  onClick={saveCanvas}>Download Chart</button>
+                </div>
+                
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} id="chartCanvas" />
+                <div className="text-center"> 
                   <input
+                  className="form-check-input"
                     type="checkbox"
                     checked={allLegendsChecked}
                     onChange={toggleAllLegends}
-                  />
-                  <label>Select All</label>
+                  />&nbsp;
+                  <label className="form-check-label">Select All</label>
                 </div>
               </div>
             )}
