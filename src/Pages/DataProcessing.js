@@ -10,7 +10,6 @@ import 'jsuites/dist/jsuites.css'; // Import jsuites CSS
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
-import { saveAs } from 'file-saver'
 //import { debounce } from 'lodash';
 
 import {
