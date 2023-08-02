@@ -385,7 +385,7 @@ function LiveData() {
       Intervaltype = type[0];
     }
     let isAvgData=false;
-    if(Interval=='15-M'){
+    if(Interval==window.Intervalval){
       isAvgData=false;
     }
     else{

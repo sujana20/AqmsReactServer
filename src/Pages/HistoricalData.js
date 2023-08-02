@@ -542,7 +542,7 @@ function HistoricalData() {
       Intervaltype = type[0];
     }
     let isAvgData = false;
-    if (Interval == '15-M') {
+    if (Interval == window.Intervalval) {
       isAvgData = false;
     }
     else {
@@ -626,7 +626,7 @@ function HistoricalData() {
       Intervaltype = Intervaltypesplit[0];
     }
     let isAvgData = false;
-    if (Interval == '15-M') {
+    if (Interval == window.Intervalval) {
       isAvgData = false;
     }
     else {

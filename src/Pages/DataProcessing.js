@@ -540,7 +540,7 @@ function DataProcessing() {
       if (cellName) {
         let color=CommonFunctions.SetFlagColor(data[0].loggerFlags == null ? window.Okflag : data[0].loggerFlags, Flagcodelist);
         jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color;
-        jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
+        //jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
       }
 
       let index = dataold.current.findIndex(x => x.ID === filtered[0].id);
@@ -800,6 +800,7 @@ function DataProcessing() {
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
+    let Interval = document.getElementById("criteriaid").value;
     setallLegendsChecked(true);
     // var layout = [];
     // layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
@@ -826,7 +827,7 @@ function DataProcessing() {
       gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       let Iscalculated = filter[0].isCalculated;
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 ? true : false, sorting: false, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 || Interval==window.Intervalval ? true : false, sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           console.log(item);
@@ -1059,7 +1060,7 @@ function DataProcessing() {
       Intervaltype = Intervaltypesplit[0];
     }
     let isAvgData = false;
-    if (Interval == '15-M') {
+    if (Interval == window.Intervalval) {
       isAvgData = false;
     }
     else {
@@ -1195,7 +1196,7 @@ function DataProcessing() {
       Intervaltype = type[0];
     }
     let isAvgData = false;
-    if (Interval == '15-M') {
+    if (Interval == window.Intervalval) {
       isAvgData = false;
     }
     else {
