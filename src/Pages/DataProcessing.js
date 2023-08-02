@@ -10,6 +10,8 @@ import 'jsuites/dist/jsuites.css'; // Import jsuites CSS
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 //import { debounce } from 'lodash';
 
 import {
@@ -39,7 +41,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   TimeScale,
-  annotationPlugin,
+  annotationPlugin
 );
 
 function DataProcessing() {
@@ -827,7 +829,7 @@ function DataProcessing() {
       gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       let Iscalculated = filter[0].isCalculated;
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 || Interval==window.Intervalval ? true : false, sorting: false, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 || Interval!=window.Intervalval ? true : false, sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           console.log(item);
@@ -857,6 +859,8 @@ function DataProcessing() {
       allowComments: true,
       contextMenu: function (obj, x, y, e) {
         var items = [];
+        let Interval = document.getElementById("criteriaid").value;
+        if(Interval ==window.Intervalval){
         let rows=obj.getSelectedRows(true);
         let columns=obj.getSelectedColumns(true);
         items.push({
@@ -872,7 +876,7 @@ function DataProcessing() {
             EditMultipleValues(rows,columns);
           }
         });
-
+      }
         return items;
       },
       //  lazyLoading: true,
@@ -1829,14 +1833,41 @@ function DataProcessing() {
   }
   
 
-  const saveCanvas=function() {
-    var a = document.createElement('a');
+  const DownloadPng=function() {
+    const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+      const image = canvas.toDataURL('image/png');
+
+      // Create a download link and trigger click event
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = 'DataValidationChart.png';
+      downloadLink.click();
+    });
+    /* var a = document.createElement('a');
     a.href = chartRef.current.toBase64Image();
     a.download = 'chart.png';
-    a.click();
+    a.click(); */
     return;
-   
 }
+
+const DownloadPdf = () => {
+  const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+    const chartImage = canvas.toDataURL('image/png');
+
+    // Create a PDF using jsPDF
+    const pdf = new jsPDF();
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('DataValidationChart.pdf');
+  });
+};
 
 
   const toggleAllLegends = function () {
@@ -2057,10 +2088,6 @@ function DataProcessing() {
             {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               
               <div className="chartmaindiv">
-                <div className="float-end">
-                <button type="button" className="btn btn-primary"  onClick={saveCanvas}>Download Chart</button>
-                </div>
-                
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} id="chartCanvas" />
                 <div className="text-center"> 
                   <input
@@ -2070,6 +2097,10 @@ function DataProcessing() {
                     onChange={toggleAllLegends}
                   />&nbsp;
                   <label className="form-check-label">Select All</label>
+                </div>
+                <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
               </div>
             )}

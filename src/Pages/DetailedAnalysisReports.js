@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import 'chartjs-adapter-moment';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -35,6 +37,7 @@ function DetailedAnalysisReports() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const chartRef = useRef();
+  const chartRefMain = useRef();
   const [selectedStations, setselectedStations] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
@@ -51,6 +54,7 @@ function DetailedAnalysisReports() {
   const [ChartDataExcedence1h, setChartDataExcedence1h] = useState({ labels: [], datasets: [] });
   const [ChartOptionsExcedence1h, setChartOptionsExcedence1h] = useState();
   const [AllLookpdata, setAllLookpdata] = useState(null);
+  const [AllDataList, setAllDataList] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
@@ -131,6 +135,7 @@ function DetailedAnalysisReports() {
           getchartdataHourly(data1.HourlyData, Pollutent, ChartType, Criteria);
           getchartdataExcedence24H(data1['HourlyDataExedence' + Interval1[0]], Pollutent, ChartType, Criteria, data1.Excedencevalues, Interval1[0]);
           getchartdataExcedence1H(data1['HourlyDataExedence' + Interval1[1]], Pollutent, ChartType, Criteria, data1.Excedencevalues, Interval1[1]);
+          setAllDataList(data1);
         }
       }).catch((error) => console.log(error));
   }
@@ -567,6 +572,43 @@ function DetailedAnalysisReports() {
     }, 10);
   }
   /* Barchart End */
+
+  const DownloadPng=function() {
+    const chartElement = chartRefMain.current;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+      const image = canvas.toDataURL('image/png');
+
+      // Create a download link and trigger click event
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = 'DetailedAnalysisReport.png';
+      downloadLink.click();
+    });
+    /* var a = document.createElement('a');
+    a.href = chartRef.current.toBase64Image();
+    a.download = 'chart.png';
+    a.click(); */
+    return;
+}
+
+const DownloadPdf = () => {
+  const chartElement = chartRefMain.current;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+    const chartImage = canvas.toDataURL('image/png');
+
+    // Create a PDF using jsPDF
+    const pdf = new jsPDF();
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('DetailedAnalysisReport.pdf');
+  });
+};
+
   return (
     <main id="main" className="main" >
       {/* Same as */}
@@ -610,7 +652,8 @@ function DetailedAnalysisReports() {
             </div>
 
 
-            <div className="row mt-0">
+            <div className="row mt-0" >
+              <div className="row mt-0" ref={chartRefMain}>
               {ChartOptionsAvg && (
                 <div className="col-md-6">
                   <div className="card">
@@ -665,6 +708,13 @@ function DetailedAnalysisReports() {
                   </div>
                 </div>
               )}
+              </div>
+              {AllDataList !=null &&(
+               <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                </div>
+                )}
             </div>
           </div>
         </div>

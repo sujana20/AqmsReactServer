@@ -7,6 +7,8 @@ import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import CommonFunctions from "../utils/CommonFunctions";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -1263,6 +1265,43 @@ function HistoricalData() {
     // }, 10);
   }
   /* Chart End */
+
+  const DownloadPng=function() {
+    const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+      const image = canvas.toDataURL('image/png');
+
+      // Create a download link and trigger click event
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = 'DataBrowsingChart.png';
+      downloadLink.click();
+    });
+    /* var a = document.createElement('a');
+    a.href = chartRef.current.toBase64Image();
+    a.download = 'chart.png';
+    a.click(); */
+    return;
+}
+
+const DownloadPdf = () => {
+  const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+    const chartImage = canvas.toDataURL('image/png');
+
+    // Create a PDF using jsPDF
+    const pdf = new jsPDF();
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('DataBrowsingChart.pdf');
+  });
+};
+
   const toggleAllLegends = function () {
     let chartinstance = chartRef.current;
     if (allLegendsChecked) {
@@ -1451,7 +1490,6 @@ function HistoricalData() {
             {ListReportData.length > 0 && ChartData && (
               <div className="card p-2" >
                 <div className="card-body">
-
                   <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
                   <div className="text-center">
                     <input className="form-check-input"
@@ -1461,6 +1499,10 @@ function HistoricalData() {
                     />
                     <label className="checkboxStylelabel">Select All</label>
                   </div>
+                  <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                </div>
                 </div>
               </div>
             )}
