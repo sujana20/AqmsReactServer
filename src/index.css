@@ -830,3 +830,8 @@ table.jexcel colgroup col:nth-child(1) {
 .react-checkbox-tree label{
   font-size: 12px;
 }
+.jexcel tbody .jexcel_freezed {
+  position: sticky !important;
+  left: 0px !important;
+  background-color: #fff!important;
+}

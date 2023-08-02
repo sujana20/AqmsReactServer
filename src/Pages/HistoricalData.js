@@ -252,7 +252,12 @@ function HistoricalData() {
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
-      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0]);
+      let filter = [];
+      if(Parameterssplit.length>1){
+        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1]);
+      }else{
+        filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == selectedStations);
+      }
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       layout.push({
@@ -857,12 +862,13 @@ function HistoricalData() {
       $('#groupid').removeClass("disable");
     }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
+    setselectedStations(e.target.value);
     setPollutents(finaldata);
     setTimeout(function () {
       $('.pollutentid')[0].sumo.reload();
     }, 10);
   }
-  $('#stationid').change(function (event) {
+ /*  $('#stationid').change(function (event) {
     setPollutents([]);
     setcriteria([]);
     let filter = $(this).val();
@@ -889,7 +895,7 @@ function HistoricalData() {
       // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
     }, 10);
-  })
+  }) */
   const Changepollutent = function (e) {
     setcriteria([]);
     console.log(selectedStations);
