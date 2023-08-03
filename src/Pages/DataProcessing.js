@@ -264,9 +264,10 @@ function DataProcessing() {
       let ModifyBy = currentUser.id;
       let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
       if (param.id != 1 || Calculatedparameter[0].loggerFlags != 14) {
+        if(Calculatedparameter[0].loggerFlags !=param.id){
         Calculatedparameter[0].loggerFlags = param.id;
         flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
-
+        }
       }//cellnames.push(cellName);
       if (findcolumn != -1) {
         let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
@@ -444,9 +445,10 @@ function DataProcessing() {
                 }
               }
               if (param.id != 1 || filtered[0].loggerFlags != 14) {
+                if(filtered[0].loggerFlags !=param.id){
                 filtered[0].loggerFlags=param.id;
-                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
-
+               flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+                }
               }//cellnames.push(cellName);
               
               if (cellName) {
