@@ -860,22 +860,36 @@ function DataProcessing() {
       contextMenu: function (obj, x, y, e) {
         var items = [];
         let Interval = document.getElementById("criteriaid").value;
-        if(Interval ==window.Intervalval){
-        let rows=obj.getSelectedRows(true);
         let columns=obj.getSelectedColumns(true);
+        if(columns.length==1 && columns[0]==0){
+          return items;
+        }
+        if(Interval == window.Intervalval){
+        let rows=obj.getSelectedRows(true);
         items.push({
           title: "Restore to Original",
           onclick: function () {
             RestoretoOriginal(rows,columns);
           }
         });
-
-        items.push({
-          title: "Batch Edit",
-          onclick: function () {
-            EditMultipleValues(rows,columns);
-          }
-        });
+        let Parameterssplit = SelectedPollutents[columns[0]-1].split("@_");
+        let filter = [];
+        if(Parameterssplit.length>1){
+          filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1] && x.isCalculated==1);
+        }else{
+          filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == selectedStations && x.isCalculated==1);
+        }
+        if(columns.length ==1 && filter.length ==1){
+          return items;
+        }else{
+          items.push({
+            title: "Batch Edit",
+            onclick: function () {
+              EditMultipleValues(rows,columns);
+            }
+          });
+        }
+       
       }
         return items;
       },
