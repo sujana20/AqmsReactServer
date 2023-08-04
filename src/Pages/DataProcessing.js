@@ -613,6 +613,8 @@ function DataProcessing() {
       else {
         value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
       }
+     // Calculatedparameter[0].parametervalue=value;
+     Calculatedparameter[0].parametervalue=value==null?value:parseFloat(value);
       jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
       if(Calculatedparameter[0].parametervalueOrginal !=Calculatedparameter[0].parametervalue || Calculatedparameter[0].loggerFlags !=Calculatedparameter[0].loggerFlagsOriginal){
         flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
@@ -620,6 +622,7 @@ function DataProcessing() {
         if (findcolumn != -1) {
         let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
         if (cellName) {
+          Calculatedparameter[0].loggerFlags=Calculatedparameter[0].loggerFlagsOriginal;
           let color=AllLookpdata.listFlagCodes.filter(x=>x.id==Calculatedparameter[0].loggerFlagsOriginal)
           jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
           jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
@@ -715,11 +718,13 @@ function DataProcessing() {
                 else {
                   value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
                 }
+                filtered[0].parametervalue=value==null?value:parseFloat(value);
                 jspreadRef.current.jexcel.updateCell(k, i,value , true);
                 flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
               
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
+                filtered[0].loggerFlags= filtered[0].loggerFlagsOriginal;
                 let color=AllLookpdata.listFlagCodes.filter(x=>x.id==filtered[0].loggerFlagsOriginal)
                 jspreadRef.current.jexcel.getCell(cellName).style.backgroundColor = color.length>0?color[0].colorCode:"#FFFFF";
                 jspreadRef.current.jexcel.getCell(cellName).classList.remove('cellhelight');
