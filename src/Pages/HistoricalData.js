@@ -589,7 +589,8 @@ function HistoricalData() {
     GetProcessingData(currentPage, true);
   }
 
-  const DownloadExcel = function () {
+  const DownloadExcel = function (filetype) {
+    
     document.getElementById('loader').style.display = "block";
 
     let Station = "";
@@ -670,7 +671,7 @@ function HistoricalData() {
       validRecord = "Invalid";
     }
 
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord });
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord,fileType:filetype });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingDataExportExcel?"
@@ -1451,7 +1452,8 @@ const DownloadPdf = () => {
                           </label>
                           <input className="form-check-input" type="checkbox" id="invalidCheck" />
                         </div>
-                        <button type="button" className="btn btn-primary datashow me-0" onClick={DownloadExcel}>Download Excel</button>
+                        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp;
+                        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
                       </div>
                     )}
 
