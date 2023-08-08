@@ -177,6 +177,8 @@ function LiveData() {
   }
  
   const loadtable = function (instance) {
+    let Interval = document.getElementById("criteriaid").value;
+    if(Interval==window.Intervalval){
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = [];
@@ -199,6 +201,7 @@ function LiveData() {
         }
       }
     }
+  }
      spreadsheetcontainer = document.querySelector(".jexcel_content");
     if(spreadsheetcontainer != null){
       spreadsheetcontainer.scrollTop = spreadsheetcontainer.scrollHeight;
@@ -550,6 +553,7 @@ function LiveData() {
     setTimeout(function () {
       // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
+      $('.pollutentid')[0].sumo.unSelectAll(); 
     }, 10);
   }
   const ChangeGroupName = function (e) {

@@ -51,6 +51,7 @@ var nodes = [{
     expandicon:'bi bi-chevron-down ms-auto',
     icon:'bi bi-menu-button-wide',
     children: [
+        { value: 'Licence', label: 'Licence', url:'/AddLicence', icon:'bi bi-circle' },
         { value: 'Users', label: 'Users', url:'/Adduser', icon:'bi bi-circle' },
         { value: 'Userlog', label: 'Users Log', url:'/UserLogHistory', icon:'bi bi-circle' },
         { value: 'Applicationlog', label: 'Application Log', url:'/AppLogHistory', icon:'bi bi-circle'},
@@ -66,8 +67,14 @@ var nodes = [{
         { value: 'Statisticalreports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
         { value: 'Predefinedcharts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },
         { value: 'Detailedanalysisreport', label: 'Detailed Analysis Report', url:'/DetailedAnalysisReports', icon:'bi bi-circle'},
+        { value: 'ExceedenceReport', label: 'Exceedence Report', url:'/ExceedenceReport', icon:'bi bi-circle'},
         { value: 'Datavalidation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
         { value: 'Livedata', label: 'Live Data', url:'/LiveData', icon:'bi bi-circle' },
         { value: 'Databrowsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
     ],
 }];
+
+var parameterNO="NO";
+var parameterNO2="NO2";
+var parameterNOx="NOX";
+var Noxparamcalc="NOX_ug/m3"

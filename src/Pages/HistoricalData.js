@@ -204,6 +204,8 @@ function HistoricalData() {
   }
 
   const loadtable = function (instance) {
+    let Interval = document.getElementById("criteriaid").value;
+    if(Interval==window.Intervalval){
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = [];
@@ -225,6 +227,7 @@ function HistoricalData() {
           }
         }
       }
+    }
     }
   }
 
@@ -869,6 +872,7 @@ function HistoricalData() {
     setPollutents(finaldata);
     setTimeout(function () {
       $('.pollutentid')[0].sumo.reload();
+      $('.pollutentid')[0].sumo.unSelectAll(); 
     }, 10);
   }
  /*  $('#stationid').change(function (event) {

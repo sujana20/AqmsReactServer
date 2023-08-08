@@ -36,7 +36,8 @@ const GroupingParameter=lazy(() => import("./Pages/GroupingParameter"));
 const ServerDashBoard=lazy(() => import("./Pages/ServerDashBoard"));
 const UserGroups=lazy(() => import("./Pages/UserGroups"));
 const PagenotFound=lazy(() => import("./Pages/PagenotFound"));
-
+const AddLicence=lazy(() => import("./Pages/AddLicense"));
+const ExceedenceReport=lazy(() => import("./Pages/ExceedenceReport"));
 function App() {
    // const [location, setlocation] = useState(window.location.pathname);
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
@@ -82,6 +83,8 @@ function App() {
           <Route   path="/GroupingParameter" exact element={currentUser !=null && permissions.indexOf("Grouping")>=0 ? <GroupingParameter /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/UserGroups" exact element={currentUser !=null && permissions.indexOf("UsersGroup")>=0 ? <UserGroups /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/PagenotFound" exact element={currentUser !=null && permissions.indexOf("PagenotFound")>=0 ? <PagenotFound /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
+          <Route   path="/AddLicence" exact element={currentUser !=null && permissions.indexOf("Licence")>=0 ? <AddLicence /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
+          <Route   path="/ExceedenceReport" exact element={currentUser !=null && permissions.indexOf("ExceedenceReport")>=0 ? <ExceedenceReport /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
         </Routes>
       </Suspense>
   {/* </BrowserRouter> */}

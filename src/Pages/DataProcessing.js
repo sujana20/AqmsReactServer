@@ -229,33 +229,38 @@ function DataProcessing() {
     chart.update();
   }
   const Calculateparameter = function (Calculatedparameter, calparamname, value, y, Parameter) {
+    if(Parameter !=window.parameterNOx){
     let Iscalculated = AllLookpdata.listPollutents.filter(x => x.parameterName == Calculatedparameter[0].parameterName && x.isCalculated == 1);
     if (Iscalculated.length > 0) {
       let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
       let calvaluefilter = AllLookpdata.listConversionfactors.filter(x => x.parameter == Parameter);
       let calvalue = value == null || calvaluefilter[0].conversionFactor == null ? null : value * calvaluefilter[0].conversionFactor;
+      
       let calvalue1 = null;
-      if (window.TruncateorRound == "RoundOff") {
+      calvalue1=ValueRoundoff(calvalue);
+     /*  if (window.TruncateorRound == "RoundOff") {
         calvalue1 = calvalue == null ? calvalue : calvalue.toFixed(digit);
       }
       else {
         calvalue1 = calvalue == null ? calvalue : CommonFunctions.truncateNumber(calvalue, digit)
-      }
-      let index = olddata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
+      } */
+      let ModifyBy = currentUser.id;
+     /*  let index = olddata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
       let index1 = newdata.current.findIndex(x => x.ID == Calculatedparameter[0].id);
       if (index == -1) {
         olddata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter.length > 0 ? Calculatedparameter[0].parametervalue : null, col: findcolumn + 1, row: y, loggerFlags: Calculatedparameter.length > 0 ? Calculatedparameter[0].loggerFlags : null,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       }
-      let ModifyBy = currentUser.id;
       if (index1 == -1) {
-        newdata.current.push({ ID: Calculatedparameter[0].id, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
+        newdata.current.push({ ID: Calculatedparameter[0].id,ParameterName:Calculatedparameter[0].parameterName, Parametervalue: calvalue, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       } else {
         newdata.current[index1].Parametervalue = calvalue;
-      }
+      } */
+      changedarray(Calculatedparameter,findcolumn + 1,y,calvalue,ModifyBy);
       if (findcolumn != -1) {
         jspreadRef.current.jexcel.updateCell(findcolumn + 1, y, calvalue1, true);
       }
     }
+  }
   }
 
   const CalculateparameterUpdateFlag = function (Calculatedparameter, calparamname, i, param) {
@@ -266,7 +271,7 @@ function DataProcessing() {
       if (param.id != 1 || Calculatedparameter[0].loggerFlags != 14) {
         if(Calculatedparameter[0].loggerFlags !=param.id){
         Calculatedparameter[0].loggerFlags = param.id;
-        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
+        flagdata.push({ ID: Calculatedparameter[0].id,ParameterName:Calculatedparameter[0].parameterName, Parametervalue: Calculatedparameter[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
         }
       }//cellnames.push(cellName);
       if (findcolumn != -1) {
@@ -277,6 +282,89 @@ function DataProcessing() {
         }
       }
     }
+  }
+
+  const CalculateparameterNox=function(filtered,value,y,param){
+    let Parametersplit = param.split("@_");
+    let ModifyBy = currentUser.id;
+    var NOvalue = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterName == window.parameterNO && row.stationID == filtered[0].stationID);
+    var NO2value = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterName == window.parameterNO2 && row.stationID == filtered[0].stationID);
+    var NOXvalue = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterName == window.parameterNOx && row.stationID == filtered[0].stationID);
+    let findcolumn = -1;
+    let findcolumn2 =1;
+    let filtercalcparameter = AllLookpdata.listPollutents.filter(x => x.parameterName == window.parameterNOx && x.stationID == filtered[0].stationID);
+        filtercalcparameter = AllLookpdata.listPollutents.filter(x => x.parameterID == filtercalcparameter[0].parameterID && x.stationID == filtered[0].stationID && x.isCalculated==1);
+    if(Parametersplit.length>1){
+      findcolumn = SelectedPollutents.findIndex(x => x == window.parameterNOx +"@_"+Parametersplit[1]);
+      findcolumn2 = filtercalcparameter.length>0?SelectedPollutents.findIndex(x => x == (filtercalcparameter[0].parameterName+"@_"+filtercalcparameter.stationID)):-1; 
+    }else{
+      findcolumn = SelectedPollutents.findIndex(x => x == window.parameterNOx);
+      findcolumn2 = filtercalcparameter.length>0?SelectedPollutents.findIndex(x => x == filtercalcparameter[0].parameterName):-1;  
+    }
+    let NOXvalue1=null;
+    let NOXcalvalue=null;
+    value=value==null?value:parseFloat(value);
+    let Calculatedparameter=[];
+    let NoConversionfactor=AllLookpdata.listConversionfactors.filter(x => x.parameter == window.parameterNO)[0].conversionFactor;
+    let No2Conversionfactor=AllLookpdata.listConversionfactors.filter(x => x.parameter == window.parameterNO2)[0].conversionFactor;
+    if(param==window.parameterNO){
+        if(NO2value.length==0 && NOXvalue.length>0){
+        let NO2value1=NOXvalue[0].parametervalue==null || NOvalue[0].parametervalue ==null ?null:NOXvalue[0].parametervalue-NOvalue[0].parametervalue;
+         NOXvalue1=NO2value1==null?null:value+NO2value1;
+         if(findcolumn2>0){
+         NOXcalvalue=NO2value1==null?null:(value*NoConversionfactor)+(NO2value1*No2Conversionfactor);
+         }
+        }else{
+           NOXvalue1=NO2value[0].parametervalue==null || NO2value[0].parametervalue==null?null:value+NO2value[0].parametervalue;
+           if(findcolumn2>0){
+           NOXcalvalue=NOXvalue1==null?null:(value*NoConversionfactor)+(NO2value[0].parametervalue*No2Conversionfactor);
+           }
+        }
+      }else if(param==window.parameterNO2){
+        if(NOvalue.length==0 && NOXvalue.length>0){
+          let NOvalue1=NOXvalue[0].parametervalue==null || NO2value[0].parametervalue ==null ?null:NOXvalue[0].parametervalue-NO2value[0].parametervalue;
+           NOXvalue1=NOvalue1==null?null:value+NOvalue1;
+           if(findcolumn2>0){
+           NOXcalvalue=NOXvalue1==null?null:(value*No2Conversionfactor)+(NOvalue1*NoConversionfactor);
+           }
+          }else{
+             NOXvalue1=NOvalue[0].parametervalue==null || NO2value[0].parametervalue==null?null:value+NOvalue[0].parametervalue;
+             if(findcolumn2>0){
+              NOXcalvalue=NOXvalue1==null?null:(value*No2Conversionfactor)+(NOvalue[0].parametervalue*No2Conversionfactor);
+              }
+          }
+      }
+      if(NOXvalue.length>0){
+        changedarray(NOXvalue,findcolumn+1,y,NOXvalue1,ModifyBy);
+      }
+      if(findcolumn2>0){
+        Calculatedparameter=ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterID === filtercalcparameter[0].id && row.stationID === filtercalcparameter[0].stationID)
+        let calparamname=SelectedPollutents[findcolumn2];
+        if(Calculatedparameter.length>0){
+        changedarray(Calculatedparameter,findcolumn2+1,y,NOXcalvalue,ModifyBy);
+        let calvalue1=ValueRoundoff(NOXcalvalue);
+        if (findcolumn2 != -1) {
+          jspreadRef.current.jexcel.updateCell(findcolumn2 + 1, y, calvalue1, true);
+        }
+          //Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
+        }
+      }
+      
+     let calvalue1=ValueRoundoff(NOXvalue1);
+
+      if (findcolumn != -1) {
+        jspreadRef.current.jexcel.updateCell(findcolumn + 1, y, calvalue1, true);
+      }
+  }
+  const ValueRoundoff=function(value){
+    let calvalue = null; 
+    if (window.TruncateorRound == "RoundOff") {
+      calvalue = value == null ? value : value.toFixed(digit);
+    }
+    else {
+      calvalue = value == null ? value : CommonFunctions.truncateNumber(value, digit)
+    }
+    return calvalue;
   }
   const changed = function (instance, cell, x, y, value) {
     let changearr = dataForGridref.current[y];
@@ -295,30 +383,26 @@ function DataProcessing() {
       if (Parametersplit.length > 1) {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == Parametersplit[0] && row.stationID == Parametersplit[1]);
         Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+        if(Parametersplit == window.parameterNO || Parametersplit == window.parameterNO2){
+          CalculateparameterNox(filtered,value,y,Parametersplit);
+        }
         if (Calculatedparameter.length > 0) {
           let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
-          Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
+          Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit);
         }
       } else {
         filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
         Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+        if(Parametersplit == window.parameterNO || Parametersplit == window.parameterNO2){
+          CalculateparameterNox(filtered,value,y,Parametersplit[0]);
+        }
         if (Calculatedparameter.length > 0) {
           let calparamname = Calculatedparameter[0].parameterName;
           Calculateparameter(Calculatedparameter, calparamname, value, y, Parametersplit[0]);
         }
       }
-      let index = olddata.current.findIndex(x => x.ID == filtered[0].id);
-      let index1 = newdata.current.findIndex(x => x.ID == filtered[0].id);
-      if (index == -1) {
-        olddata.current.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
-      }
       let ModifyBy = currentUser.id;
-      if (index1 == -1) {
-        newdata.current.push({ ID: filtered[0].id, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
-      } else {
-        newdata.current[index1].Parametervalue = value;
-      }
-
+      changedarray(filtered,x,y,value,ModifyBy);
       filtered[0].parametervalue = value == null ? value : parseFloat(value);
       filtered[0].loggerFlags = window.Editflag;
       let Parametername = SelectedPollutents[x - 1];
@@ -335,6 +419,19 @@ function DataProcessing() {
     chartdata.datasets[x - 1].data[y].y = value;
     chart.update();
     revertRef.current = false;
+  }
+
+  const changedarray=function(filtered,x,y,value,ModifyBy){
+    let index = olddata.current.findIndex(x => x.ID == filtered[0].id);
+      let index1 = newdata.current.findIndex(x => x.ID == filtered[0].id);
+      if (index == -1) {
+        olddata.current.push({ ID: filtered[0].id, Parametervalue: filtered.length > 0 ? filtered[0].parametervalue : null, col: x, row: y, loggerFlags: filtered.length > 0 ? filtered[0].loggerFlags : null,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+      }
+      if (index1 == -1) {
+        newdata.current.push({ ID: filtered[0].id,ParameterName:filtered[0].parameterName, Parametervalue: value, ModifyBy: ModifyBy, LoggerFlags: window.Editflag,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+      } else {
+        newdata.current[index1].Parametervalue = value;
+      }
   }
 
   const SaveEditedData = function () {
@@ -373,13 +470,13 @@ function DataProcessing() {
         } else {
           for (let i = 0; i < OldData.current.length; i++) {
             revertRef.current = true;
-            let value = 0;
-            if (window.TruncateorRound == "RoundOff") {
+            let value = ValueRoundoff(OldData.current[i].Parametervalue);
+           /*  if (window.TruncateorRound == "RoundOff") {
               value = OldData.current[i].Parametervalue == null ? OldData.current[i].Parametervalue : OldData.current[i].Parametervalue.toFixed(digit);
             }
             else {
               value = OldData.current[i].Parametervalue == null ? OldData.current[i].Parametervalue : CommonFunctions.truncateNumber(OldData.current[i].Parametervalue, digit)
-            }
+            } */
             jspreadRef.current.jexcel.updateCell(OldData.current[i].col, OldData.current[i].row, value, true);
             let cell = jspreadRef.current.jexcel.getCellFromCoords(OldData.current[i].col, OldData.current[i].row);
             let classname = CommonFunctions.SetFlagColor(OldData.current[i].loggerFlags == null ? window.Okflag : OldData.current[i].loggerFlags, Flagcodelist);
@@ -447,7 +544,7 @@ function DataProcessing() {
               if (param.id != 1 || filtered[0].loggerFlags != 14) {
                 if(filtered[0].loggerFlags !=param.id){
                 filtered[0].loggerFlags=param.id;
-               flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+               flagdata.push({ ID: filtered[0].id,ParameterName:filtered[0].parameterName, Parametervalue: filtered[0].parametervalue, ModifyBy: ModifyBy, LoggerFlags: param.id,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
                 }
               }//cellnames.push(cellName);
               
@@ -458,7 +555,7 @@ function DataProcessing() {
             }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingUpdateflag', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -479,6 +576,8 @@ function DataProcessing() {
 
   }
   const loadtable = function (instance) {
+    let Interval = document.getElementById("criteriaid").value;
+      if(Interval==window.Intervalval){
     for (let i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = [];
@@ -501,6 +600,7 @@ function DataProcessing() {
         }
       }
     }
+  }
   }
 
   const gethistory = function () {
@@ -533,12 +633,13 @@ function DataProcessing() {
         value = data[0].Parametervalue;
         filtered[0].parametervalue=data[0].Parametervalue;
         filtered[0].loggerFlags=data[0].LoggerFlags;
-        if (window.TruncateorRound == "RoundOff") {
+        value=ValueRoundoff(value);
+        /* if (window.TruncateorRound == "RoundOff") {
           value = value == null ? value : value.toFixed(digit);
         }
         else {
           value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
-        }
+        } */
       jspreadRef.current.jexcel.updateCell(k, i,value , true);
       var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
       if (cellName) {
@@ -607,12 +708,13 @@ function DataProcessing() {
     if (Calculatedparameter.length > 0) {
       let findcolumn = SelectedPollutents.findIndex(x => x == calparamname);
       let value=Calculatedparameter[0].parametervalueOrginal;
-      if (window.TruncateorRound == "RoundOff") {
+      value=ValueRoundoff(value);
+      /* if (window.TruncateorRound == "RoundOff") {
         value = value == null ? value : value.toFixed(digit);
       }
       else {
         value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
-      }
+      } */
      // Calculatedparameter[0].parametervalue=value;
      Calculatedparameter[0].parametervalue=value==null?value:parseFloat(value);
       jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
@@ -712,12 +814,13 @@ function DataProcessing() {
               if(filtered[0].parametervalueOrginal !=filtered[0].parametervalue || filtered[0].loggerFlags !=filtered[0].loggerFlagsOriginal){
                 revertRef.current=true;
                 let value=filtered[0].parametervalueOrginal;
-                if (window.TruncateorRound == "RoundOff") {
+                value=ValueRoundoff(value);
+                /* if (window.TruncateorRound == "RoundOff") {
                   value = value == null ? value : value.toFixed(digit);
                 }
                 else {
                   value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
-                }
+                } */
                 filtered[0].parametervalue=value==null?value:parseFloat(value);
                 jspreadRef.current.jexcel.updateCell(k, i,value , true);
                 flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
@@ -789,12 +892,13 @@ function DataProcessing() {
               return false;
             }
             let value=filtered[0].parametervalue*parseFloat(multiplier)+parseFloat(constant);
-            if (window.TruncateorRound == "RoundOff") {
+            value=ValueRoundoff(value);
+           /*  if (window.TruncateorRound == "RoundOff") {
               value = value == null ? value : value.toFixed(digit);
             }
             else {
               value = value == null ? value : CommonFunctions.truncateNumber(value, digit)
-            }
+            } */
             jspreadRef.current.jexcel.updateCell(k, i,value , true);
           }
         }
@@ -1015,14 +1119,15 @@ function DataProcessing() {
       dataForGrid = dataForGridref.current;
       var temp = dataForGrid.findIndex(x => x.Date === ReportData[k].interval);
       let roundedNumber = 0;
-      if (window.TruncateorRound == "RoundOff") {
+      roundedNumber=ValueRoundoff(ReportData[k].parametervalue);
+      /* if (window.TruncateorRound == "RoundOff") {
 
         let num = ReportData[k].parametervalue;
         roundedNumber = num == null ? num : num.toFixed(digit);
       }
       else {
         roundedNumber = ReportData[k].parametervalue == null ? ReportData[k].parametervalue : CommonFunctions.truncateNumber(ReportData[k].parametervalue, digit);
-      }
+      } */
       if (Groupid != "") {
         if (temp >= 0) {
           dataForGrid[temp][ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
@@ -1363,8 +1468,8 @@ function DataProcessing() {
     setselectedStations(e.target.value);
     setPollutents(finaldata);
     setTimeout(function () {
-      // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
+      $('.pollutentid')[0].sumo.unSelectAll(); 
     }, 10);
   }
   const ChangeGroupName = function (e) {
