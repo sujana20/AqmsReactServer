@@ -113,6 +113,8 @@ function DetailedAnalysisReports() {
     let Interval = '1440,60';
     let Interval1 = Interval.split(',');
     let valid = ReportValidations(Station, Pollutent, FromYear, ToYear, Interval);
+    let unitid=AllLookpdata.listPollutents.filter(x=>x.parameterName==Pollutent && x.stationID==Station)[0]?.unitID;
+    let Pollutent1=Pollutent+"_"+unitid;
     if (!valid) {
       return false;
     }
@@ -124,7 +126,7 @@ function DetailedAnalysisReports() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationName: Station, FromYear: FromYear, ToYear: ToYear, DataFilter: Interval, Pollutant: Pollutent }),
+      body: JSON.stringify({ StationName: Station, FromYear: FromYear, ToYear: ToYear, DataFilter: Interval, Pollutant: Pollutent1 }),
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
