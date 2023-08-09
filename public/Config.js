@@ -53,9 +53,9 @@ var nodes = [{
     children: [
         { value: 'Licence', label: 'Licence', url:'/AddLicence', icon:'bi bi-circle' },
         { value: 'Users', label: 'Users', url:'/Adduser', icon:'bi bi-circle' },
-        { value: 'Userlog', label: 'Users Log', url:'/UserLogHistory', icon:'bi bi-circle' },
-        { value: 'Applicationlog', label: 'Application Log', url:'/AppLogHistory', icon:'bi bi-circle'},
-        { value: 'UsersGroup', label: 'Users Group', url:'/UserGroups', icon:'bi bi-circle'},
+        { value: 'Users Log', label: 'Users Log', url:'/UserLogHistory', icon:'bi bi-circle' },
+        { value: 'Application Log', label: 'Application Log', url:'/AppLogHistory', icon:'bi bi-circle'},
+        { value: 'Users Group', label: 'Users Group', url:'/UserGroups', icon:'bi bi-circle'},
     ],
 },{
     value: 'Reports',
@@ -64,13 +64,13 @@ var nodes = [{
     expandicon:'bi bi-chevron-down ms-auto',
     icon:'bi bi-bar-chart',
     children: [
-        { value: 'Statisticalreports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
-        { value: 'Predefinedcharts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },
-        { value: 'Detailedanalysisreport', label: 'Detailed Analysis Report', url:'/DetailedAnalysisReports', icon:'bi bi-circle'},
-        { value: 'ExceedenceReport', label: 'Exceedence Report', url:'/ExceedenceReport', icon:'bi bi-circle'},
-        { value: 'Datavalidation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
+        { value: 'Statistical Reports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
+        { value: 'Predefined Charts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },
+        { value: 'Detailed Analysis Report', label: 'Detailed Analysis Report', url:'/DetailedAnalysisReports', icon:'bi bi-circle'},
+        { value: 'Exceedence Report', label: 'Exceedence Report', url:'/ExceedenceReport', icon:'bi bi-circle'},
+        { value: 'Data Validation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
         { value: 'Livedata', label: 'Live Data', url:'/LiveData', icon:'bi bi-circle' },
-        { value: 'Databrowsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
+        { value: 'Data Browsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
     ],
 }];
 

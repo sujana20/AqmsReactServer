@@ -63,7 +63,14 @@ function UserGroups(){
           },
           fields: [
             { name: "groupName", title: "User Name", type: "text", width:"30px" },
-            { name: "permissions", title: "Permission", type: "text", width:"100px" },            
+            { name: "permissions", title: "Permission", type: "text", width:"100px",
+            itemTemplate: function(value) {
+              // Split values by comma and join with line breaks
+              var valuesArray = value.split(",");
+              var formattedValues = valuesArray.join("<br>");
+              return formattedValues;
+              }
+            },            
             {
               type: "control", width: 10, editButton: false, deleteButton: false,
               itemTemplate: function (value, item) {
