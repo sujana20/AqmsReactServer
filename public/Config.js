@@ -77,4 +77,5 @@ var nodes = [{
 var parameterNO="NO";
 var parameterNO2="NO2";
 var parameterNOx="NOX";
-var Noxparamcalc="NOX_ug/m3"
+var Noxparamcalc="NOX_ug/m3";
+var RollingParameters=["CO","O3","CO_Mg/m3","O3_ug/m3"]
