@@ -263,19 +263,9 @@ function ExceedenceReport() {
     var UnitName=AllData.listReportedunits.filter(x=>x.id==UnitID);
     var StationName=AllData.listStations.filter(x=>x.id==StationID);
     var AvgInterval;
-    if(Interval==60){
-      AvgInterval="1 Hour";
-    }
-    else if(Interval==480){
-      AvgInterval="8 Hours";
-    }
-    else if(Interval==720){
-      AvgInterval="12 Hours"
-    }
-    else if(Interval==1440){
-      AvgInterval="24 Hours";
-    }
+    var Interval1= Interval/60
 
+    AvgInterval=Interval1 + (Interval1==1 ? " Hour":" Hours");
 
     var tableheading = [];
     tableheading.push("Rank");
@@ -286,20 +276,12 @@ function ExceedenceReport() {
     var layout = new Date();
     var hours = layout.getHours();
     var minutes = layout.getMinutes();
-    if(hours==12){
       var ampm = hours >= 12 ? 'pm' : 'am';
       hours = hours % 12;
       hours = hours ? hours : 12; // the hour '0' should be '12'
       minutes = minutes < 10 ? '0'+minutes : minutes;
       var strTime = hours + ':' + minutes + ' ' + ampm;
-    }
-    else{
-      var ampm = hours >= 24 ? 'pm' : 'am';
-      hours = hours % 24;
-      hours = hours ? hours : 24; // the hour '0' should be '12'
-      minutes = minutes < 10 ? '0'+minutes : minutes;
-      var strTime = hours + ':' + minutes + ' ' + ampm;
-    }
+    
     fetch(process.env.REACT_APP_WSurl + 'api/AirQuality/ParameterExceedence?' + params, {
       method: 'GET',
     }).then((response) => response.json())
