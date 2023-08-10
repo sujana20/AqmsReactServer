@@ -54,6 +54,7 @@ function HistoricalData() {
   const [selectedgrid, setselectedgrid] = useState([]);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
+  const [isRolling, setisRolling] = useState(false);
   const [dataForGridcopy, setdataForGridcopy] = useState([]);
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
@@ -310,7 +311,7 @@ function HistoricalData() {
     const visibleRowCount = Math.ceil(sheetcontainer.clientHeight / rowHeight) - records;
     const scrollPosition = sheetcontainer.scrollTop;
     const firstVisibleRow = Math.floor(scrollPosition / rowHeight);
-    console.log(visibleRowCount, firstVisibleRow);
+   // console.log(visibleRowCount, firstVisibleRow);
     const visibleRecords = dataForGridref.current.slice(firstVisibleRow, firstVisibleRow + visibleRowCount); // Perform operations with the visibleRecords data, such as updating the display // or executing any other desired actions
     return visibleRecords;
     /* const targetRowIndex = 15; // Index of the target row
@@ -332,6 +333,7 @@ function HistoricalData() {
   const Getmaxvalue = function (visibleRecords, Key) {
     let max;
     let excludedKey = 'Date';
+    if(visibleRecords.length>0){
     if (Key != "") {
       // max = visibleRecords.reduce((a, b) => a[excludedKey] > b[excludedKey] ? a[excludedKey] : b[excludedKey])[excludedKey];
       max = visibleRecords.reduce((max, current) => {
@@ -359,6 +361,7 @@ function HistoricalData() {
       return maxValue;
 
     }
+  }
     //return max;
 
   }
@@ -366,6 +369,7 @@ function HistoricalData() {
     let min;
     let min1 = 0;
     let excludedKey = 'Date';
+    if(visibleRecords.length>0){
     if (Key != "") {
       min = visibleRecords.reduce((min, current) => {
         if (current[excludedKey] < min[excludedKey]) {
@@ -392,6 +396,7 @@ function HistoricalData() {
       }
       return minValue;
     }
+  }
     // return min;
 
   }
@@ -442,7 +447,9 @@ function HistoricalData() {
     setReportDataList(newData);
     ReportDataListRef.current = newData;
     getchartdata(newData, SelectedPollutents, "line", "Raw");
+    if(finaldata.length>0){
     spreadsheet.setData(finaldata);
+  }
     /* let jspcontainer = jspreadRef.current.jexcel;;
     let scrollTop = jspcontainer.scrollTop;
 
@@ -541,12 +548,18 @@ function HistoricalData() {
     document.getElementById('loader').style.display = "block";
     let type = Interval.split('-');
     let Intervaltype;
+    let isRollingAvg=false;
+    let isAvgData = false;
+    if(Interval != "Rolling"){
     if (type[1] == 'H') {
       Intervaltype = type[0] * 60;
     } else {
       Intervaltype = type[0];
     }
-    let isAvgData = false;
+    }else{
+      isRollingAvg=true;
+      Intervaltype =60;
+    }
     if (Interval == window.Intervalval) {
       isAvgData = false;
     }
@@ -554,7 +567,7 @@ function HistoricalData() {
       isAvgData = true;
     }
     startindex = (currentPage - 1) * pageLimit;
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData,isRollingAvg:isRollingAvg, StartIndex: startindex, PageLimit: pageLimit });
     // currentPage++;
     let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
     if (GroupId != "") {
@@ -625,13 +638,19 @@ function HistoricalData() {
     }
     document.getElementById('loader').style.display = "block";
     let Intervaltype;
+    let isAvgData = false;
+    let isRollingAvg=false;
     let Intervaltypesplit = Interval.split('-');
+    if(Interval !="Rolling"){
     if (Intervaltypesplit[1] == 'H') {
       Intervaltype = Intervaltypesplit[0] * 60;
     } else {
       Intervaltype = Intervaltypesplit[0];
     }
-    let isAvgData = false;
+  }else{
+    isRollingAvg=true;
+    Intervaltype =60;
+  }
     if (Interval == window.Intervalval) {
       isAvgData = false;
     }
@@ -674,7 +693,7 @@ function HistoricalData() {
       validRecord = "Invalid";
     }
 
-    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord,fileType:filetype });
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData,isRollingAvg:isRollingAvg, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord,fileType:filetype });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?"
     if (GroupId != "") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingDataExportExcel?"
@@ -756,6 +775,7 @@ function HistoricalData() {
   /* reported data end */
   const ChangeGroupName = function (e) {
     let stationParamaters = [];
+    setisRolling(false);
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
     $('.pollutentid')[0].sumo.reload();
@@ -859,6 +879,7 @@ function HistoricalData() {
     }
   }
   const ChangeStation = function (e) {
+    setisRolling(false);
     setPollutents([]);
     setcriteria([]);
     document.getElementById("groupid").value = "";
@@ -905,7 +926,7 @@ function HistoricalData() {
   }) */
   const Changepollutent = function (e) {
     setcriteria([]);
-    console.log(selectedStations);
+    //console.log(selectedStations);
     let stationID = document.getElementById("stationid").val();
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     if (finaldata.length > 0) {
@@ -928,9 +949,10 @@ function HistoricalData() {
     setcriteria([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
-
+    let Pollutent = $("#pollutentid").val();
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     //let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
+    if(Pollutent.length>0){
     let finaldata = AllLookpdata.listPollutents.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
 
@@ -955,9 +977,17 @@ function HistoricalData() {
         }
 
       }
-
       setcriteria(finalinterval);
     }
+    var res = Pollutent.filter( function(n) { 
+      return !this.has(n.toLowerCase()) 
+    }, new Set(window.RollingParameters.map(v => v.toLowerCase())) );
+    if(res.length==0){
+      setisRolling(true);
+    }else{
+      setisRolling(false);
+    }
+  }
   })
   const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
@@ -1031,7 +1061,7 @@ function HistoricalData() {
         subEl.bX += moveX;
         //  subEl.bY += moveY;
         //const value = xAxis.getValueForPixel(subEl.x);
-        console.log(subEl.x, subEl.x2)
+       // console.log(subEl.x, subEl.x2)
       }
     }
   };
@@ -1434,6 +1464,9 @@ const DownloadPdf = () => {
                       {Criteria.map((x, y) =>
                         <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
                       )}
+                      {isRolling &&(
+                       <option value="Rolling">8-H Rolling Averages</option>
+                       )}
                     </select>
                   </div>
                   <div className=" mt-4">

@@ -1050,6 +1050,7 @@ function DataProcessing() {
   const Getmaxvalue = function (visibleRecords, Key) {
     let max;
     let excludedKey = 'Date';
+    if(visibleRecords.length>0){
     if (Key != "") {
       max = visibleRecords.reduce((max, current) => {
         if (current[excludedKey] > max[excludedKey]) {
@@ -1077,6 +1078,7 @@ function DataProcessing() {
       return maxValue;
 
     }
+    }
     //return max;
 
   }
@@ -1084,6 +1086,7 @@ function DataProcessing() {
     let min;
     let min1 = 0;
     let excludedKey = 'Date';
+    if(visibleRecords.length>0){
     if (Key != "") {
       min = visibleRecords.reduce((min, current) => {
         if (current[excludedKey] < min[excludedKey]) {
@@ -1109,6 +1112,7 @@ function DataProcessing() {
         }
       }
       return minValue;
+    }
     }
     // return min;
 
@@ -1229,7 +1233,9 @@ function DataProcessing() {
     setReportDataList(newData);
     ReportDataListRef.current = newData;
     getchartdata(newData, SelectedPollutents, "line", "Raw");
-    spreadsheet.setData(finaldata);
+    if(finaldata.length>0){
+      spreadsheet.setData(finaldata);
+    }
     isLoading = false;
   }
 
