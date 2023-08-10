@@ -3,6 +3,10 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
+
 function ExceedenceReport() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -219,6 +223,127 @@ function ExceedenceReport() {
       ]
     });
   }
+
+  const PDFDataContent=function(layout,strTime,PollutentName,UnitName,AvgInterval,Fromdate,Todate,StationName,Exceedencevalue){
+    var pdf = new jsPDF("p", "pt", "a4");
+          pdf.setFont("helvetica");
+          pdf.setFontSize(10);          
+          //const columns = tableheading;
+          pdf.text(35, 10,"Current Date : "+ String(layout.getDate()).padStart(2, '0') + "/" + String(layout.getMonth() + 1).padStart(2, '0') + "/" + layout.getFullYear());
+          pdf.text(35, 30,"Current Time : "+ strTime);
+          var width = pdf.internal.pageSize.getWidth();
+          pdf.text("Violation of Standard Reports", width/2, 50, { align: 'center' });
+          pdf.setFontSize(8);
+          pdf.text(PollutentName+'_'+UnitName[0].unitName +" " + AvgInterval + " limit", width/2, 70, { align: 'center' });
+          pdf.setFontSize(10);
+          pdf.text(Fromdate+" "+"00:00 "+"- "+Todate+" "+"23:59", width/2, 90, { align: 'center' });
+          pdf.text(35, 110, "Site : "+StationName[0].stationName, { "text-align": 'left' });
+          pdf.text(550,110, "Parameter : "+PollutentName, { align: 'right' });
+          pdf.text(35, 130, "Average Interval : "+AvgInterval, { align: 'left' });
+          pdf.text(550,130, "Units : "+UnitName[0].unitName, { align: 'right' });
+          pdf.text(35, 150, "Average Type : Normal", { align: 'left' });
+          pdf.text(550, 150, "Violation Limit : "+Exceedencevalue, { align: 'right' });
+          return pdf;
+  }
+
+  const DownloadPDF = function () {
+    let StationID = document.getElementById("stationid").value;
+    let PollutentName = document.getElementById("pollutentid").value;
+    let UnitID=document.getElementById("unitid").value;
+    let Fromdate = document.getElementById("fromdateid").value;
+    let Todate = document.getElementById("todateid").value;
+    let Interval = document.getElementById("intervalid").value;
+    let valid = ReportValidations(StationID, PollutentName,UnitID, Fromdate, Todate, Interval);
+    if (!valid) {
+      return false;
+    }
+    let Exceedencevalue=AllData.listParameters.filter(x=>x.parameter==PollutentName && x.interval == Interval && x.unitID==UnitID)[0]?.excedenceValue;
+    let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate, Parameter: PollutentName, UnitID:UnitID, Interval: Interval,Exceedencevalue:Exceedencevalue});
+
+    var UnitName=AllData.listReportedunits.filter(x=>x.id==UnitID);
+    var StationName=AllData.listStations.filter(x=>x.id==StationID);
+    var AvgInterval;
+    if(Interval==60){
+      AvgInterval="1 Hour";
+    }
+    else if(Interval==480){
+      AvgInterval="8 Hours";
+    }
+    else if(Interval==720){
+      AvgInterval="12 Hours"
+    }
+    else if(Interval==1440){
+      AvgInterval="24 Hours";
+    }
+
+
+    var tableheading = [];
+    tableheading.push("Rank");
+    tableheading.push("Average");
+    tableheading.push("Date");
+    tableheading.push("Hour");
+    var rows=[];
+    var layout = new Date();
+    var hours = layout.getHours();
+    var minutes = layout.getMinutes();
+    if(hours==12){
+      var ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+    }
+    else{
+      var ampm = hours >= 24 ? 'pm' : 'am';
+      hours = hours % 24;
+      hours = hours ? hours : 24; // the hour '0' should be '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      var strTime = hours + ':' + minutes + ' ' + ampm;
+    }
+    fetch(process.env.REACT_APP_WSurl + 'api/AirQuality/ParameterExceedence?' + params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((pdfdata) => {
+        if (pdfdata.length!=0) {   
+          var b = 0;
+          var c1=1;
+          var c2=2;
+          var c3=3;
+          for (var k = 0; k < pdfdata.length; k++) {            
+            var temprank=pdfdata[k].rank;
+            if(temprank==0){
+              temprank=k+1;
+            }
+            rows.push([temprank])
+            rows[b][c1] = pdfdata[k].average;
+            rows[b][c2] = pdfdata[k].date;
+            rows[b][c3] = pdfdata[k].hour;
+            b++;
+          }
+
+          var PDFData= PDFDataContent(layout,strTime,PollutentName,UnitName,AvgInterval,Fromdate,Todate,StationName,Exceedencevalue);
+          const columns = tableheading;
+          PDFData.autoTable(columns, rows, {
+            theme: "grid",
+            startY: 200
+          });          
+          PDFData.save("Exceedence Data Report");
+        }
+        else{
+          var rowdata='No values exceeded the limit of the selected time period';
+          var PDFData= PDFDataContent(layout,strTime,PollutentName,UnitName,AvgInterval,Fromdate,Todate,StationName,Exceedencevalue);
+          const columns = tableheading;
+          PDFData.autoTable(columns, rows,{
+            theme: "grid",
+            startY: 200
+          });
+          let finalY=250;
+          var width = PDFData.internal.pageSize.getWidth();
+          PDFData.text(rowdata, width/2, finalY, { align: 'center' });
+          PDFData.save("Exceedence Data Report");
+        }
+      }).catch((error) => toast.error('Unable to download the PDF File. Please contact adminstrator'));
+  }
  
   return (
     <main id="main" className="main" >
@@ -275,6 +400,10 @@ function ExceedenceReport() {
 
                   <div className="col-md-12  mt-4">
                     <button type="button" className="btn btn-primary" onClick={GenarateReport}>Generate Report</button>
+
+                    {ListExceedence && (
+                        <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button>
+                    )}
                   </div>
                 </div>
               </div>
