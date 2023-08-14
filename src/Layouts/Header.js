@@ -3,6 +3,20 @@ import { NavLink } from "react-router-dom";
 
 function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
+
+  const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
+  var startdate=Lisence.startDate.split("T")[0];
+  var enddate=Lisence.endDate.split("T")[0];
+  var LisenceValidity;
+  if(startdate<=enddate){
+    LisenceValidity="Application valid till "+ startdate + " to "+ enddate + " Please contact Adminstrator";
+  }
+  else{
+    LisenceValidity="License Expired.! Please contact Adminstrator";
+  } 
+
+
+
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
   }
@@ -30,6 +44,14 @@ function Header() {
           <img src="images/logo.png" alt="" />
           </NavLink>
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
+        
+      </div>
+
+      {/* <div className="d-flex align-items-center justify-content-between">
+        <marquee style={{ color: "white"}} id="LisenceMessage">{ LisenceValidity }</marquee>
+      </div> */}
+      <div className="col-lg-4" style={{ flex:-1, textAlign:"center",marginLeft:"50px"}}>
+        <marquee class="scrollmarque" id="LisenceMessage">{ LisenceValidity }</marquee>
       </div>
 
      {/*  <div className="search-bar">
