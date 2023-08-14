@@ -838,3 +838,32 @@ table.jexcel colgroup col:nth-child(1) {
 /* .licencefile{
   width: auto !important;
 } */
+
+
+.scrollmarque{
+  color:yellow;
+  font-size:initial;
+  animation: blink 0.4s linear infinite;
+} 
+
+@keyframes blink{
+  0%{
+    color:white;
+  }
+  50%{
+    color:orange;
+  }
+  100%{
+    color:cyan;
+  }
+}
+
+
+.jsgrid-grid-body .jsgrid-alt-row:first-child .jsgrid-cell, .jsgrid-grid-body .jsgrid-row:first-child .jsgrid-cell {
+  word-break: break-word;
+}
+
+
+.children-container {
+  margin-left: 20px;
+}
