@@ -284,7 +284,10 @@ function DataProcessing() {
     }
   }
 
-  const CalculateparameterNox=function(filtered,value,y,param){
+  const CalculateparameterNox=function(filtered,value,y,param,restore){
+  //  if(restore){
+      revertRef.current=true;
+  //  }
     let Parametersplit = param.split("@_");
     let ModifyBy = currentUser.id;
     var NOvalue = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterName == window.parameterNO && row.stationID == filtered[0].stationID);
@@ -305,6 +308,7 @@ function DataProcessing() {
     let NOXcalvalue=null;
     value=value==null?value:parseFloat(value);
     let Calculatedparameter=[];
+    let loggerFlags=null;
     let NoConversionfactor=AllLookpdata.listConversionfactors.filter(x => x.parameter == window.parameterNO)[0].conversionFactor;
     let No2Conversionfactor=AllLookpdata.listConversionfactors.filter(x => x.parameter == window.parameterNO2)[0].conversionFactor;
     if(param==window.parameterNO){
@@ -334,14 +338,14 @@ function DataProcessing() {
               }
           }
       }
-      if(NOXvalue.length>0){
+      /* if(NOXvalue.length>0){
         changedarray(NOXvalue,findcolumn+1,y,NOXvalue1,ModifyBy);
-      }
+      } */
       if(findcolumn2>0){
         Calculatedparameter=ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterID === filtercalcparameter[0].id && row.stationID === filtercalcparameter[0].stationID)
         let calparamname=SelectedPollutents[findcolumn2];
         if(Calculatedparameter.length>0){
-        changedarray(Calculatedparameter,findcolumn2+1,y,NOXcalvalue,ModifyBy);
+      // changedarray(Calculatedparameter,findcolumn2+1,y,NOXcalvalue,ModifyBy);
         let calvalue1=ValueRoundoff(NOXcalvalue);
         if (findcolumn2 != -1) {
           jspreadRef.current.jexcel.updateCell(findcolumn2 + 1, y, calvalue1, true);
@@ -377,6 +381,7 @@ function DataProcessing() {
       }
     }
     let filtered = null;
+    let Parametername = SelectedPollutents[x - 1];
     if (!revertRef.current) {
       let Parametersplit = SelectedPollutents[x - 1].split("@_");
       let Calculatedparameter = [];
@@ -405,7 +410,6 @@ function DataProcessing() {
       changedarray(filtered,x,y,value,ModifyBy);
       filtered[0].parametervalue = value == null ? value : parseFloat(value);
       filtered[0].loggerFlags = window.Editflag;
-      let Parametername = SelectedPollutents[x - 1];
       // changearr[Parametername] = value == null ? value : parseFloat(value);
       dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
       //setOldData(olddata.current);
@@ -414,6 +418,7 @@ function DataProcessing() {
       OldData.current=olddata.current;
       NewData.current=newdata.current
     }
+    dataForGridref.current[y][Parametername] = value == null ? value : parseFloat(value);
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
     chartdata.datasets[x - 1].data[y].y = value;
@@ -689,6 +694,10 @@ function DataProcessing() {
           }
           revertRef.current=true;
           revertfromolddata(filtered,k,i);
+          if(Parametersplit == window.parameterNO || Parametersplit == window.parameterNO2){
+           // revertRef.current=true;
+            CalculateparameterNox(filtered,filtered[0].parametervalueOrginal,i,SelectedPollutents[k - 1],true);
+          }  
           }
       }
       if (dataold.current.length == 0) {
@@ -719,7 +728,7 @@ function DataProcessing() {
      Calculatedparameter[0].parametervalue=value==null?value:parseFloat(value);
       jspreadRef.current.jexcel.updateCell(findcolumn+1, i,value , true);
       if(Calculatedparameter[0].parametervalueOrginal !=Calculatedparameter[0].parametervalue || Calculatedparameter[0].loggerFlags !=Calculatedparameter[0].loggerFlagsOriginal){
-        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
+        flagdata.push({ ID: Calculatedparameter[0].id, Parametervalue: Calculatedparameter[0].parametervalueOrginal,ParameterName:Calculatedparameter[0].parameterName,  ModifyBy: ModifyBy, LoggerFlags: Calculatedparameter[0].loggerFlagsOriginal,StationID:Calculatedparameter[0].stationID,ParameterID:Calculatedparameter[0].parameterID,ParameterIDRef:Calculatedparameter[0].parameterIDRef,CreatedTime:Calculatedparameter[0].createdTime });
       
         if (findcolumn != -1) {
         let cellName = jspreadsheet.helpers.getColumnNameFromCoords(findcolumn + 1, i);
@@ -795,8 +804,11 @@ function DataProcessing() {
                   let calparamname = Calculatedparameter[0].parameterName + "@_" + Calculatedparameter[0].stationID;
                   RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
                 }
-               }
-               
+                if(Parametersplit == window.parameterNO || Parametersplit == window.parameterNO2){
+                  revertRef.current=true;
+                  CalculateparameterNox(filtered,filtered[0].parametervalueOrginal,i,Parametersplit,true);
+                }  
+               }   
               } else {
                 filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[k - 1]);
                  index =olddata.current.findIndex(x=>x.ID==filtered[0].id);
@@ -804,10 +816,15 @@ function DataProcessing() {
                 reverttoprevious();
                }else{
                 Calculatedparameter = ReportDataListRef.current.filter(row => row.interval === filtered[0].interval && row.parameterIDRef === filtered[0].parameterIDRef && row.stationID === filtered[0].stationID && row.parameterName != filtered[0].parameterName);
+               
                 if (Calculatedparameter.length > 0) {
                   let calparamname = Calculatedparameter[0].parameterName;
                   RestoreCalculateparameter(Calculatedparameter, calparamname, i,ModifyBy);
                 }
+                if(Parametersplit == window.parameterNO || Parametersplit == window.parameterNO2){
+                  revertRef.current=true;
+                  CalculateparameterNox(filtered,filtered[0].parametervalueOrginal,i,Parametersplit[0],true);
+                }  
               }
               }
               if(index == -1){
@@ -823,7 +840,7 @@ function DataProcessing() {
                 } */
                 filtered[0].parametervalue=value==null?value:parseFloat(value);
                 jspreadRef.current.jexcel.updateCell(k, i,value , true);
-                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
+                flagdata.push({ ID: filtered[0].id, Parametervalue: filtered[0].parametervalueOrginal,ParameterName:filtered[0].parameterName, ModifyBy: ModifyBy, LoggerFlags: filtered[0].loggerFlagsOriginal,StationID:filtered[0].stationID,ParameterID:filtered[0].parameterID,ParameterIDRef:filtered[0].parameterIDRef,CreatedTime:filtered[0].createdTime });
               
               var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
               if (cellName) {
