@@ -52,7 +52,7 @@ function AverageDataReport() {
 
   useEffect(() => {
 
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAverageLookupData")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAverageLookupData")
 
       .then((response) => response.json())
 
@@ -296,7 +296,7 @@ function AverageDataReport() {
 
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
 
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/AvergaeDataReport?"
 
     /* fetch(url + params, {
 
@@ -486,7 +486,7 @@ function AverageDataReport() {
     };
     var b = 0;
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    fetch(process.env.REACT_APP_WSurl + 'api/AirQuality/ExportToPDFAverageData?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/AirQuality/ExportToPDFAverageData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((pdfdata) => {
@@ -605,7 +605,7 @@ function AverageDataReport() {
     }
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
 
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+    window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
   }
 
 

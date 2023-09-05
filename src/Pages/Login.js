@@ -3,6 +3,7 @@ import React, { Component } from "react";
 //import { useNavigate, redirect } from "react-router-dom";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
+import CommonFunctions from "../utils/CommonFunctions";
 //function Login() {
 
   
@@ -16,7 +17,7 @@ import bcrypt from 'bcryptjs';
     if (!form.checkValidity()) {
       form.classNameList.add('was-validated');
     } else {
-      fetch(process.env.REACT_APP_WSurl + 'api/Users/Login', {
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/Login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -64,7 +65,9 @@ import bcrypt from 'bcryptjs';
 
     return encryptedPassword ;
   }
-
+  const redirectToReset = () => {
+    window.location.href =process.env.REACT_APP_BASE_URL+ "/ResetPassword";
+  };
   return (
     <main>
       <div className="container">
@@ -107,11 +110,14 @@ import bcrypt from 'bcryptjs';
                         <div className="invalid-feedback">Please enter your password!</div>
                       </div>
 
-                      <div className="col-12">
+                      <div className="col-6">
                         <div className="form-check">
                           <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                           <label className="form-check-label" for="rememberMe">Remember me</label>
                         </div>
+                      </div>
+                      <div className="col-6" style={{textAlign:"right"}}>
+                        <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
                       </div>
                       <div className="col-12">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>

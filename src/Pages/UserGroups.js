@@ -5,6 +5,7 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import CommonFunctions from "../utils/CommonFunctions";
 
 function UserGroups(){
     const $ = window.jQuery;
@@ -26,7 +27,7 @@ function UserGroups(){
     }, []);
 
     const GetGroupDetails = function () {
-        fetch(process.env.REACT_APP_WSurl + "api/UsersGroup", {
+        fetch(CommonFunctions.getWebApiUrl()+ "api/UsersGroup", {
           method: 'GET',
         }).then((response) => response.json())
           .then((data) => {
@@ -127,7 +128,7 @@ function UserGroups(){
         if (!validation) {
             return false;
         }
-        fetch(process.env.REACT_APP_WSurl + 'api/AddUsersGroup', {
+        fetch(CommonFunctions.getWebApiUrl()+ 'api/AddUsersGroup', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -186,7 +187,7 @@ function UserGroups(){
         if (!validation) {
           return false;
         }
-        fetch(process.env.REACT_APP_WSurl + 'api/UpdateUsersGroup/' + GroupId, {
+        fetch(CommonFunctions.getWebApiUrl()+ 'api/UpdateUsersGroup/' + GroupId, {
           method: 'PUT',
           headers: {
             'Accept': 'application/json',
@@ -222,7 +223,7 @@ function UserGroups(){
           .then(function (isConfirm) {
             if (isConfirm.isConfirmed) {
               let id = item.id;
-              fetch(process.env.REACT_APP_WSurl + 'api/DeleteUsersGroup/' + id, {
+              fetch(CommonFunctions.getWebApiUrl()+ 'api/DeleteUsersGroup/' + id, {
                 method: 'DELETE'
               }).then((response) => response.json())
                 .then((responseJson) => {

@@ -67,7 +67,7 @@ function LiveData() {
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -230,7 +230,7 @@ function LiveData() {
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let params = new URLSearchParams({ id: filtered[0].id });
 
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -395,9 +395,9 @@ function LiveData() {
       isAvgData=true;
     }
     let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/LiveData?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/LiveData?"
     if(GroupId !=""){
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingLiveData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingLiveData?"
     }
     
     fetch(url + params, {
@@ -426,7 +426,7 @@ function LiveData() {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params, "_blank");
+    window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcel?" + params, "_blank");
   }
 
   const ReportValidations = function (Station, Pollutent, Interval,GroupId) {

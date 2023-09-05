@@ -105,7 +105,7 @@ function HistoricalData() {
 
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -569,9 +569,9 @@ function HistoricalData() {
     startindex = (currentPage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData,isRollingAvg:isRollingAvg, StartIndex: startindex, PageLimit: pageLimit });
     // currentPage++;
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
@@ -694,9 +694,9 @@ function HistoricalData() {
     }
 
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData,isRollingAvg:isRollingAvg, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord,fileType:filetype });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcel?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingDataExportExcel?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingDataExportExcel?"
     }
     window.open(url + params, "_blank");
     document.getElementById('loader').style.display = "none";

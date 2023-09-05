@@ -130,7 +130,7 @@ function DataProcessing() {
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupDataProcessing")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupDataProcessing")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -452,7 +452,7 @@ function DataProcessing() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           revertRef.current = false;
-          fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+          fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -560,7 +560,7 @@ function DataProcessing() {
             }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingUpdateflag', {
+            fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingUpdateflag', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -619,7 +619,7 @@ function DataProcessing() {
     }
     let params = new URLSearchParams({ id: filtered[0].id });
 
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -854,7 +854,7 @@ function DataProcessing() {
                 }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingRestoretoOriginal', {
+            fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingRestoretoOriginal', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -1219,9 +1219,9 @@ function DataProcessing() {
     }
     startindex = (currentpage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
@@ -1358,9 +1358,9 @@ function DataProcessing() {
     startindex = (currentPage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
     // currentPage++;
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
