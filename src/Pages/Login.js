@@ -66,7 +66,7 @@ import CommonFunctions from "../utils/CommonFunctions";
     return encryptedPassword ;
   }
   const redirectToReset = () => {
-    window.location.href =process.env.REACT_APP_BASE_URL+ "/ResetPassword";
+    window.location.href =process.env.REACT_APP_BASE_URL+ "/ResetPasswordServer";
   };
   return (
     <main>
