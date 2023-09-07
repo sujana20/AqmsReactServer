@@ -5,8 +5,8 @@ function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
 
   const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
-  var startdate=Lisence.startDate.split("T")[0];
-  var enddate=Lisence.endDate.split("T")[0];
+  var startdate=Lisence==null?null:Lisence.startDate.split("T")[0];
+  var enddate=Lisence==null?null:Lisence.endDate.split("T")[0];
   var LisenceValidity;
   if(startdate<=enddate){
     LisenceValidity="Application valid till "+ startdate + " to "+ enddate + " Please contact Adminstrator";
@@ -50,9 +50,9 @@ function Header() {
       {/* <div className="d-flex align-items-center justify-content-between">
         <marquee style={{ color: "white"}} id="LisenceMessage">{ LisenceValidity }</marquee>
       </div> */}
-      <div className="col-lg-4" style={{ flex:-1, textAlign:"center",marginLeft:"50px"}}>
+     {/*  <div className="col-lg-4" style={{ flex:-1, textAlign:"center",marginLeft:"50px"}}>
         <marquee class="scrollmarque" id="LisenceMessage">{ LisenceValidity }</marquee>
-      </div>
+      </div> */}
 
      {/*  <div className="search-bar">
         <form className="search-form d-flex align-items-center" method="POST" action="#">

@@ -597,12 +597,19 @@ function HistoricalData() {
 
   }
 
-  const getdatareport = function () {
+  const getdatareport = function (event) {
+    event.currentTarget.disabled=true;
     currentPage = 1;
     setListReportData([]);
     setReportDataList([]);
     setLoadjsGridData(false);
     GetProcessingData(currentPage, true);
+    setTimeout(function(){
+      let id=document.getElementById("getdata");
+      if(id !=null){
+      id.disabled=false;
+        }
+       }, 500);
   }
 
   const DownloadExcel = function (filetype) {
@@ -1471,7 +1478,7 @@ const DownloadPdf = () => {
                   </div>
                   <div className=" mt-4">
                     <div class="col-md-2 float-start">
-                      <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                      <button type="button" className="btn btn-primary" id="getdata" onClick={getdatareport}>Get Data</button>
                       <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                     </div>
                     {ListReportData != 0 && (

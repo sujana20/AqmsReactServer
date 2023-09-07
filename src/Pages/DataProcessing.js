@@ -989,7 +989,8 @@ function DataProcessing() {
         var items = [];
         let Interval = document.getElementById("criteriaid").value;
         let columns=obj.getSelectedColumns(true);
-        if(columns.length==1 && columns[0]==0){
+        let Parameterssplit = SelectedPollutents[columns[0]-1].split("@_");
+        if(columns.length==1 && (columns[0]==0 || Parameterssplit[0].toLowerCase() == window.parameterNOx.toLowerCase() || Parameterssplit[0].toLowerCase()==window.Noxparamcalc.toLowerCase())){
           return items;
         }
         if(Interval == window.Intervalval){
@@ -1000,14 +1001,15 @@ function DataProcessing() {
             RestoretoOriginal(rows,columns);
           }
         });
-        let Parameterssplit = SelectedPollutents[columns[0]-1].split("@_");
         let filter = [];
         if(Parameterssplit.length>1){
           filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1] && x.isCalculated==1);
         }else{
           filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == selectedStations && x.isCalculated==1);
         }
-        if(columns.length ==1 && filter.length ==1){
+        if(columns.length ==1 && (Parameterssplit[0].toLowerCase() == window.parameterNOx.toLowerCase() || Parameterssplit[0].toLowerCase()==window.Noxparamcalc.toLowerCase())){
+          return items;
+        }else if(columns.length ==1 && filter.length ==1){
           return items;
         }else{
           items.push({
@@ -1386,7 +1388,9 @@ function DataProcessing() {
 
   }
 
-  const getdatareport = function () {
+  const getdatareport = function (event) {
+    event.currentTarget.disabled=true;
+    //;
     currentPage = 1;
     /* if (chartRef.current) {
       chartRef.current.destroy();
@@ -1406,6 +1410,12 @@ function DataProcessing() {
     //setOldData([]);
     //setChartOptions({});
     GetProcessingData(currentPage, true);
+    setTimeout(function(){
+    let id=document.getElementById("getdata");
+    if(id !=null){
+    id.disabled=false;
+      }
+     }, 500);
   }
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval, GroupId) {
@@ -2192,7 +2202,7 @@ const DownloadPdf = () => {
                     </select>
                   </div>
                   <div className=" mt-4">
-                    <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                    <button type="button" className="btn btn-primary" id="getdata" onClick={getdatareport}>Get Data</button>
                     <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                   </div>
                   <div className="col-md-4">
