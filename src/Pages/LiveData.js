@@ -403,9 +403,9 @@ const GetProcessingData=function(isInitialized){
     isAvgData=true;
   }
   let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
-  let url = process.env.REACT_APP_WSurl + "api/AirQuality/LiveData?"
+  let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/LiveData?"
   if(GroupId !=""){
-    url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingLiveData?"
+    url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingLiveData?"
   }
   
   fetch(url + params, {
@@ -413,34 +413,13 @@ const GetProcessingData=function(isInitialized){
   }).then((response) => response.json())
     .then((data) => {
       if (data) {
-        
         let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
         if(isInitialized){
           setListReportData(data1);
           setLoadjsGridData(true);
         }else{
           appendDataToSpreadsheet(data1);
-    else{
-      isAvgData=true;
-    }
-    let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
-    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/LiveData?"
-    if(GroupId !=""){
-      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingLiveData?"
-    }
-    
-    fetch(url + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-            setListReportData(data1);
-            setLoadjsGridData(true);
-            //getchartdata(data1, "line", "Raw");
         }
-        ReportDataListRef.current=data;
-          //getchartdata(data1, "line", "Raw");
       }
       document.getElementById('loader').style.display = "none";
     }).catch((error) => console.log(error));
