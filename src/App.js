@@ -9,6 +9,7 @@ import Sidenavbar from "./Layouts/Sidenavbar";
 import Pagination from "./Pagination";
 import { LayoutCssClasses } from "ag-grid-community";
 const Login =lazy(() => import("./Pages/Login"));
+const ResetPassword = lazy(() => import("./Pages/ResetPassword"));
 const Dashboard =lazy(() => import("./Pages/Dashboard"));
 const Profile =lazy(() => import("./Pages/Profile"));
 const Parameters =lazy(() => import("./Pages/Parameters"));
@@ -80,6 +81,7 @@ function App() {
         <Routes>
           <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
           <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
+          <Route   path="/ResetPassword" exact element={currentUser ==null ? <ResetPassword /> : (<Navigate to="/" />)} />
           <Route   path="*" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
           <Route   path="/Dashboard" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("Dashboard")>=0 ? <ServerDashBoard /> : currentUser !=null && !LicenseExpired ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/Profile" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("Profile")>=0 ? <Profile /> : currentUser !=null && !LicenseExpired ? <PagenotFound/> : (<Navigate to="/" />)} />

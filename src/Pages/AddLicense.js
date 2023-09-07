@@ -3,7 +3,7 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import bcrypt from 'bcryptjs';
-
+import CommonFunctions from "../utils/CommonFunctions";
 
 const AddLicense = ({ handleAuthentication }) => {
   const $ = window.jQuery;
@@ -32,7 +32,7 @@ const AddLicense = ({ handleAuthentication }) => {
             return false;
           }
 
-          fetch(process.env.REACT_APP_WSurl + 'api/Licence', {
+          fetch(CommonFunctions.getWebApiUrl()+ 'api/Licence', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -87,7 +87,7 @@ const AddLicense = ({ handleAuthentication }) => {
 //           if(!isvalid){
 //             return false;
 //           }
-//           fetch(process.env.REACT_APP_WSurl + 'api/Licence', {
+//           fetch(CommonFunctions.getWebApiUrl()+ 'api/Licence', {
 //             method: 'POST',
 //             headers: {
 //               'Accept': 'application/json',

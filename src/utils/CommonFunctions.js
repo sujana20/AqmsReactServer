@@ -2,6 +2,14 @@ import { React } from "react";
 
 const CommonFunctions = {
   
+  getWebApiUrl()
+  {
+      const baseUrl=window.location.origin;
+      if(baseUrl.indexOf(":")!==-1)
+        return process.env.REACT_APP_WSurl;
+      else
+        return baseUrl+process.env.REACT_APP_WSurl;
+  },
    
   truncateNumber(number,digits) {
         

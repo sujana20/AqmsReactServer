@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import CommonFunctions from "../utils/CommonFunctions";
 
 function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
@@ -21,7 +22,7 @@ function Header() {
     document.querySelector('body').classList.toggle('toggle-sidebar')
   }
   const Signout = function () {
-    fetch(process.env.REACT_APP_WSurl +'api/Users/Logout', {
+    fetch(CommonFunctions.getWebApiUrl()+'api/Users/Logout', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -109,7 +110,7 @@ function Header() {
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <a className="dropdown-item d-flex align-items-center" onClick={Signout}>
+                <a className="dropdown-item d-flex align-items-center" style={{cursor:"pointer"}} onClick={Signout}>
                   <i className="bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
                 </a>

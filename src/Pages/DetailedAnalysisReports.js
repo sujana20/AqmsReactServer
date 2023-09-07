@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import 'chartjs-adapter-moment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -96,7 +97,7 @@ function DetailedAnalysisReports() {
     });
   })
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetLookupDataDetailedAnalysis")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetLookupDataDetailedAnalysis")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -118,7 +119,7 @@ function DetailedAnalysisReports() {
     if (!valid) {
       return false;
     }
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/"
     let suburl = "getAnnualAveragesbyYear";
     fetch(url + suburl, {
       method: 'POST',

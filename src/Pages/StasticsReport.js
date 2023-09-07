@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -54,7 +55,7 @@ function StasticsReport() {
     '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -117,7 +118,7 @@ function StasticsReport() {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
 
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/"
     let suburl = "getAnnualAverages";
     if (Criteria == 'Max') {
       suburl = "geMaxValuePollutants";
