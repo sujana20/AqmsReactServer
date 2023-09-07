@@ -420,6 +420,7 @@ const GetProcessingData=function(isInitialized){
         }else{
           appendDataToSpreadsheet(data1);
         }
+		ReportDataListRef.current=data;
       }
       document.getElementById('loader').style.display = "none";
     }).catch((error) => console.log(error));
