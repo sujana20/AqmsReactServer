@@ -5,6 +5,8 @@ function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
 
   const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
+  if(Lisence!=null)
+  {
   var startdate=Lisence.startDate.split("T")[0];
   var enddate=Lisence.endDate.split("T")[0];
   var LisenceValidity;
@@ -13,7 +15,8 @@ function Header() {
   }
   else{
     LisenceValidity="License Expired.! Please contact Adminstrator";
-  } 
+  }
+} 
 
 
 

@@ -46,6 +46,7 @@ function App() {
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
     const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
+    LicenseExpired=true;
     if(Lisence!=null){
       var Licensestartdate=Lisence.startDate.split("T")[0];
       var Licenseenddate=Lisence.endDate.split("T")[0];
