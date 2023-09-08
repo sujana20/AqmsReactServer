@@ -130,7 +130,7 @@ function DataProcessing() {
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupDataProcessing")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupDataProcessing")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -452,7 +452,7 @@ function DataProcessing() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           revertRef.current = false;
-          fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+          fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -560,7 +560,7 @@ function DataProcessing() {
             }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingUpdateflag', {
+            fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingUpdateflag', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -619,7 +619,7 @@ function DataProcessing() {
     }
     let params = new URLSearchParams({ id: filtered[0].id });
 
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -854,7 +854,7 @@ function DataProcessing() {
                 }
           }
           if (flagdata.length > 0) {
-            fetch(process.env.REACT_APP_WSurl + 'api/DataProcessingRestoretoOriginal', {
+            fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingRestoretoOriginal', {
               method: 'POST',
               headers: {
                 'Accept': 'application/json',
@@ -989,7 +989,8 @@ function DataProcessing() {
         var items = [];
         let Interval = document.getElementById("criteriaid").value;
         let columns=obj.getSelectedColumns(true);
-        if(columns.length==1 && columns[0]==0){
+        let Parameterssplit = SelectedPollutents[columns[0]-1].split("@_");
+        if(columns.length==1 && (columns[0]==0 || Parameterssplit[0].toLowerCase() == window.parameterNOx.toLowerCase() || Parameterssplit[0].toLowerCase()==window.Noxparamcalc.toLowerCase())){
           return items;
         }
         if(Interval == window.Intervalval){
@@ -1000,14 +1001,15 @@ function DataProcessing() {
             RestoretoOriginal(rows,columns);
           }
         });
-        let Parameterssplit = SelectedPollutents[columns[0]-1].split("@_");
         let filter = [];
         if(Parameterssplit.length>1){
           filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1] && x.isCalculated==1);
         }else{
           filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == selectedStations && x.isCalculated==1);
         }
-        if(columns.length ==1 && filter.length ==1){
+        if(columns.length ==1 && (Parameterssplit[0].toLowerCase() == window.parameterNOx.toLowerCase() || Parameterssplit[0].toLowerCase()==window.Noxparamcalc.toLowerCase())){
+          return items;
+        }else if(columns.length ==1 && filter.length ==1){
           return items;
         }else{
           items.push({
@@ -1219,9 +1221,9 @@ function DataProcessing() {
     }
     startindex = (currentpage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
@@ -1358,9 +1360,9 @@ function DataProcessing() {
     startindex = (currentPage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
     // currentPage++;
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingData?"
+      url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
@@ -1386,7 +1388,9 @@ function DataProcessing() {
 
   }
 
-  const getdatareport = function () {
+  const getdatareport = function (event) {
+    event.currentTarget.disabled=true;
+    //;
     currentPage = 1;
     /* if (chartRef.current) {
       chartRef.current.destroy();
@@ -1406,6 +1410,12 @@ function DataProcessing() {
     //setOldData([]);
     //setChartOptions({});
     GetProcessingData(currentPage, true);
+    setTimeout(function(){
+    let id=document.getElementById("getdata");
+    if(id !=null){
+    id.disabled=false;
+      }
+     }, 500);
   }
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval, GroupId) {
@@ -2192,7 +2202,7 @@ const DownloadPdf = () => {
                     </select>
                   </div>
                   <div className=" mt-4">
-                    <button type="button" className="btn btn-primary" onClick={getdatareport}>Get Data</button>
+                    <button type="button" className="btn btn-primary" id="getdata" onClick={getdatareport}>Get Data</button>
                     <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                   </div>
                   <div className="col-md-4">

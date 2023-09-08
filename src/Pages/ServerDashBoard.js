@@ -1,6 +1,7 @@
 
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
+import CommonFunctions from "../utils/CommonFunctions";
 import Swal from "sweetalert2";
 function ServerDashBoard() {
   const $ = window.jQuery;
@@ -15,7 +16,7 @@ function ServerDashBoard() {
 
   const GetStation = function () {
     document.getElementById('loader').style.display = "block";
-    fetch(process.env.REACT_APP_WSurl + "api/StationsDashBoardData", {
+    fetch(CommonFunctions.getWebApiUrl()+ "api/StationsDashBoardData", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

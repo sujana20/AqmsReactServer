@@ -5,7 +5,7 @@ import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-
+import CommonFunctions from "../utils/CommonFunctions";
 function Grouping() {
     const $ = window.jQuery;
     const gridRefjsgridreport = useRef();
@@ -27,7 +27,7 @@ function Grouping() {
 
 
     const GetparametersLookup = function () {
-        fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData", {
+        fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData", {
           method: 'GET',
         }).then((response) => response.json())
           .then((data) => {
@@ -159,7 +159,7 @@ function Grouping() {
       if (!validation) {
         return false;
       }
-      fetch(process.env.REACT_APP_WSurl + 'api/GroupingAdd', {
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingAdd', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -215,7 +215,7 @@ function Grouping() {
       if (!validation) {
         return false;
       }
-      fetch(process.env.REACT_APP_WSurl + 'api/GroupingUpdate/' + GroupId, {
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingUpdate/' + GroupId, {
         method: 'PUT',
         headers: {
           'Accept': 'application/json',
@@ -252,7 +252,7 @@ function Grouping() {
         .then(function (isConfirm) {
           if (isConfirm.isConfirmed) {
             let id = item.groupID;
-            fetch(process.env.REACT_APP_WSurl + 'api/DeleteGrouping/' + id, {
+            fetch(CommonFunctions.getWebApiUrl()+ 'api/DeleteGrouping/' + id, {
               method: 'DELETE'
             }).then((response) => response.json())
               .then((responseJson) => {

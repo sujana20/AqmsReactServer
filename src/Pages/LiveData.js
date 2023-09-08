@@ -56,6 +56,7 @@ function LiveData() {
   const [LoadjsGridData, setLoadjsGridData] = useState(false);
   const getDuration = window.LiveDataDuration;
   const revertRef = useRef();
+  const ReportDataListRef = useRef();
   revertRef.current = revert;
   let jsptable = null;
   var lastSelectedRow;
@@ -67,7 +68,7 @@ function LiveData() {
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -117,7 +118,8 @@ function LiveData() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getdatareport('refresh');
+     // getdatareport('refresh');
+     GetProcessingData(false);
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   })
@@ -183,9 +185,9 @@ function LiveData() {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filnallist = [];
       if (Parameterssplit.length > 1) {
-        filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
       } else {
-        filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
       }
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
@@ -230,7 +232,7 @@ function LiveData() {
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let params = new URLSearchParams({ id: filtered[0].id });
 
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -278,44 +280,8 @@ function LiveData() {
         layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false,readOnly:true, });
       }
     }
-    
-    for (var k = 0; k < ListReportData.length; k++) {
-      var obj = {};
-      var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval);
-
-      let roundedNumber = 0;
-
-      let digit = window.decimalDigit
-
-      if (window.TruncateorRound == "RoundOff") {
-
-        let num = ListReportData[k].parametervalue;
-        roundedNumber = num==null?num:num.toFixed(digit);
-      }
-
-      else {
-        roundedNumber = ListReportData[k].parametervalue==null?ListReportData[k].parametervalue:CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
-      }
-      let Groupid=document.getElementById("groupid").value;
-      if(Groupid !=""){
-        if (temp >= 0) {
-          dataForGrid[temp][ListReportData[k].parameterName+"@_"+ListReportData[k].stationID] = roundedNumber;
-        } else {
-          obj["Date"] = ListReportData[k].interval;
-          obj[ListReportData[k].parameterName+"@_"+ListReportData[k].stationID] = roundedNumber;
-          dataForGrid.push(obj);
-        }
-      }else{
-        if (temp >= 0) {
-          dataForGrid[temp][ListReportData[k].parameterName] = roundedNumber;
-        } else {
-          obj["Date"] = ListReportData[k].interval;
-          obj[ListReportData[k].parameterName] = roundedNumber;
-          dataForGrid.push(obj);
-        } 
-      }
-    }
-
+    dataForGrid=GridData(ListReportData);
+   
     if(dataForGrid.length>0){
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
@@ -333,6 +299,46 @@ function LiveData() {
 
   }
   }
+
+  const GridData = function (ReportData) {
+    for (var k = 0; k < ReportData.length; k++) {
+      var obj = {};
+      var temp = dataForGrid.findIndex(x => x.Date === ReportData[k].interval);
+
+      let roundedNumber = 0;
+
+      let digit = window.decimalDigit
+
+      if (window.TruncateorRound == "RoundOff") {
+
+        let num = ReportData[k].parametervalue;
+        roundedNumber = num==null?num:num.toFixed(digit);
+      }
+
+      else {
+        roundedNumber = ReportData[k].parametervalue==null?ReportData[k].parametervalue:CommonFunctions.truncateNumber(ReportData[k].parametervalue, digit);
+      }
+      let Groupid=document.getElementById("groupid").value;
+      if(Groupid !=""){
+        if (temp >= 0) {
+          dataForGrid[temp][ReportData[k].parameterName+"@_"+ReportData[k].stationID] = roundedNumber;
+        } else {
+          obj["Date"] = ReportData[k].interval;
+          obj[ReportData[k].parameterName+"@_"+ReportData[k].stationID] = roundedNumber;
+          dataForGrid.push(obj);
+        }
+      }else{
+        if (temp >= 0) {
+          dataForGrid[temp][ReportData[k].parameterName] = roundedNumber;
+        } else {
+          obj["Date"] = ReportData[k].interval;
+          obj[ReportData[k].parameterName] = roundedNumber;
+          dataForGrid.push(obj);
+        } 
+      }
+    }
+return dataForGrid;
+  }
   const hexToRgbA = function (hex) {
     var c;
     if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
@@ -348,70 +354,84 @@ function LiveData() {
   const getdatareport = function () {
     setListReportData([]);
     setLoadjsGridData(false);
-    console.log(new Date());
-    
-    let Station="";
-    let Pollutent="";
-    let GroupId = $("#groupid").val();
-    Station = $("#stationid").val();
-    Pollutent = $("#pollutentid").val();
-      if (Pollutent.length > 0) {
-        Pollutent.join(',')
-      }
-      if(GroupId==""){
-        setSelectedPollutents(Pollutent);
-      }else{
-        Pollutent=SelectedPollutents;
-      }
-      // if (param == 'reset' || Pollutent.length == 0) {
-      //   if(GroupId==""){
-      //     setSelectedPollutents(Pollutent);
-      //   }else{
-      //     Pollutent=SelectedPollutents;
-      //   }
-      // } else {
-      //    //setSelectedPollutents(finalpollutent);
-      // }
-      setRefreshGrid(RefreshGrid?false:true);
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
-    if (!valid) {
-      return false;
-    }
+    GetProcessingData(true);
+  }
 
-    document.getElementById('loader').style.display = "block";
-    let type = Interval.split('-');
-    let Intervaltype;
-    if (type[1] == 'H') {
-      Intervaltype = type[0] * 60;
-    } else {
-      Intervaltype = type[0];
+const GetProcessingData=function(isInitialized){
+  let Station="";
+  let Pollutent="";
+  let GroupId = $("#groupid").val();
+  Station = $("#stationid").val();
+  Pollutent = $("#pollutentid").val();
+    if (Pollutent.length > 0) {
+      Pollutent.join(',')
     }
-    let isAvgData=false;
-    if(Interval==window.Intervalval){
-      isAvgData=false;
+    if(GroupId==""){
+      setSelectedPollutents(Pollutent);
+    }else{
+      Pollutent=SelectedPollutents;
     }
-    else{
-      isAvgData=true;
-    }
-    let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/LiveData?"
-    if(GroupId !=""){
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/StationGroupingLiveData?"
-    }
-    
-    fetch(url + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-            setListReportData(data1);
-            setLoadjsGridData(true);
-            //getchartdata(data1, "line", "Raw");
+    // if (param == 'reset' || Pollutent.length == 0) {
+    //   if(GroupId==""){
+    //     setSelectedPollutents(Pollutent);
+    //   }else{
+    //     Pollutent=SelectedPollutents;
+    //   }
+    // } else {
+    //    //setSelectedPollutents(finalpollutent);
+    // }
+    //setRefreshGrid(RefreshGrid?false:true);
+  let Interval = document.getElementById("criteriaid").value;
+  let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
+  if (!valid) {
+    return false;
+  }
+
+  document.getElementById('loader').style.display = "block";
+  let type = Interval.split('-');
+  let Intervaltype;
+  if (type[1] == 'H') {
+    Intervaltype = type[0] * 60;
+  } else {
+    Intervaltype = type[0];
+  }
+  let isAvgData=false;
+  if(Interval==window.Intervalval){
+    isAvgData=false;
+  }
+  else{
+    isAvgData=true;
+  }
+  let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
+  let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/LiveData?"
+  if(GroupId !=""){
+    url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingLiveData?"
+  }
+  
+  fetch(url + params, {
+    method: 'GET',
+  }).then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+        if(isInitialized){
+          setListReportData(data1);
+          setLoadjsGridData(true);
+        }else{
+          appendDataToSpreadsheet(data1);
         }
-        document.getElementById('loader').style.display = "none";
-      }).catch((error) => console.log(error));
+		ReportDataListRef.current=data;
+      }
+      document.getElementById('loader').style.display = "none";
+    }).catch((error) => console.log(error));
+}
+
+  const appendDataToSpreadsheet = function (data) {
+    const spreadsheet = jspreadRef.current.jexcel;
+    let finaldata = GridData(data);
+    if(finaldata.length>0){
+      spreadsheet.setData(finaldata);
+    }
   }
 
   const DownloadExcel = function () {
@@ -426,7 +446,7 @@ function LiveData() {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params, "_blank");
+    window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcel?" + params, "_blank");
   }
 
   const ReportValidations = function (Station, Pollutent, Interval,GroupId) {

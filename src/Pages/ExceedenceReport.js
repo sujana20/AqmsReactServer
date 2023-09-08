@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import DatePicker from "react-datepicker";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-
+import CommonFunctions from "../utils/CommonFunctions";
 
 function ExceedenceReport() {
   const $ = window.jQuery;
@@ -20,7 +20,7 @@ function ExceedenceReport() {
   const [ListExceedence, setListExceedence] = useState(null);
 
   const GetLookupData = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetExceedenceLookupData", {
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetExceedenceLookupData", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -166,7 +166,7 @@ function ExceedenceReport() {
     let Exceedencevalue=AllData.listParameters.filter(x=>x.parameter==PollutentName && x.interval == Interval && x.unitID==UnitID)[0]?.excedenceValue;
     let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate, Parameter: PollutentName, UnitID:UnitID, Interval: Interval,Exceedencevalue:Exceedencevalue});
  
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/ParameterExceedence?"+params, {
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ParameterExceedence?"+params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -282,7 +282,7 @@ function ExceedenceReport() {
       minutes = minutes < 10 ? '0'+minutes : minutes;
       var strTime = hours + ':' + minutes + ' ' + ampm;
     
-    fetch(process.env.REACT_APP_WSurl + 'api/AirQuality/ParameterExceedence?' + params, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/AirQuality/ParameterExceedence?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((pdfdata) => {
