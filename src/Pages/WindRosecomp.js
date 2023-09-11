@@ -1,7 +1,7 @@
 
 import React, { Component, useEffect, useState, useRef } from "react";
-import styled from "styled-components";
-import { calculateWindRose, Chart } from "react-windrose-chart";
+/* import styled from "styled-components";
+import { calculateWindRose, Chart } from "react-windrose-chart"; */
 
 
 
