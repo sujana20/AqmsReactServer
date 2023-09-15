@@ -16,11 +16,12 @@ function Adduser() {
   const Useraddvalidation = function (UserName, UserEmail,Password, UserGroup, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
+    let validmail=validateEmail(UserEmail);
     if (UserName == "") {
       //toast.warning('Please enter user name');
       form.classList.add('was-validated');
       isvalid = false;
-    } else if (UserEmail == "") {
+    } else if (UserEmail == "" || !validmail) {
       //toast.warning('Please enter user email');
       form.classList.add('was-validated');
       isvalid = false;
@@ -44,6 +45,13 @@ function Adduser() {
     }
     return isvalid;
   }
+  const validateEmail = (email) => {
+    return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  };
   const Useradd = async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
@@ -290,8 +298,8 @@ function Adduser() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
-                  <input type="text" className="form-control" id="useremail" placeholder="Enter user email" required />
-                  <div class="invalid-feedback">Please enter user email.</div>
+                  <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
+                  <div class="invalid-feedback">Please enter valid user email.</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="password" className="form-label">Password:</label>
