@@ -13,45 +13,51 @@ import CommonFunctions from "../utils/CommonFunctions";
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
-    Password=await handleEncrypt(Password);
+    //Password=await handleEncrypt(Password);
     if (!form.checkValidity()) {
       form.classNameList.add('was-validated');
     } else {
-      fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/Login', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ UserName: UserName, Password: Password }),
+      fetch(CommonFunctions.getWebApiUrl()+ "api/Users/" + UserName, {
+        method: 'GET',
       }).then((response) => response.json())
-        .then((responseJson) => {
-          if (responseJson != null) {
-            //sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            sessionStorage.setItem("UserData", JSON.stringify(responseJson.listUserGroupLogin[0]));
-           // sessionStorage.setItem("LisenceInformation",JSON.stringify(responseJson.listLicenseAccess[0]))
-            
-            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
-          } else {
-             //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
-
-            toast.error('User name or password is incorrect. Please try again', {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-            });
-            return false;
-          }
-        }).catch((error) => 
-            toast.error('User name or password is incorrect. Please try again')
-           // window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard"
-        );
-    }
+            .then((data) => {
+              if (data != null) {
+                  let uPassword = data.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
+                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
+                  if(!doesPasswordMatch){
+                        toast.error('User name or password is incorrect. Please try again', {
+                          position: "top-right",
+                          autoClose: 5000,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                          theme: "colored",
+                        });
+                        return false;
+                  }
+                  else{
+                      sessionStorage.setItem("UserData", JSON.stringify(data[0]));
+                      window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+                  } 
+              }
+              else {
+                  toast.error('User name or password is incorrect. Please try again', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                  });
+                  return false;
+                }
+              
+            }).catch((error) => toast.error('Unable to connect Database. Please contact adminstrator'));
+        }
   }
 
   const handleEncrypt = async (password) => {
@@ -65,6 +71,9 @@ import CommonFunctions from "../utils/CommonFunctions";
 
     return encryptedPassword ;
   }
+  const forgotPassword = () => {
+    window.location.href =process.env.REACT_APP_BASE_URL+ "/ForgotPassword";
+  };
   const redirectToReset = () => {
     window.location.href =process.env.REACT_APP_BASE_URL+ "/ResetPassword";
   };
@@ -119,8 +128,11 @@ import CommonFunctions from "../utils/CommonFunctions";
                       <div className="col-6" style={{textAlign:"right"}}>
                         <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
                       </div>
-                      <div className="col-12">
+                      <div className="col-6">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
+                      </div>
+                      <div className="col-6">
+                         <a className="form-check-label" style={{cursor:"pointer"}} onClick={forgotPassword}>Forgot Password?</a>
                       </div>
                     </form>
 
