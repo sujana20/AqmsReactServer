@@ -50,6 +50,7 @@ function App() {
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
     const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
+    LicenseExpired=true;
     if(Lisence!=null){
       var Licensestartdate=Lisence.startDate.split("T")[0];
       var Licenseenddate=Lisence.endDate.split("T")[0];
@@ -152,7 +153,7 @@ function App() {
           <Route   path="/PagenotFound" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("PagenotFound")>=0 ? <PagenotFound /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/AddLicence" exact element={currentUser !=null && permissions.indexOf("Licence")>=0 ? <AddLicence /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/ExceedenceReport" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("Exceedence Report")>=0 ? <ExceedenceReport /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
-          <Route   path="/WindRose" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("WindRose")>=0 ? <WindRose /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
+          {/* <Route   path="/WindRose" exact element={currentUser !=null && LicenseExpired && permissions.indexOf("WindRose")>=0 ? <WindRose /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} /> */}
         </Routes>
       </Suspense>
   {/* </BrowserRouter> */}

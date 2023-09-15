@@ -6,15 +6,19 @@ function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
 
   const Lisence = JSON.parse(sessionStorage.getItem('LisenceInformation'));
-  var startdate=Lisence==null?null:Lisence.startDate.split("T")[0];
-  var enddate=Lisence==null?null:Lisence.endDate.split("T")[0];
-  var LisenceValidity;
-  if(startdate<=enddate){
-    LisenceValidity="Application valid till "+ startdate + " to "+ enddate + " Please contact Adminstrator";
+  if(Lisence!=null)
+    {
+    var startdate=Lisence.startDate.split("T")[0];
+    var enddate=Lisence.endDate.split("T")[0];
+    var LisenceValidity;
+    if(startdate<=enddate){
+      LisenceValidity="Application valid till "+ startdate + " to "+ enddate + " Please contact Adminstrator";
+    }
+    else{
+      LisenceValidity="License Expired.! Please contact Adminstrator";
+    }
   }
-  else{
-    LisenceValidity="License Expired.! Please contact Adminstrator";
-  } 
+
 
 
 
@@ -121,5 +125,5 @@ function Header() {
       </nav>
     </header>
   )
-}
+            }
 export default Header;
