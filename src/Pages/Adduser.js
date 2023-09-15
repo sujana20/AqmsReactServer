@@ -212,7 +212,7 @@ function Adduser() {
           return $.grep(this.data, function (item) {
             return ((!filter.userName || item.userName.toUpperCase().indexOf(filter.userName.toUpperCase()) >= 0)
               && (!filter.userEmail || item.userEmail.toUpperCase().indexOf(filter.userEmail.toUpperCase()) >= 0)
-              && (!filter.password || item.password.toUpperCase().indexOf(filter.password.toUpperCase()) >= 0)
+              // && (!filter.password || item.password.toUpperCase().indexOf(filter.password.toUpperCase()) >= 0)
               && (!filter.role || item.role.toUpperCase().indexOf(filter.role.toUpperCase()) >= 0)
             );
           });
@@ -221,7 +221,7 @@ function Adduser() {
       fields: [
         { name: "userName", title: "User Name", type: "text" },
         { name: "userEmail", title: "User Email", type: "text" },
-        { name: "password", title: "Password", type: "text" },
+        // { name: "password", title: "Password", type: "text" },
         { name: "role", title: "Role", type: "text", },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,

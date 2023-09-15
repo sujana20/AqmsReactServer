@@ -22,8 +22,8 @@ import CommonFunctions from "../utils/CommonFunctions";
       }).then((response) => response.json())
             .then((data) => {
               if (data != null) {
-                  let uPassword = data.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
-                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
+                  let uPassword = data.listUserGroupLogin[0].password;
+                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword);
                   if(!doesPasswordMatch){
                         toast.error('User name or password is incorrect. Please try again', {
                           position: "top-right",
@@ -38,7 +38,7 @@ import CommonFunctions from "../utils/CommonFunctions";
                         return false;
                   }
                   else{
-                      sessionStorage.setItem("UserData", JSON.stringify(data[0]));
+                      sessionStorage.setItem("UserData", JSON.stringify(data.listUserGroupLogin[0]));
                       window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
                   } 
               }
