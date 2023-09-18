@@ -306,7 +306,7 @@ function Adduser() {
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback">Please enter valid user email.</div>
                 </div>
-                {showPassword && (
+                {!UserList && UserId==0 && (
                   <div className="col-md-12 mb-3">
                     <label for="password" className="form-label">Password:</label>
                     <input type="password" className="form-control" id="password" placeholder="Enter Password"  />
@@ -314,14 +314,7 @@ function Adduser() {
                     <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
                   </div>
                 )}
-                {!showPassword && (
-                  <div className="col-md-12 mb-3" hidden={true}>
-                    <label for="password" className="form-label">Password:</label>
-                    <input type="password" className="form-control" id="password" placeholder="Enter Password"  />
-                    {/* <div class="invalid-feedback">Please enter password.</div> */}
-                    <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
-                  </div>
-                )}
+                
                 <div className="col-md-12 mb-3">
                   <label for="Group" className="form-label">User Group:</label>
                   <select className="form-select" id="usergroup" required>
