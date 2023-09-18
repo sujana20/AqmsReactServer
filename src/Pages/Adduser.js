@@ -12,6 +12,7 @@ function Adduser() {
   const [UserId, setUserId] = useState(0);
   const [UserPwd, setUserPwd] = useState(null);
   const [Notification, setNotification] = useState(true);
+  const [showPassword, setshowPassword] = useState(true);
   const [ListUserGroup, setListUserGroup] = useState([]);
   const Useraddvalidation = function (UserName, UserEmail,Password, UserGroup, UserRole) {
     let isvalid = true;
@@ -58,14 +59,14 @@ function Adduser() {
     let Password = document.getElementById("password").value;
     let UserGroup=document.getElementById("usergroup").value;
     let UserRole = document.getElementById("userrole").value;
-
+    
     let encryptPassword=await handleEncrypt(Password);
 
     let validation = Useraddvalidation(UserName, UserEmail,encryptPassword, UserGroup, UserRole);
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/Users', {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + Notification, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -112,16 +113,17 @@ function Adduser() {
   }
 
   const UpdateUser=async(event) => {
+    
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let Password = document.getElementById("password").value;
     let UserGroup=document.getElementById("usergroup").value;
     let UserRole = document.getElementById("userrole").value;
-    let encryptPassword=Password;
-    if(Password != UserPwd){
-      encryptPassword=await handleEncrypt(Password);
-    }
-    let validation = Useraddvalidation(UserName, UserEmail,encryptPassword, UserGroup, UserRole);
+    //let encryptPassword=Password;
+    // if(Password != UserPwd){
+    //   encryptPassword=await handleEncrypt(Password);
+    // }
+    let validation = Useraddvalidation(UserName, UserEmail,Password, UserGroup, UserRole);
     if (!validation) {
       return false;
     }
@@ -131,7 +133,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password:encryptPassword,GroupID: UserGroup, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,GroupID: UserGroup, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -238,7 +240,9 @@ function Adduser() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
+                setshowPassword(false);
                 EditUser(item);
+
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
@@ -261,6 +265,7 @@ function Adduser() {
       setUserList(true);
     } else {
       setUserList(false);
+      setshowPassword(true);
       setUserId(0);
       $('#password').removeClass("disable");
     }
@@ -301,12 +306,22 @@ function Adduser() {
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback">Please enter valid user email.</div>
                 </div>
-                <div className="col-md-12 mb-3">
-                  <label for="password" className="form-label">Password:</label>
-                  <input type="password" className="form-control" id="password" placeholder="Enter Password" required />
-                  {/* <div class="invalid-feedback">Please enter password.</div> */}
-                  <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
-                </div>
+                {showPassword && (
+                  <div className="col-md-12 mb-3">
+                    <label for="password" className="form-label">Password:</label>
+                    <input type="password" className="form-control" id="password" placeholder="Enter Password"  />
+                    {/* <div class="invalid-feedback">Please enter password.</div> */}
+                    <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
+                  </div>
+                )}
+                {!showPassword && (
+                  <div className="col-md-12 mb-3" hidden={true}>
+                    <label for="password" className="form-label">Password:</label>
+                    <input type="password" className="form-control" id="password" placeholder="Enter Password"  />
+                    {/* <div class="invalid-feedback">Please enter password.</div> */}
+                    <div class="invalid-feedback" id="lblsignpwd" style={{display:"none"}}>Password must contain minimum 8 characters</div>
+                  </div>
+                )}
                 <div className="col-md-12 mb-3">
                   <label for="Group" className="form-label">User Group:</label>
                   <select className="form-select" id="usergroup" required>
