@@ -34,6 +34,7 @@ function LiveData() {
   const chartRef = useRef();
   const jspreadRef = useRef();
   const [selectedStations, setselectedStations] = useState([]);
+  const [Autorefresh, setAutorefresh] = useState(true);
   const [ListReportData, setListReportData] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
@@ -46,7 +47,7 @@ function LiveData() {
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
-  const [Flagcodelist,SetFlagcodelist]=useState([]);
+  const [Flagcodelist, SetFlagcodelist] = useState([]);
   const [Nestedheaders, setNestedheaders] = useState([]);
   const [revert, setrevert] = useState(false);
   const [Groups, setGroups] = useState([]);
@@ -68,15 +69,15 @@ function LiveData() {
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
         SetFlagcodelist(data.listFlagCodes);
         setStationGroups(data.listStationGroups);
-        let groupNamearray= data.listStationGroups;
-        let groupnames = groupNamearray.filter( (ele, ind) => ind === groupNamearray.findIndex( elem => elem.groupID === ele.groupID))
+        let groupNamearray = data.listStationGroups;
+        let groupnames = groupNamearray.filter((ele, ind) => ind === groupNamearray.findIndex(elem => elem.groupID === ele.groupID))
         setGroups(groupnames);
         setRefreshGrid(true);
         //getdatareport();
@@ -90,7 +91,7 @@ function LiveData() {
             search: true
           });
         }, 10);
-        
+
       })
       .catch((error) => console.log(error));
   }, []);
@@ -100,9 +101,9 @@ function LiveData() {
     }
     initializeJsGrid();
     initializeTooltip();
-  }, [RefreshGrid,ListReportData,LoadjsGridData]);
+  }, [RefreshGrid, ListReportData, LoadjsGridData]);
 
-  const initializeTooltip=function(){
+  const initializeTooltip = function () {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     return () => {
@@ -110,16 +111,18 @@ function LiveData() {
     }
   }
   useEffect(() => {
-    if(AllLookpdata !=null){
-    ChangeGroupName('load');
-    getdatareport();
-  }
+    if (AllLookpdata != null) {
+      ChangeGroupName('load');
+      getdatareport();
+    }
   }, [AllLookpdata]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-     // getdatareport('refresh');
-     GetProcessingData(false);
+      // getdatareport('refresh');
+      if (Autorefresh) {
+        GetProcessingData(false);
+      }
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   })
@@ -177,35 +180,35 @@ function LiveData() {
     // }
     // chart.update();
   }
- 
+
   const loadtable = function (instance) {
     let Interval = document.getElementById("criteriaid").value;
-    if(Interval==window.Intervalval){
-    for (let i = 0; i < SelectedPollutents.length; i++) {
-      let Parameterssplit = SelectedPollutents[i].split("@_");
-      let filnallist = [];
-      if (Parameterssplit.length > 1) {
-        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
-      } else {
-        filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
-      }
-      for (let j = 0; j < filnallist.length; j++) {
-        let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
-        if (index > -1) {
-          let cell = instance.jexcel.getCellFromCoords(i + 1, index);
-          if (filnallist[j].loggerFlags != null) {
-            let classname = CommonFunctions.SetFlagColor(filnallist[j].loggerFlags, Flagcodelist);
-            if (cell != undefined) {
-              cell.style.backgroundColor = classname;
-              //cell.classList.add(classname);
+    if (Interval == window.Intervalval) {
+      for (let i = 0; i < SelectedPollutents.length; i++) {
+        let Parameterssplit = SelectedPollutents[i].split("@_");
+        let filnallist = [];
+        if (Parameterssplit.length > 1) {
+          filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase() && x.stationID == Parameterssplit[1]);
+        } else {
+          filnallist = ReportDataListRef.current.filter(x => x.parameterName.toLowerCase() === Parameterssplit[0].toLowerCase());
+        }
+        for (let j = 0; j < filnallist.length; j++) {
+          let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
+          if (index > -1) {
+            let cell = instance.jexcel.getCellFromCoords(i + 1, index);
+            if (filnallist[j].loggerFlags != null) {
+              let classname = CommonFunctions.SetFlagColor(filnallist[j].loggerFlags, Flagcodelist);
+              if (cell != undefined) {
+                cell.style.backgroundColor = classname;
+                //cell.classList.add(classname);
+              }
             }
           }
         }
       }
     }
-  }
-     spreadsheetcontainer = document.querySelector(".jexcel_content");
-    if(spreadsheetcontainer != null){
+    spreadsheetcontainer = document.querySelector(".jexcel_content");
+    if (spreadsheetcontainer != null) {
       spreadsheetcontainer.scrollTop = spreadsheetcontainer.scrollHeight;
     }
   }
@@ -224,7 +227,7 @@ function LiveData() {
 
   const handleScroll = (event) => {
     // Prevent scrolling to the top when clicking on the scrollbar
-      event.preventDefault();
+    event.preventDefault();
   };
 
   const gethistory = function () {
@@ -232,7 +235,7 @@ function LiveData() {
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let params = new URLSearchParams({ id: filtered[0].id });
 
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -256,19 +259,19 @@ function LiveData() {
       headers = Nestedheaders;
     }
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true,readOnly:true, });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, readOnly: true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let Parameterssplit = SelectedPollutents[i].split("@_");
       let filter = [];
-      if(Parameterssplit.length>1){
+      if (Parameterssplit.length > 1) {
         filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == Parameterssplit[1]);
-      }else{
+      } else {
         filter = AllLookpdata.listPollutents.filter(x => x.parameterName == Parameterssplit[0] && x.stationID == selectedStations);
       }
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false,readOnly:true, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, readOnly: true, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           return $("<td>").css("background-color", bgcolor).append(item);
@@ -277,27 +280,27 @@ function LiveData() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false,readOnly:true, });
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false, readOnly: true, });
       }
     }
-    dataForGrid=GridData(ListReportData);
-   
-    if(dataForGrid.length>0){
-    jsptable = jspreadsheet(jspreadRef.current, {
-      data: dataForGrid,
-      rowResize: true,
-      tableWidth: '100%',
-      tableOverflow: true,
-      freezeColumns: 1,
-      columns: layout,
-      nestedHeaders: headers,
-     // lazyLoading: true,
-     // loadingSpin: true,
-      onselection: selectionActive,
-      onload: loadtable,
-    });
+    dataForGrid = GridData(ListReportData);
 
-  }
+    if (dataForGrid.length > 0) {
+      jsptable = jspreadsheet(jspreadRef.current, {
+        data: dataForGrid,
+        rowResize: true,
+        tableWidth: '100%',
+        tableOverflow: true,
+        freezeColumns: 1,
+        columns: layout,
+        nestedHeaders: headers,
+        // lazyLoading: true,
+        // loadingSpin: true,
+        onselection: selectionActive,
+        onload: loadtable,
+      });
+
+    }
   }
 
   const GridData = function (ReportData) {
@@ -312,32 +315,32 @@ function LiveData() {
       if (window.TruncateorRound == "RoundOff") {
 
         let num = ReportData[k].parametervalue;
-        roundedNumber = num==null?num:num.toFixed(digit);
+        roundedNumber = num == null ? num : num.toFixed(digit);
       }
 
       else {
-        roundedNumber = ReportData[k].parametervalue==null?ReportData[k].parametervalue:CommonFunctions.truncateNumber(ReportData[k].parametervalue, digit);
+        roundedNumber = ReportData[k].parametervalue == null ? ReportData[k].parametervalue : CommonFunctions.truncateNumber(ReportData[k].parametervalue, digit);
       }
-      let Groupid=document.getElementById("groupid").value;
-      if(Groupid !=""){
+      let Groupid = document.getElementById("groupid").value;
+      if (Groupid != "") {
         if (temp >= 0) {
-          dataForGrid[temp][ReportData[k].parameterName+"@_"+ReportData[k].stationID] = roundedNumber;
+          dataForGrid[temp][ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
         } else {
           obj["Date"] = ReportData[k].interval;
-          obj[ReportData[k].parameterName+"@_"+ReportData[k].stationID] = roundedNumber;
+          obj[ReportData[k].parameterName + "@_" + ReportData[k].stationID] = roundedNumber;
           dataForGrid.push(obj);
         }
-      }else{
+      } else {
         if (temp >= 0) {
           dataForGrid[temp][ReportData[k].parameterName] = roundedNumber;
         } else {
           obj["Date"] = ReportData[k].interval;
           obj[ReportData[k].parameterName] = roundedNumber;
           dataForGrid.push(obj);
-        } 
+        }
       }
     }
-return dataForGrid;
+    return dataForGrid;
   }
   const hexToRgbA = function (hex) {
     var c;
@@ -357,19 +360,19 @@ return dataForGrid;
     GetProcessingData(true);
   }
 
-const GetProcessingData=function(isInitialized){
-  let Station="";
-  let Pollutent="";
-  let GroupId = $("#groupid").val();
-  Station = $("#stationid").val();
-  Pollutent = $("#pollutentid").val();
+  const GetProcessingData = function (isInitialized) {
+    let Station = "";
+    let Pollutent = "";
+    let GroupId = $("#groupid").val();
+    Station = $("#stationid").val();
+    Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
-    if(GroupId==""){
+    if (GroupId == "") {
       setSelectedPollutents(Pollutent);
-    }else{
-      Pollutent=SelectedPollutents;
+    } else {
+      Pollutent = SelectedPollutents;
     }
     // if (param == 'reset' || Pollutent.length == 0) {
     //   if(GroupId==""){
@@ -381,55 +384,60 @@ const GetProcessingData=function(isInitialized){
     //    //setSelectedPollutents(finalpollutent);
     // }
     //setRefreshGrid(RefreshGrid?false:true);
-  let Interval = document.getElementById("criteriaid").value;
-  let valid = ReportValidations(Station, Pollutent, Interval,GroupId);
-  if (!valid) {
-    return false;
-  }
+    let Interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Station, Pollutent, Interval, GroupId);
+    if (!valid) {
+      return false;
+    }
 
-  document.getElementById('loader').style.display = "block";
-  let type = Interval.split('-');
-  let Intervaltype;
-  if (type[1] == 'H') {
-    Intervaltype = type[0] * 60;
-  } else {
-    Intervaltype = type[0];
-  }
-  let isAvgData=false;
-  if(Interval==window.Intervalval){
-    isAvgData=false;
-  }
-  else{
-    isAvgData=true;
-  }
-  let params = new URLSearchParams({Group:GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype,isAvgData: isAvgData });
-  let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/LiveData?"
-  if(GroupId !=""){
-    url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingLiveData?"
-  }
-  
-  fetch(url + params, {
-    method: 'GET',
-  }).then((response) => response.json())
-    .then((data) => {
-      if (data) {
-        let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
-        if(isInitialized){
-          setListReportData(data1);
-          setLoadjsGridData(true);
-        }else{
-          appendDataToSpreadsheet(data1);
+    document.getElementById('loader').style.display = "block";
+    let type = Interval.split('-');
+    let Intervaltype;
+    if (type[1] == 'H') {
+      Intervaltype = type[0] * 60;
+    } else {
+      Intervaltype = type[0];
+    }
+    let isAvgData = false;
+    if (Interval == window.Intervalval) {
+      isAvgData = false;
+    }
+    else {
+      isAvgData = true;
+    }
+    let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Interval: Intervaltype, isAvgData: isAvgData });
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/LiveData?"
+    if (GroupId != "") {
+      url = CommonFunctions.getWebApiUrl() + "api/AirQuality/StationGroupingLiveData?"
+    }
+
+    fetch(url + params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          if (data.length > 0) {
+            let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+            if (isInitialized) {
+              setListReportData(data1);
+              setLoadjsGridData(true);
+            } else {
+              appendDataToSpreadsheet(data1);
+            }
+            ReportDataListRef.current = data;
+          }else{
+            setListReportData(data);
+            setLoadjsGridData(true);
+          }
         }
-		ReportDataListRef.current=data;
-      }
-      document.getElementById('loader').style.display = "none";
-    }).catch((error) => console.log(error));
-}
+        document.getElementById('loader').style.display = "none";
+      }).catch((error) => console.log(error));
+  }
 
   const appendDataToSpreadsheet = function (data) {
     const spreadsheet = jspreadRef.current.jexcel;
     let finaldata = GridData(data);
-    if(finaldata.length>0){
+    if (finaldata.length > 0) {
       spreadsheet.setData(finaldata);
     }
   }
@@ -446,10 +454,10 @@ const GetProcessingData=function(isInitialized){
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Interval: Interval });
-    window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcel?" + params, "_blank");
+    window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcel?" + params, "_blank");
   }
 
-  const ReportValidations = function (Station, Pollutent, Interval,GroupId) {
+  const ReportValidations = function (Station, Pollutent, Interval, GroupId) {
     let isvalid = true;
     if (GroupId == "" && Station == "") {
       toast.error('Please select group or station', {
@@ -494,11 +502,11 @@ const GetProcessingData=function(isInitialized){
   /* reported data end */
   const GetInterval = function () {
     setcriteria([]);
-    let stationID =  $("#stationid").val();
+    let stationID = $("#stationid").val();
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID);
     if (finaldata.length > 0) {
       let finalinterval = [];
-      let intervalarr = finaldata[0].serverAvgInterval==null?[]:finaldata[0].serverAvgInterval.split(',');
+      let intervalarr = finaldata[0].serverAvgInterval == null ? [] : finaldata[0].serverAvgInterval.split(',');
       for (let i = 0; i < intervalarr.length; i++) {
         let intervalsplitarr = intervalarr[i].split('-');
         finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
@@ -512,23 +520,23 @@ const GetProcessingData=function(isInitialized){
       setcriteria(finalinterval);
     }
   }
-  
- /*  $('#stationid').change(function (event) {
-   
-    let filter = $(this).val();
-    setselectedStations(filter);
-    let Pollutent = AllLookpdata.listPollutents.filter(function (item) {
-      for (var i = 0; i < filter.length; i++) {
-        if (item['stationID'] == filter[i])
-          return true;
-      }
-    });
+
+  /*  $('#stationid').change(function (event) {
     
-    setSelectedPollutents(Pollutent);
-    GetInterval(); 
-    
-  }) */
-  
+     let filter = $(this).val();
+     setselectedStations(filter);
+     let Pollutent = AllLookpdata.listPollutents.filter(function (item) {
+       for (var i = 0; i < filter.length; i++) {
+         if (item['stationID'] == filter[i])
+           return true;
+       }
+     });
+     
+     setSelectedPollutents(Pollutent);
+     GetInterval(); 
+     
+   }) */
+
   const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
@@ -560,10 +568,10 @@ const GetProcessingData=function(isInitialized){
   const ChangeStation = function (e) {
     setPollutents([]);
     setcriteria([]);
-    document.getElementById("groupid").value="";
-    if(e.target.value !=""){
+    document.getElementById("groupid").value = "";
+    if (e.target.value != "") {
       $('#groupid').addClass("disable");
-    }else{
+    } else {
       $('#groupid').removeClass("disable");
     }
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
@@ -573,26 +581,14 @@ const GetProcessingData=function(isInitialized){
     setTimeout(function () {
       // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
-      $('.pollutentid')[0].sumo.unSelectAll(); 
+      $('.pollutentid')[0].sumo.unSelectAll();
     }, 10);
   }
   const ChangeGroupName = function (e) {
-    let stationParamaters=[];
+    let stationParamaters = [];
     let selectedGroup = document.getElementById("groupid").value;
     let headers = [];
-    if(e !="load"){
-    $('.pollutentid')[0].sumo.reload();
-    $('.pollutentid')[0].sumo.unSelectAll();
-    $('#stationid').val("");
-    if (selectedGroup != "") {
-      $('#stationid').addClass("disable");
-      $('.pollutentid')[0].sumo.disable();
-    } else {
-      $('#stationid').removeClass("disable");
-      $('.pollutentid')[0].sumo.enable();
-    }
-  }else{
-    setTimeout(function () {
+    if (e != "load") {
       $('.pollutentid')[0].sumo.reload();
       $('.pollutentid')[0].sumo.unSelectAll();
       $('#stationid').val("");
@@ -603,31 +599,43 @@ const GetProcessingData=function(isInitialized){
         $('#stationid').removeClass("disable");
         $('.pollutentid')[0].sumo.enable();
       }
-    }, 10);
-  }
+    } else {
+      setTimeout(function () {
+        $('.pollutentid')[0].sumo.reload();
+        $('.pollutentid')[0].sumo.unSelectAll();
+        $('#stationid').val("");
+        if (selectedGroup != "") {
+          $('#stationid').addClass("disable");
+          $('.pollutentid')[0].sumo.disable();
+        } else {
+          $('#stationid').removeClass("disable");
+          $('.pollutentid')[0].sumo.enable();
+        }
+      }, 10);
+    }
     setGroupSelected(selectedGroup);
     setcriteria([]);
     let filter2 = [];
-    let filter1=[];
-    let stationID=[];
-    if(selectedGroup !=="all"){
-     stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
-    var finalstationID = stationID.filter(function (item, pos) {
-      return stationID.indexOf(item) == pos;
-    });
-     filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
-    for (let i = 0; i < finalstationID.length; i++) {
-      let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
-      let station = Stations.filter(x => x.id == finalstationID[i]);
-      let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
-      headers.push(obj);
-      for (let j = 0; j < parameters.length; j++) {
-        let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-        let value = value1.length>0?value1[0].parameterName:"";
-        filter2.push(value + "@_" + finalstationID[i]);
+    let filter1 = [];
+    let stationID = [];
+    if (selectedGroup !== "all") {
+      stationID = StationGroups.filter(x => x.groupID == selectedGroup).map(a => a.stationID);
+      var finalstationID = stationID.filter(function (item, pos) {
+        return stationID.indexOf(item) == pos;
+      });
+      filter1 = StationGroups.filter(x => x.groupID == selectedGroup && finalstationID.includes(x.stationID)).map(a => a.parameterID);
+      for (let i = 0; i < finalstationID.length; i++) {
+        let parameters = StationGroups.filter(x => x.stationID == finalstationID[i] && x.groupID == selectedGroup).map(a => a.parameterID);
+        let station = Stations.filter(x => x.id == finalstationID[i]);
+        let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
+        headers.push(obj);
+        for (let j = 0; j < parameters.length; j++) {
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
+          filter2.push(value + "@_" + finalstationID[i]);
+        }
       }
-    }
-    }else{
+    } else {
       stationID = Stations.map(a => a.id);
       var finalstationID = stationID.filter(function (item, pos) {
         return stationID.indexOf(item) == pos;
@@ -638,8 +646,8 @@ const GetProcessingData=function(isInitialized){
         let obj = { title: station.length > 0 ? station[0].stationName : "", colspan: parameters.length };
         headers.push(obj);
         for (let j = 0; j < parameters.length; j++) {
-          let value1=AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
-          let value = value1.length>0?value1[0].parameterName:"";
+          let value1 = AllLookpdata.listPollutents.filter(x => x.stationID == finalstationID[i] && x.id == parameters[j]);
+          let value = value1.length > 0 ? value1[0].parameterName : "";
           filter2.push(value + "@_" + finalstationID[i]);
         }
       }
@@ -655,22 +663,22 @@ const GetProcessingData=function(isInitialized){
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval == null ? [] : finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
-          if(intervalarr[i] !=null){
-          let intervalsplitarr = intervalarr[i].split('-');
-          let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
-          if (index == -1) {
-            finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
+          if (intervalarr[i] != null) {
+            let intervalsplitarr = intervalarr[i].split('-');
+            let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
+            if (index == -1) {
+              finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
+            }
           }
-        }
         }
       }
       setcriteria(finalinterval);
     }
-   /*  for(var i=0; i<StationGroups.length;i++){
-        stationParamaters.push({"Station": StationGroups[i].stationID,"ParameterName":StationGroups[i].parameterID});
-    } */
+    /*  for(var i=0; i<StationGroups.length;i++){
+         stationParamaters.push({"Station": StationGroups[i].stationID,"ParameterName":StationGroups[i].parameterID});
+     } */
   }
   $('#pollutentid').change(function (e) {
     setcriteria([]);
@@ -682,15 +690,15 @@ const GetProcessingData=function(isInitialized){
     if (finaldata.length > 0) {
       let finalinterval = [];
       for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].serverAvgInterval==null?[]:finaldata[j].serverAvgInterval.split(',');
+        let intervalarr = finaldata[j].serverAvgInterval == null ? [] : finaldata[j].serverAvgInterval.split(',');
         for (let i = 0; i < intervalarr.length; i++) {
-          if(intervalarr[i] !=null){
-          let intervalsplitarr = intervalarr[i].split('-');
-          let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
-          if (index == -1) {
-            finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
+          if (intervalarr[i] != null) {
+            let intervalsplitarr = intervalarr[i].split('-');
+            let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
+            if (index == -1) {
+              finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
+            }
           }
-        }
         }
       }
       setcriteria(finalinterval);
@@ -700,7 +708,7 @@ const GetProcessingData=function(isInitialized){
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
-    
+
     setChartData({ labels: [], datasets: [] });
     setChartOptions();
     let datasets = [];
@@ -711,11 +719,11 @@ const GetProcessingData=function(isInitialized){
     for (let i = 0; i < SelectedPollutents.length; i++) {
       chartdata = [];
       pointRadius = [];
-      let parameterlabel="";
+      let parameterlabel = "";
       let pollutentdata = data.filter(val => val.parameterID == SelectedPollutents[i].id);
-      if(pollutentdata.length>0){
+      if (pollutentdata.length > 0) {
         for (let k = 0; k < pollutentdata.length; k++) {
-          parameterlabel=pollutentdata[k].parameterName;
+          parameterlabel = pollutentdata[k].parameterName;
           let index = labels.indexOf(pollutentdata[k].interval);
           if (index == -1) {
             labels.push(pollutentdata[k].interval)
@@ -725,7 +733,7 @@ const GetProcessingData=function(isInitialized){
         }
         datasets.push({ label: parameterlabel, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
-      
+
     }
     setChartOptions({
       responsive: true,
@@ -736,7 +744,7 @@ const GetProcessingData=function(isInitialized){
       onDrag: function (e, datasetIndex, index, value) {
         console.log(datasetIndex, index, value)
       },
-      
+
       plugins: {
         legend: {
           position: 'top',
@@ -760,7 +768,7 @@ const GetProcessingData=function(isInitialized){
 
   return (
     <main id="main" className="main" >
-      <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -806,58 +814,66 @@ const GetProcessingData=function(isInitialized){
           <div>
             <div className="card">
               <div className="card-body">
-            <div className="row">
-            <div className="col-md-2">
-                <label className="form-label">Group Name</label>
-                <select className="form-select" id="groupid" onChange={ChangeGroupName}>
-                    <option value="">None</option>
-                    <option value="all" selected>All Stations</option>
-                    {Groups.map((x, y) =>
-                       <option value={x.groupID} key={y} >{x.groupName}</option>
-                       //<option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
-                    )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
-                <option value="" selected> Select Station</option>
-                  {Stations.map((x, y) =>
-                    <option value={x.id} key={y} >{x.stationName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
-                  {/* <option selected> Select Pollutents</option> */}
-                  {Pollutents.map((x, y) =>
-                    <option value={x.parameterName} key={y} >{x.parameterName}</option>
-                  )}
-                </select>
-              </div>
-              <div className="col-md-2">
-                <label className="form-label">Interval</label>
-                <select className="form-select" id="criteriaid">
-                  <option value="" selected>Select Interval</option>
-                  <option value="15-M" selected>15-M</option>
-                  {Criteria.map((x, y) =>
-                    <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
-                  )}
-                </select>
-              </div>
-              <div className=" mt-4">
-                <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
-                <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
-              </div>
-              <div className="col-md-4">
                 <div className="row">
-                  <div id="loader" className="loader"></div>
+                  <div className="col-md-2">
+                    <label className="form-label">Group Name</label>
+                    <select className="form-select" id="groupid" onChange={ChangeGroupName}>
+                      <option value="">None</option>
+                      <option value="all" selected>All Stations</option>
+                      {Groups.map((x, y) =>
+                        <option value={x.groupID} key={y} >{x.groupName}</option>
+                        //<option value={x.groupID} key={y} selected={Groups[0]}>{x.groupName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Station Name</label>
+                    <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
+                      <option value="" selected> Select Station</option>
+                      {Stations.map((x, y) =>
+                        <option value={x.id} key={y} >{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
+                      {/* <option selected> Select Pollutents</option> */}
+                      {Pollutents.map((x, y) =>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2">
+                    <label className="form-label">Interval</label>
+                    <select className="form-select" id="criteriaid">
+                      <option value="" selected>Select Interval</option>
+                      <option value="15-M" selected>15-M</option>
+                      {Criteria.map((x, y) =>
+                        <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-2 mt-4">
+                    <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
+                    <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
+                  </div>
+                  <div className="col-md-2 mt-4">
+                    <div className="form-check">
+                      <input className="form-check-input" type="checkbox" id="autorefresh" onChange={(e) => setAutorefresh(e.target.checked)} defaultChecked={Autorefresh} />
+                      <label className="form-check-label form-label" for="isderived">
+                        Autorefresh
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="row">
+                      <div id="loader" className="loader"></div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
-
-            </div>
-            </div>
             </div>
             {ListReportData.length > 0 && (
               <div>
@@ -868,22 +884,22 @@ const GetProcessingData=function(isInitialized){
                 </div> */}
                 <div className="card Livedata">
                   <div className="card-body p-2">
-                <div className="row">
-                  <div className="col-md-12 mb-3">
-                    {AllLookpdata.listFlagCodes.map((i,j) =>
-                      <button type="button" className="btn btn-primary flag mx-1" key={j} style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
-                    )}                    
+                    <div className="row">
+                      <div className="col-md-12 mb-3">
+                        {AllLookpdata.listFlagCodes.map((i, j) =>
+                          <button type="button" className="btn btn-primary flag mx-1" key={j} style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="jsGrid" ref={jspreadRef} />
                   </div>
                 </div>
-                
-                <div className="jsGrid" ref={jspreadRef}  />
               </div>
-              </div>
-                </div>
             )}
 
-            {ListReportData.length == 0 && LoadjsGridData &&(
-              <div class="nodatamessage" id="nodatamessage">No data found</div>
+            {ListReportData.length == 0 && LoadjsGridData && (
+              <div className="nodatamessage" id="nodatamessage">No data found</div>
             )}
 
             {ListReportData.length > 0 && ChartData && (
