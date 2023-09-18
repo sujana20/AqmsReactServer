@@ -12,7 +12,7 @@ function Adduser() {
   const [UserId, setUserId] = useState(0);
   const [UserPwd, setUserPwd] = useState(null);
   const [Notification, setNotification] = useState(true);
-  const [showPassword, setshowPassword] = useState(true);
+  
   const [ListUserGroup, setListUserGroup] = useState([]);
   const Useraddvalidation = function (UserName, UserEmail,Password, UserGroup, UserRole) {
     let isvalid = true;
@@ -240,7 +240,7 @@ function Adduser() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                setshowPassword(false);
+                
                 EditUser(item);
 
                 /* alert("ID: " + item.id); */
@@ -265,7 +265,7 @@ function Adduser() {
       setUserList(true);
     } else {
       setUserList(false);
-      setshowPassword(true);
+      
       setUserId(0);
       $('#password').removeClass("disable");
     }
