@@ -53,6 +53,26 @@ function Adduser() {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
   };
+  const UserEditvalidation = function ( UserEmail, UserGroup, UserRole) {
+    let isvalid = true;
+    let form = document.querySelectorAll('#AddUserform')[0];
+    let validmail=validateEmail(UserEmail);
+    if (UserEmail == "" || !validmail) {
+      //toast.warning('Please enter user email');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }
+    else if (UserGroup == "") {
+      //toast.error('Please select user group');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }else if (UserRole == "") {
+      //toast.warning('Please select user role');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }
+    return isvalid;
+  }
   const Useradd = async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
@@ -102,9 +122,9 @@ function Adduser() {
     setUserId(param.id);
     setUserPwd(param.password);
     setTimeout(() => {
-      document.getElementById("username").value = param.userName;
+      //document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
-      document.getElementById("password").value = param.password;
+      //document.getElementById("password").value = param.password;
       document.getElementById("usergroup").value = param.groupID;
       document.getElementById("userrole").value = param.role;
       $('#password').addClass("disable");     
@@ -114,16 +134,16 @@ function Adduser() {
 
   const UpdateUser=async(event) => {
     
-    let UserName = document.getElementById("username").value;
+    //let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
-    let Password = document.getElementById("password").value;
+    //let Password = document.getElementById("password").value;
     let UserGroup=document.getElementById("usergroup").value;
     let UserRole = document.getElementById("userrole").value;
     //let encryptPassword=Password;
     // if(Password != UserPwd){
     //   encryptPassword=await handleEncrypt(Password);
     // }
-    let validation = Useraddvalidation(UserName, UserEmail,Password, UserGroup, UserRole);
+    let validation = UserEditvalidation( UserEmail, UserGroup, UserRole);
     if (!validation) {
       return false;
     }
@@ -133,7 +153,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,GroupID: UserGroup, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserEmail: UserEmail,GroupID: UserGroup, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -296,11 +316,13 @@ function Adduser() {
             </div>
             {!UserList && (
               <form id="AddUserform" className="row">
+                {!UserList && UserId==0 && (
                 <div className="col-md-12 mb-3">
-                  <label for="username" className="form-label">User Name:</label>
-                  <input type="text" className="form-control" id="username" placeholder="Enter user name" required />
-                  <div class="invalid-feedback">Please enter user name.</div>
-                </div>
+                    <label for="username" className="form-label">User Name:</label>
+                    <input type="text" className="form-control" id="username" placeholder="Enter user name" required />
+                    <div class="invalid-feedback">Please enter user name.</div>
+                  </div>
+                )}
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
@@ -335,18 +357,20 @@ function Adduser() {
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
                 </div>
-                <div className="col-md-12 mb-3">
-                  <label for="Notification" className="form-label">Notification: </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
-                    <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
-                    {Notification && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
-                    )}
-                    {!Notification && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
-                    )}
+                {!UserList && UserId==0 && (
+                  <div className="col-md-12 mb-3">
+                    <label for="Notification" className="form-label">Notification: </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
+                      <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
+                      {Notification && (
+                        <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
+                      )}
+                      {!Notification && (
+                        <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
                   <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
