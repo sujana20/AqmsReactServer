@@ -214,6 +214,9 @@ function StasticsReport() {
 
   $('#stationid').change(function (event) {
     setPollutents([]);
+    setTimeout(function () {
+      $('.pollutentid')[0].sumo.reload();
+     }, 10);
     setcriteria([]);
     let filter = $(this).val();
     setselectedStations(filter);
@@ -237,6 +240,9 @@ function StasticsReport() {
     setPollutents(finaldata1);
     setTimeout(function () {
       $('.pollutentid')[0].sumo.reload();
+      if(filter.length==1){
+        $('.pollutentid')[0].sumo.unSelectAll(); 
+      }
      // $('.pollutentid')[0].sumo.unSelectAll(); 
     }, 10);
   })
@@ -474,7 +480,7 @@ const DownloadPdf = () => {
                     <select className="form-select pollutentid" id="pollutentid" multiple="multiple">
                       {/* <option selected> Select Pollutents</option> */}
                       {Pollutents.map((x, y) =>
-                        <option value={x.ID} key={y} >{x.parameterName}</option>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
                       )}
                     </select>
                   </div>
