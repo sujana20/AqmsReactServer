@@ -37,7 +37,7 @@ function ResetPassword() {
         let NewPassword = document.getElementById("NewPassword").value;
         let ConfirmPassword = document.getElementById("confirmNewPassword").value;
         
-        Password=await handleEncrypt(Password);
+        //Password=await handleEncrypt(Password);
         $("#lblbothmatch")[0].style.display="none"; 
         $("#lblPassword")[0].style.display="none";  
         if (NewPassword != ConfirmPassword) {            
@@ -48,15 +48,12 @@ function ResetPassword() {
           $("#lblPassword")[0].style.display="block";
           return false;
         }
+
         let validation = Passwordvalidation(UserName, Password, NewPassword, ConfirmPassword);
         if (!validation) {
             return false;
         }
-        
-        
-
-        
-
+        NewPassword=await handleEncrypt(NewPassword);
         fetch(CommonFunctions.getWebApiUrl() + 'api/Users/ResetPassword', {
             method: 'POST',
             headers: {

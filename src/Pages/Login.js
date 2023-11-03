@@ -17,46 +17,35 @@ import CommonFunctions from "../utils/CommonFunctions";
     if (!form.checkValidity()) {
       form.classNameList.add('was-validated');
     } else {
-      fetch(CommonFunctions.getWebApiUrl()+ "api/Users/" + UserName, {
-        method: 'GET',
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/Login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ UserName: UserName, Password: Password }),
       }).then((response) => response.json())
-            .then((data) => {
-              if (data != null) {
-                  let uPassword = data.listUserGroupLogin[0].password;
-                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword);
-                  if(!doesPasswordMatch){
-                        toast.error('User name or password is incorrect. Please try again', {
-                          position: "top-right",
-                          autoClose: 5000,
-                          hideProgressBar: false,
-                          closeOnClick: true,
-                          pauseOnHover: true,
-                          draggable: true,
-                          progress: undefined,
-                          theme: "colored",
-                        });
-                        return false;
-                  }
-                  else{
-                      sessionStorage.setItem("UserData", JSON.stringify(data.listUserGroupLogin[0]));
-                      window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
-                  } 
-              }
-              else {
-                  toast.error('User name or password is incorrect. Please try again', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "colored",
-                  });
-                  return false;
-                }
-              
-            }).catch((error) => toast.error('Unable to connect Database. Please contact adminstrator'));
+        .then((responseJson) => {
+          if (responseJson != null) {
+            sessionStorage.setItem("UserData", JSON.stringify(responseJson.listUserGroupLogin[0]));
+            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+          } else {
+            toast.error('User name or password is incorrect. Please try again', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            return false;
+          }
+        }).catch((error) => 
+            toast.error('User name or password is incorrect. Please try again')
+        );
+    
         }
   }
 
