@@ -86,33 +86,7 @@ function AddDevice() {
       }).catch((error) => toast.error('Unable to add the Device. Please contact adminstrator'));
   }
 
-  const EditDevice = function (param) {
-    setDeviceList(false);
-    setDeviceid(param.id);
-    setType(param.type);
-    setStatus(param.status == 1 ? true : false);
-    setServiceMode(param.serviceMode == 1 ? true : false);
-    setEnable(param.isEnable == 1 ? true : false);
-    setTimeout(() => {
-      document.getElementById("stationname").value = param.stationID;
-      document.getElementById("devicename").value = param.deviceName;
-      document.getElementById("devicemodel").value = param.deviceModel;
-      document.getElementById("type").value = param.type;
-      document.getElementById("deviceid").value = param.deviceId;
-      if (param.type == 'Tcp/IP') {
-        document.getElementById("ipaddress").value = param.ipAddress;
-        document.getElementById("port").value = param.port;
-      } else if (param.type == 'Serial') {
-        document.getElementById("commport").value=param.commPort;
-        document.getElementById("baudrate").value=param.baudRate;
-        document.getElementById("parity").value=param.parity;
-        document.getElementById("stopbits").value=param.stopBits;
-        document.getElementById("databits").value=param.dataBits;
-        document.getElementById("serialrtumode").checked=param.serialRtuMode;
-      }
-    }, 10);
-
-  }
+  
 
   const UpdateDevice= function () {
     let StationID = document.getElementById("stationname").value;
@@ -173,36 +147,12 @@ function AddDevice() {
       }).catch((error) => toast.error('Unable to update the Device. Please contact adminstrator'));
   }
 
-  const DeleteDevice = function (item) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: ("You want to delete this Device !"),
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#5cb85c",
-      confirmButtonText: "Yes",
-      closeOnConfirm: false
-    })
-      .then(function (isConfirm) {
-        if (isConfirm.isConfirmed) {
-          let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/Devices/' + id, {
-            method: 'DELETE'
-          }).then((response) => response.json())
-            .then((responseJson) => {
-              if (responseJson == 1) {
-                toast.success('Device deleted successfully')
-                GetDevices();
-              } else {
-                toast.error('Unable to delete Device. Please contact adminstrator');
-              }
-            }).catch((error) => toast.error('Unable to delete Device. Please contact adminstrator'));
-        }
-      });
-  }
-  const GetLookupdata = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/Deviceslookup", {
+  
+  const GetLookupdata = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/Deviceslookup", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

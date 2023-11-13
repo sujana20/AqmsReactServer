@@ -11,9 +11,11 @@ function UserLogHistory() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
 
-  const GetUserLogLookup = function () {
+  const GetUserLogLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ "api/LoginHistory", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -30,8 +32,8 @@ function UserLogHistory() {
       }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'));
   }
 
-  const GetUserLog = function (param) {
-   
+  const GetUserLog = async function (param) {
+    let authHeader = await CommonFunctions.getAuthHeader();
     let UserName = $("#userid").val();
     if (UserName.length > 0) {
       UserName.join(',')
@@ -50,6 +52,7 @@ function UserLogHistory() {
   let params = new URLSearchParams({ UserName: UserName, Fromdate: Fromdate, Todate: Todate});
     fetch(CommonFunctions.getWebApiUrl()+ "api/LoginHistoryByFilter?"+ params, {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

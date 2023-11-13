@@ -86,12 +86,12 @@ function Adduser() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + Notification, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader.Accept='application/json';
+    authHeader["Content-Type"]='application/json';
+    await  fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + Notification, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader ,
       body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Password: encryptPassword, GroupID: UserGroup, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -147,12 +147,12 @@ function Adduser() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + UserId, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader.Accept='application/json';
+    authHeader["Content-Type"]='application/json';
+    await fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + UserId, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader ,
       body: JSON.stringify({ UserEmail: UserEmail,GroupID: UserGroup, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -178,11 +178,13 @@ function Adduser() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
+        let authHeader = await CommonFunctions.getAuthHeader();
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + id, {
-            method: 'DELETE'
+          await  fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + id, {
+            method: 'DELETE',
+            headers: authHeader ,
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -195,9 +197,11 @@ function Adduser() {
         }
       });
   }
-  const GetUser = function () {
+  const GetUser = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ "api/Users", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -205,9 +209,11 @@ function Adduser() {
         }
       }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
   }
-  const GetGroupDetails = function () {
+  const GetGroupDetails = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ "api/UsersGroup", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

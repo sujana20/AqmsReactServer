@@ -27,7 +27,11 @@ import CommonFunctions from "../utils/CommonFunctions";
       }).then((response) => response.json())
         .then((responseJson) => {
           if (responseJson != null) {
-            sessionStorage.setItem("UserData", JSON.stringify(responseJson.listUserGroupLogin[0]));
+            sessionStorage.setItem("UserData", JSON.stringify(responseJson.users[0]));
+            sessionStorage.setItem("Token",responseJson.token);
+            var currentDate=new Date();
+            currentDate.setMinutes(currentDate.getMinutes()+responseJson.tokenExpirationTime-1);
+            sessionStorage.setItem("TokenExpTime",currentDate);
             window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
             toast.error('User name or password is incorrect. Please try again', {

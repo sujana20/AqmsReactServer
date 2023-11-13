@@ -26,9 +26,11 @@ function UserGroups(){
         GetGroupDetails();
     }, []);
 
-    const GetGroupDetails = function () {
+    const GetGroupDetails = async function () {
+      let authHeader = await CommonFunctions.getAuthHeader();
         fetch(CommonFunctions.getWebApiUrl()+ "api/UsersGroup", {
           method: 'GET',
+          headers: authHeader,
         }).then((response) => response.json())
           .then((data) => {
             if (data) {
@@ -112,7 +114,7 @@ function UserGroups(){
         return isvalid;
     }
 
-    const addusergroup=function(){
+    const addusergroup = async function(){
         setChecked([]);
         let GroupName = document.getElementById("usergroupname").value;
         var paramvalues='';
@@ -128,12 +130,12 @@ function UserGroups(){
         if (!validation) {
             return false;
         }
-        fetch(CommonFunctions.getWebApiUrl()+ 'api/AddUsersGroup', {
+        let authHeader = await CommonFunctions.getAuthHeader();
+        authHeader.Accept='application/json';
+        authHeader["Content-Type"]='application/json';
+        await fetch(CommonFunctions.getWebApiUrl()+ 'api/AddUsersGroup', {
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
+            headers: authHeader,
             body: JSON.stringify({ GroupName: GroupName, Permissions: paramvalues }),
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -172,7 +174,7 @@ function UserGroups(){
         }, 100);  
     }
 
-    const UpdateGroup=function(){
+    const UpdateGroup = async function(){
         var GroupName=document.getElementById("usergroupname").value;             
         var paramvalues='';
         for(var u=0;u<checked.length;u++){
@@ -187,12 +189,12 @@ function UserGroups(){
         if (!validation) {
           return false;
         }
-        fetch(CommonFunctions.getWebApiUrl()+ 'api/UpdateUsersGroup/' + GroupId, {
+        let authHeader = await CommonFunctions.getAuthHeader();
+        authHeader.Accept='application/json';
+        authHeader["Content-Type"]='application/json';
+        await  fetch(CommonFunctions.getWebApiUrl()+ 'api/UpdateUsersGroup/' + GroupId, {
           method: 'PUT',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },    
+          headers: authHeader,  
           body: JSON.stringify({ GroupName: GroupName, Permissions: paramvalues }), 
           //body: JSON.stringify({ GroupID:groupid, GroupName: groupname, StationID: stationvalue, ParameterID:parametervalues, Status:status, CreatedBy:CreatedBy, ModifiedBy:ModifiedBy }),
         }).then((response) => response.json())
@@ -220,11 +222,13 @@ function UserGroups(){
           confirmButtonText: "Yes",
           closeOnConfirm: false
         })
-          .then(function (isConfirm) {
+          .then(async function (isConfirm) {
             if (isConfirm.isConfirmed) {
               let id = item.id;
+              let authHeader = await CommonFunctions.getAuthHeader();
               fetch(CommonFunctions.getWebApiUrl()+ 'api/DeleteUsersGroup/' + id, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: authHeader,
               }).then((response) => response.json())
                 .then((responseJson) => {
                   if (responseJson == 1) {

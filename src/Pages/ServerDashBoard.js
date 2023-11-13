@@ -14,10 +14,12 @@ function ServerDashBoard() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const getDuration = window.DashboardRefreshtime;
 
-  const GetStation = function () {
+  const GetStation = async function () {
     document.getElementById('loader').style.display = "block";
-    fetch(CommonFunctions.getWebApiUrl()+ "api/StationsDashBoardData", {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/StationsDashBoardData", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

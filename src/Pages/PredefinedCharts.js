@@ -57,16 +57,16 @@ function PredefinedCharts() {
   useEffect(() => {
     GenarateChart();
   }, []);
-  const GenarateChart = function () {
+  const GenarateChart = async function () {
     let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/getPredefinedchartData";
     let Pollutent = $("input[type='radio'][name='parametersradio']:checked").val();
     let DataFilter = 1440;
-    fetch(url, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader['Accept'] = 'application/json';
+    authHeader['Content-Type'] = 'application/json';
+    await fetch(url, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader ,
       body: JSON.stringify({ DataFilter: DataFilter, Pollutant: Pollutent.toString() }),
     }).then((response) => response.json())
       .then((data) => {

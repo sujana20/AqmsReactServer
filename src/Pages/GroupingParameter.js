@@ -26,9 +26,11 @@ function Grouping() {
     const jspreadRef = useRef(null);
 
 
-    const GetparametersLookup = function () {
-        fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData", {
+    const GetparametersLookup = async function () {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      await  fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData", {
           method: 'GET',
+          headers: authHeader ,
         }).then((response) => response.json())
           .then((data) => {
             if (data) { 
@@ -145,7 +147,7 @@ function Grouping() {
       return isvalid;
     }
 
-    const Groupadd = function(){
+    const Groupadd = async function(){
       setcheckedStationValues([]);
       setChecked([]);
       var groupname=document.getElementById("groupnamevalue").value;      
@@ -159,12 +161,13 @@ function Grouping() {
       if (!validation) {
         return false;
       }
-      fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingAdd', {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      authHeader.Accept='application/json';
+      authHeader["Content-Type"]='application/json';
+  
+    await  fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingAdd', {
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
+        headers: authHeader ,
         body: JSON.stringify(parameterArray),
         //body: JSON.stringify({ GroupID:groupid, GroupName: groupname, StationID: stationvalue, ParameterID:parametervalues, Status:status, CreatedBy:CreatedBy, ModifiedBy:ModifiedBy }),
       }).then((response) => response.json())
@@ -192,7 +195,7 @@ function Grouping() {
           if(ListStationGroups[u].groupID == param.groupID){
             var parameter= ListStationGroups[u].parameterID;
             var station=  ListStationGroups[u].stationID;
-            parameterArray.push([station + "-" + parameter]); 
+            parameterArray.push(station + "-" + parameter); 
           }
                   
         }
@@ -203,7 +206,7 @@ function Grouping() {
       }, 100);  
     }
 
-    const UpdateGroup=function(){
+    const UpdateGroup= async function(){
       var groupname=document.getElementById("groupnamevalue").value;
            
       var parameterArray=[];
@@ -215,12 +218,12 @@ function Grouping() {
       if (!validation) {
         return false;
       }
-      fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingUpdate/' + GroupId, {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      authHeader.Accept='application/json';
+      authHeader["Content-Type"]='application/json';
+      await  fetch(CommonFunctions.getWebApiUrl()+ 'api/GroupingUpdate/' + GroupId, {
         method: 'PUT',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },    
+        headers: authHeader ,    
         body: JSON.stringify(parameterArray),   
         //body: JSON.stringify({ GroupID:groupid, GroupName: groupname, StationID: stationvalue, ParameterID:parametervalues, Status:status, CreatedBy:CreatedBy, ModifiedBy:ModifiedBy }),
       }).then((response) => response.json())
@@ -239,7 +242,7 @@ function Grouping() {
         }).catch((error) => toast.error('Unable to update the Group. Please contact adminstrator'));
     }
 
-    const DeleteGroup = function (item) {
+    const DeleteGroup =  function (item) {
       Swal.fire({
         title: "Are you sure?",
         text: ("You want to delete this parameter !"),
@@ -249,11 +252,13 @@ function Grouping() {
         confirmButtonText: "Yes",
         closeOnConfirm: false
       })
-        .then(function (isConfirm) {
+        .then(async function (isConfirm) {
           if (isConfirm.isConfirmed) {
             let id = item.groupID;
-            fetch(CommonFunctions.getWebApiUrl()+ 'api/DeleteGrouping/' + id, {
-              method: 'DELETE'
+            let authHeader = await CommonFunctions.getAuthHeader();
+            await fetch(CommonFunctions.getWebApiUrl()+ 'api/DeleteGrouping/' + id, {
+              method: 'DELETE',
+              headers: authHeader ,
             }).then((response) => response.json())
               .then((responseJson) => {
                 if (responseJson == 1) {

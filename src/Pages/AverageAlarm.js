@@ -27,7 +27,7 @@ function AverageAlarm() {
     return isvalid;
   }
 
-  const AddAvgAlarm = (event) => {
+  const AddAvgAlarm = async (event) => {
     let AverageAlarmName = document.getElementById("alarmname").value;
     let Enabled="1";
     let SourceID="1";
@@ -46,13 +46,12 @@ function AverageAlarm() {
     if (!validation) {
       return false;
     }
-    
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader.Accept='application/json';
+    authHeader["Content-Type"]='application/json';
     fetch(CommonFunctions.getWebApiUrl()+ 'api/AverageAlarm', {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader,
       body: JSON.stringify({ AverageAlarmName: AverageAlarmName, Enabled: Enabled,SourceID:SourceID,ReadingAverageIntervalID:ReadingAverageIntervalID,AlarmOnFlags:AlarmOnFlags,InhibitingFlags:InhibitingFlags,OutputPattern:OutputPattern,OutputToAlarmPort:OutputToAlarmPort,AcknowledgeInputPattern:AcknowledgeInputPattern,AutoAcknowledgeInterval:AutoAcknowledgeInterval,EndOnNoFlags:EndOnNoFlags }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -86,7 +85,7 @@ function AverageAlarm() {
 
   }
 
-  const UpdateAvgAlarm = function () {
+  const UpdateAvgAlarm = async function () {
     let AverageAlarmName = document.getElementById("alarmname").value;
     let Enabled="1";
     let SourceID="1";
@@ -104,12 +103,12 @@ function AverageAlarm() {
     if (!validation) {
       return false;
     }
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader.Accept='application/json';
+    authHeader["Content-Type"]='application/json';
     fetch(CommonFunctions.getWebApiUrl()+ 'api/AverageAlarm/' + AvgAlarmId, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader,
       body: JSON.stringify({ AverageAlarmName: AverageAlarmName, Enabled: Enabled,SourceID:SourceID,ReadingAverageIntervalID:ReadingAverageIntervalID,AlarmOnFlags:AlarmOnFlags,InhibitingFlags:InhibitingFlags,OutputPattern:OutputPattern,OutputToAlarmPort:OutputToAlarmPort,AcknowledgeInputPattern:AcknowledgeInputPattern,AutoAcknowledgeInterval:AutoAcknowledgeInterval,EndOnNoFlags:EndOnNoFlags }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -135,11 +134,13 @@ function AverageAlarm() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
+        let authHeader = await CommonFunctions.getAuthHeader();
         if (isConfirm.isConfirmed) {
           let id = item.id;
           fetch(CommonFunctions.getWebApiUrl()+ 'api/AverageAlarm/' + id, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: authHeader,
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -152,9 +153,11 @@ function AverageAlarm() {
         }
       });
   }
-  const GetAvgAlarm = function () {
+  const GetAvgAlarm = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ "api/AverageAlarm", {
       method: 'GET',
+      headers: authHeader,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

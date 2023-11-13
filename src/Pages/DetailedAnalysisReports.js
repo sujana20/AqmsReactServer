@@ -97,16 +97,25 @@ function DetailedAnalysisReports() {
     });
   })
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetLookupDataDetailedAnalysis")
+    LoadData();
+    // initializeJsGrid();
+  }, []);
+
+  const LoadData = async function(){
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetLookupDataDetailedAnalysis",{
+      method: 'GET',
+      headers: authHeader ,
+   })
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
       })
       .catch((error) => console.log(error));
-    // initializeJsGrid();
-  }, []);
-  const GenarateChart = function () {
+  }
+
+  const GenarateChart = async function () {
     let Station = $("#stationid").val();
     let Pollutent = $("#pollutentid").val();
     let FromYear = fromDate;
@@ -119,14 +128,15 @@ function DetailedAnalysisReports() {
     if (!valid) {
       return false;
     }
+   
     let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/"
     let suburl = "getAnnualAveragesbyYear";
-    fetch(url + suburl, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader['Accept'] = 'application/json';
+    authHeader['Content-Type'] = 'application/json';
+    await fetch(url + suburl, {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader ,
       body: JSON.stringify({ StationName: Station, FromYear: FromYear, ToYear: ToYear, DataFilter: Interval, Pollutant: Pollutent1 }),
     }).then((response) => response.json())
       .then((data) => {

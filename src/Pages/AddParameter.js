@@ -95,35 +95,17 @@ function AddParameter() {
       }).catch((error) => toast.error('Unable to add the parameter. Please contact adminstrator'));
   }
 
-  const Editparameter = function (param) {
-    setparameterList(false);
-    setparameterId(param.id)
-    setStatus(param.status==1?true:false)
-    setTimeout(() => {
-      document.getElementById("stationname").value = param.stationID;
-      document.getElementById("devicename").value = param.deviceID;
-      Deviceschange();
-      document.getElementById("drivername").value = param.driverID;
-      document.getElementById("parametername").value = param.parameterName;
-      document.getElementById("pollinginterval").value = param.pollingInterval;
-      document.getElementById("avginterval").value = param.avgInterval;
-      document.getElementById("unit").value = param.unitID;
-      document.getElementById("scalefactor").value=param.scaleFactor;
-      document.getElementById("coefa").value=param.coefA;
-      document.getElementById("coefb").value=param.coefB;
-    }, 10);
 
-  }
-
-  const Insertparameter= function(param){
+  const Insertparameter= async function(param){
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/ParameterInsertConversionfactor', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    authHeader.Accept='application/json';
+    authHeader["Content-Type"]='application/json';
+
+    await fetch(CommonFunctions.getWebApiUrl()+ 'api/ParameterInsertConversionfactor', {
       method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+      headers: authHeader ,
       body: JSON.stringify({ StationID: param.stationID, DeviceID: param.deviceID, DriverID: param.driverID, ParameterName: param.parameterName, PollingInterval: param.pollingInterval, AvgInterval: param.avgInterval, CoefA:param.coefA, CoefB:param.coefB, UnitID: param.unitID, ScaleFactor: param.scaleFactor,Status:param.status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy, ParameterID:param.parameterID,Alarm:param.alarm,ParameterValue:param.parameterValue,IsEnable:param.isEnable,Flag:param.flag,IsCalculated:param.isCalculated,ServerAvgInterval:param.serverAvgInterval }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -178,37 +160,13 @@ function AddParameter() {
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
 
-  const Deleteparameter = function (item) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: ("You want to delete this parameter !"),
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#5cb85c",
-      confirmButtonText: "Yes",
-      closeOnConfirm: false
-    })
-      .then(function (isConfirm) {
-        if (isConfirm.isConfirmed) {
-          let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/ParametersDelete/' + id, {
-            method: 'DELETE'
-          }).then((response) => response.json())
-            .then((responseJson) => {
-              if (responseJson == 1) {
-                toast.success('Parameter deleted successfully')
-                Getparameters();
-              } else {
-                toast.error('Unable to delete parameter. Please contact adminstrator');
-              }
-            }).catch((error) => toast.error('Unable to delete parameter. Please contact adminstrator'));
-        }
-      });
-  }
+  
 
-  const Getparameters = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/ParametersList", {
+  const Getparameters = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/ParametersList", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -217,9 +175,11 @@ function AddParameter() {
       }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'));
   }
 
-  const GetparametersLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/Parameters/ParameterLookup", {
+  const GetparametersLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/Parameters/ParameterLookup", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

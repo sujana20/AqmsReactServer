@@ -32,12 +32,13 @@ const AddLicense = ({ handleAuthentication }) => {
             return false;
           }
 
+          let authHeader = await CommonFunctions.getAuthHeader();
+          authHeader.Accept='application/json';
+          authHeader["Content-Type"]='application/json';
+
           fetch(CommonFunctions.getWebApiUrl()+ 'api/Licence', {
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
+            headers: authHeader ,
             body: JSON.stringify(jsonData),
           }).then((response) => response.json())
             .then((responseJson) => {

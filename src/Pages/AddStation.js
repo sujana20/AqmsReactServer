@@ -57,17 +57,7 @@ function AddStation() {
       }).catch((error) => toast.error('Unable to add the Station. Please contact adminstrator'));
   }
 
-  const EditStation = function (param) {
-    setStationList(false);
-    setStationId(param.id);
-    setStatus(param.status==1?true:false)
-    setTimeout(() => {
-      document.getElementById("StationName").value = param.stationName;
-      document.getElementById("Description").value = param.description;
-      //setStatus(param.status==1?true:false)
-    }, 1);
-
-  }
+  
 
   const UpdateStation = function () {
     let StationName = document.getElementById("StationName").value;
@@ -100,36 +90,12 @@ function AddStation() {
       }).catch((error) => toast.error('Unable to update the Station. Please contact adminstrator'));
   }
 
-  const DeleteStation = function (item) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: ("You want to delete this Station !"),
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#5cb85c",
-      confirmButtonText: "Yes",
-      closeOnConfirm: false
-    })
-      .then(function (isConfirm) {
-        if (isConfirm.isConfirmed) {
-          let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/Stations/' + id, {
-            method: 'DELETE'
-          }).then((response) => response.json())
-            .then((responseJson) => {
-              if (responseJson == 1) {
-                toast.success('Station deleted successfully')
-                GetStation();
-              } else {
-                toast.error('Unable to delete Station. Please contact adminstrator');
-              }
-            }).catch((error) => toast.error('Unable to delete Station. Please contact adminstrator'));
-        }
-      });
-  }
-  const GetStation = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/Stations", {
+  
+  const GetStation = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/Stations", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -191,14 +157,7 @@ function AddStation() {
       ]
     });
   }
-  const AddStationchange = function (param) {
-    if (param) {
-      setStationList(true);
-    } else {
-      setStationList(false);
-      setStationId(0);
-    }
-  }
+ 
   return (
     <main id="main" className="main" >
       <div className="container">

@@ -50,12 +50,12 @@ function AverageDataReport() {
 
 
 
-  useEffect(() => {
-
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAverageLookupData")
-
-      .then((response) => response.json())
-
+  useEffect( async() => {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAverageLookupData", {
+      method: 'GET',
+      headers: authHeader,
+    }).then((response) => response.json())
       .then((data) => {
 
         setAllLookpdata(data);
@@ -285,6 +285,7 @@ function AverageDataReport() {
       return false;
 
     }
+    let authHeader = await CommonFunctions.getAuthHeader();
     let type = interval.substr(interval.length - 1);
     let Interval;
     if (type == 'H') {
@@ -319,6 +320,7 @@ function AverageDataReport() {
     return await fetch(url + params, {
 
       method: 'GET',
+      headers: authHeader,
 
     }).then((response) => response.json())
 
@@ -434,7 +436,7 @@ function AverageDataReport() {
 
   }
 
-  const DownloadPDF = function () {
+  const DownloadPDF = async function () {
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -486,8 +488,10 @@ function AverageDataReport() {
     };
     var b = 0;
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ 'api/AirQuality/ExportToPDFAverageData?' + params, {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((pdfdata) => {
         if (pdfdata) {
@@ -563,7 +567,7 @@ function AverageDataReport() {
       }).catch((error) => toast.error('Unable to download the PDF File. Please contact adminstrator'));
   }
 
-  const DownloadExcel = function () {
+  const DownloadExcel = async function () {
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -605,7 +609,23 @@ function AverageDataReport() {
     }
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
 
-    window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+    //window.open(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+
+    let authHeader = await CommonFunctions.getAuthHeader();
+   
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcelAverageData?" + params, {
+      method: 'GET',
+      headers:authHeader
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a link element and trigger a click on it to download the file
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+       link.download = Date.now()+".xlsx"; // Set the desired filename
+        link.click();
+      })
+      .catch(error => console.error('Error:', error));
   }
 
 

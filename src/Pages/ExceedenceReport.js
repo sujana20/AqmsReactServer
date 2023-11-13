@@ -19,9 +19,11 @@ function ExceedenceReport() {
   const [Criteria, setcriteria] = useState([]);
   const [ListExceedence, setListExceedence] = useState(null);
 
-  const GetLookupData = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetExceedenceLookupData", {
+  const GetLookupData = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetExceedenceLookupData", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -102,7 +104,7 @@ function ExceedenceReport() {
       });
       isvalid = false;
     } else if (UnitID == "") {
-      toast.error('Please select from date', {
+      toast.error('Please select from unit', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -152,7 +154,7 @@ function ExceedenceReport() {
     }
     return isvalid;
   }
-  const GenarateReport=function(){
+  const GenarateReport= async function(){
     let StationID = document.getElementById("stationid").value;
     let PollutentName = document.getElementById("pollutentid").value;
     let UnitID=document.getElementById("unitid").value;
@@ -165,9 +167,10 @@ function ExceedenceReport() {
     }
     let Exceedencevalue=AllData.listParameters.filter(x=>x.parameter==PollutentName && x.interval == Interval && x.unitID==UnitID)[0]?.excedenceValue;
     let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate, Parameter: PollutentName, UnitID:UnitID, Interval: Interval,Exceedencevalue:Exceedencevalue});
- 
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ParameterExceedence?"+params, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ParameterExceedence?"+params, {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -246,7 +249,7 @@ function ExceedenceReport() {
           return pdf;
   }
 
-  const DownloadPDF = function () {
+  const DownloadPDF = async function () {
     let StationID = document.getElementById("stationid").value;
     let PollutentName = document.getElementById("pollutentid").value;
     let UnitID=document.getElementById("unitid").value;
@@ -281,9 +284,10 @@ function ExceedenceReport() {
       hours = hours ? hours : 12; // the hour '0' should be '12'
       minutes = minutes < 10 ? '0'+minutes : minutes;
       var strTime = hours + ':' + minutes + ' ' + ampm;
-    
-    fetch(CommonFunctions.getWebApiUrl()+ 'api/AirQuality/ParameterExceedence?' + params, {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      await fetch(CommonFunctions.getWebApiUrl()+ 'api/AirQuality/ParameterExceedence?' + params, {
       method: 'GET',
+      headers: authHeader,
     }).then((response) => response.json())
       .then((pdfdata) => {
         if (pdfdata.length!=0) {   

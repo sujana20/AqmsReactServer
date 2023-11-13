@@ -130,7 +130,16 @@ function DataProcessing() {
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupDataProcessing")
+    LoadData();
+    // initializeJsGrid();
+  }, []);
+
+  const LoadData = async function(){
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupDataProcessing", {
+      method: 'GET',
+      headers: authHeader,
+    })
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -154,8 +163,8 @@ function DataProcessing() {
         //setcriteria(data.listPollutentsConfig);
       })
       .catch((error) => console.log(error));
-    // initializeJsGrid();
-  }, []);
+  }
+
   useEffect(() => {
     // if (!jspreadRef.current) {
     if (jsptable) {
@@ -449,15 +458,15 @@ function DataProcessing() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           revertRef.current = false;
+          let authHeader = await CommonFunctions.getAuthHeader();
+          authHeader['Accept'] = 'application/json';
+          authHeader['Content-Type'] = 'application/json';
           fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing', {
             method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
+            headers: authHeader ,
             body: JSON.stringify(NewData.current),
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -520,7 +529,7 @@ function DataProcessing() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then( async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           flagdata = [];
           let ModifyBy = currentUser.id;
@@ -560,12 +569,12 @@ function DataProcessing() {
             }
           }
           if (flagdata.length > 0) {
-            fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingUpdateflag', {
+            let authHeader = await CommonFunctions.getAuthHeader();
+                authHeader['Accept'] = 'application/json';
+                authHeader['Content-Type'] = 'application/json';
+              await  fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingUpdateflag', {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
+              headers: authHeader ,
               body: JSON.stringify(flagdata),
             }).then((response) => response.json())
               .then((responseJson) => {
@@ -608,7 +617,7 @@ function DataProcessing() {
   }
   }
 
-  const gethistory = function () {
+  const gethistory = async function () {
     let changearr = dataForGridcopy[selectedgrid.current[1]];
     let Parametersplit = SelectedPollutents[selectedgrid.current[0] - 1].split("@_");
     let filtered = null;
@@ -618,9 +627,10 @@ function DataProcessing() {
       filtered = ReportDataListRef.current.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid.current[0] - 1]);
     }
     let params = new URLSearchParams({ id: filtered[0].id });
-
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessing?' + params, {
       method: 'GET',
+      headers: authHeader,
     }).then((response) => response.json())
       .then((historydata) => {
         if (historydata) {
@@ -776,7 +786,7 @@ function DataProcessing() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let rowindex1=rows[0];
           let rowindex2=rows[rows.length-1];
@@ -854,12 +864,12 @@ function DataProcessing() {
                 }
           }
           if (flagdata.length > 0) {
+            let authHeader = await CommonFunctions.getAuthHeader();
+                authHeader['Accept'] = 'application/json';
+                authHeader['Content-Type'] = 'application/json';
             fetch(CommonFunctions.getWebApiUrl()+ 'api/DataProcessingRestoretoOriginal', {
               method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
+              headers: authHeader ,
               body: JSON.stringify(flagdata,{restore:restore}),
             }).then((response) => response.json())
               .then((responseJson) => {
@@ -1174,7 +1184,7 @@ function DataProcessing() {
   /* Scroll with pageing start */
 
   // Function to fetch data for a specific page
-  const fetchDataonscroll = function (currentpage, limit) {
+  const fetchDataonscroll = async function (currentpage, limit) {
     let Station = "";
     let Pollutent = "";
     let GroupId = $("#groupid").val();
@@ -1221,12 +1231,14 @@ function DataProcessing() {
     }
     startindex = (currentpage - 1) * pageLimit;
     let params = new URLSearchParams({ Group: GroupId, Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, isAvgData: isAvgData, StartIndex: startindex, PageLimit: pageLimit });
+    let authHeader = await CommonFunctions.getAuthHeader();
     let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality?"
     if (GroupId != "") {
       url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
     fetch(url + params, {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -1321,7 +1333,7 @@ function DataProcessing() {
     throw new Error('Bad Hex');
   }
 
-  const GetProcessingData = function (currentPage, isInitialized) {
+  const GetProcessingData = async function (currentPage, isInitialized) {
     let Station = "";
     let Pollutent = "";
     let GroupId = $("#groupid").val();
@@ -1364,8 +1376,10 @@ function DataProcessing() {
     if (GroupId != "") {
       url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(url + params, {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
