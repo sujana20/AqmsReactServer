@@ -957,7 +957,7 @@ function DataProcessing() {
       gridheadertitle = Parameterssplit[0] + "\n" + unitname[0].unitName
       let Iscalculated = filter[0].isCalculated;
       layout.push({
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 || Interval!=window.Intervalval ? true : false, sorting: false, cellRenderer: function (item, value) {
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", readOnly: Iscalculated == 1 || Interval!=window.Intervalval || filter[0].parameterName.toLowerCase()==window.parameterNOx.toLowerCase() ? true : false, sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF";
           console.log(item);
