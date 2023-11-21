@@ -69,8 +69,29 @@ function LiveData() {
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
-      .then((response) => response.json())
+    GetAllLookupdata();
+  }, []);
+  useEffect(() => {
+    if (jsptable) {
+      jsptable.refresh();
+    }
+    initializeJsGrid();
+    initializeTooltip();
+  }, [RefreshGrid, ListReportData, LoadjsGridData]);
+
+  const initializeTooltip = function () {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    return () => {
+      tooltipList.map(t => t.dispose())
+    }
+  }
+  const GetAllLookupdata= async function(){
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData", {
+      method: 'GET',
+      headers: authHeader,
+    }).then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
@@ -94,21 +115,6 @@ function LiveData() {
 
       })
       .catch((error) => console.log(error));
-  }, []);
-  useEffect(() => {
-    if (jsptable) {
-      jsptable.refresh();
-    }
-    initializeJsGrid();
-    initializeTooltip();
-  }, [RefreshGrid, ListReportData, LoadjsGridData]);
-
-  const initializeTooltip = function () {
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    return () => {
-      tooltipList.map(t => t.dispose())
-    }
   }
   useEffect(() => {
     if (AllLookpdata != null) {
@@ -360,7 +366,7 @@ function LiveData() {
     GetProcessingData(true);
   }
 
-  const GetProcessingData = function (isInitialized) {
+  const GetProcessingData = async function (isInitialized) {
     let Station = "";
     let Pollutent = "";
     let GroupId = $("#groupid").val();
@@ -410,9 +416,12 @@ function LiveData() {
     if (GroupId != "") {
       url = CommonFunctions.getWebApiUrl() + "api/AirQuality/StationGroupingLiveData?"
     }
+    
+    let authHeader = await CommonFunctions.getAuthHeader();
 
-    fetch(url + params, {
+    await   fetch(url + params, {
       method: 'GET',
+      headers: authHeader,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

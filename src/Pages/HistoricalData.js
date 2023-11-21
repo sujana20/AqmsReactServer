@@ -105,31 +105,39 @@ function HistoricalData() {
 
 
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData")
-      .then((response) => response.json())
-      .then((data) => {
-        setAllLookpdata(data);
-        setStations(data.listStations);
-        SetFlagcodelist(data.listFlagCodes);
-        setStationGroups(data.listStationGroups);
-
-        let groupNamearray = data.listStationGroups;
-        let groupnames = groupNamearray.filter((ele, ind) => ind === groupNamearray.findIndex(elem => elem.groupID === ele.groupID))
-        setGroups(groupnames);
-        setTimeout(function () {
-          // $('#stationid').SumoSelect({
-          //   triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
-          //   search: true
-          // });
-          $('#pollutentid').SumoSelect({
-            triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
-            search: true
-          });
-        }, 100);
-        //setcriteria(data.listPollutentsConfig);
-      })
-      .catch((error) => console.log(error));
+    GetAllLookupData();
   }, []);
+
+  const GetAllLookupData= async function(){
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/GetAllLookupData", {
+      method: 'GET',
+      headers: authHeader,
+    }).then((response) => response.json())
+    .then((data) => {
+      setAllLookpdata(data);
+      setStations(data.listStations);
+      SetFlagcodelist(data.listFlagCodes);
+      setStationGroups(data.listStationGroups);
+
+      let groupNamearray = data.listStationGroups;
+      let groupnames = groupNamearray.filter((ele, ind) => ind === groupNamearray.findIndex(elem => elem.groupID === ele.groupID))
+      setGroups(groupnames);
+      setTimeout(function () {
+        // $('#stationid').SumoSelect({
+        //   triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
+        //   search: true
+        // });
+        $('#pollutentid').SumoSelect({
+          triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
+          search: true
+        });
+      }, 100);
+      //setcriteria(data.listPollutentsConfig);
+    })
+    .catch((error) => console.log(error));
+  }
+
   useEffect(() => {
     // if (!jspreadRef.current) {
     if (jsptable) {
@@ -524,7 +532,7 @@ function HistoricalData() {
     throw new Error('Bad Hex');
   }
 
-  const GetProcessingData = function (currentPage, isInitialized) {
+  const GetProcessingData = async function (currentPage, isInitialized) {
     let Station = "";
     let Pollutent = "";
     let GroupId = $("#groupid").val();
@@ -573,8 +581,10 @@ function HistoricalData() {
     if (GroupId != "") {
       url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingData?"
     }
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(url + params, {
       method: 'GET',
+      headers: authHeader,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -612,7 +622,7 @@ function HistoricalData() {
        }, 500);
   }
 
-  const DownloadExcel = function (filetype) {
+  const DownloadExcel = async function (filetype) {
     
     document.getElementById('loader').style.display = "block";
 
@@ -705,7 +715,22 @@ function HistoricalData() {
     if (GroupId != "") {
       url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationGroupingDataExportExcel?"
     }
-    window.open(url + params, "_blank");
+  //  window.open(url + params, "_blank");
+  let authHeader = await CommonFunctions.getAuthHeader();
+   
+    await fetch(url + params, {
+      method: 'GET',
+      headers:authHeader
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a link element and trigger a click on it to download the file
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+       link.download = Date.now()+".xlsx"; // Set the desired filename
+        link.click();
+      })
+      .catch(error => console.error('Error:', error));
     document.getElementById('loader').style.display = "none";
     /*  fetch(url + params, {
        method: 'GET',
