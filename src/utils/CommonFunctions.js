@@ -12,21 +12,12 @@ const CommonFunctions = {
   },
    
   truncateNumber(number,digits) {
-        
-   /*  var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
-        m = number.toString().match(re);
-    return m ? parseFloat(m[1]) : number.valueOf(); */
-
-    return Math.trunc(number * Math.pow(10, digits)) / Math.pow(10, digits)
-    //return with2Decimals = value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
- 
-     },
+      return Math.trunc(number * Math.pow(10, digits)) / Math.pow(10, digits)
+    },
 
     SetFlagColor(flagcode,flaglist){  
       for(var i=0; i<flaglist.length;i++){      
-        if(flaglist[i].id ==flagcode){   
-          //var msgname = flaglist[i].message.toLocaleLowerCase().replaceAll(' ','');
-          //return flaglist[i].message.toLocaleLowerCase().replaceAll(' ','');
+        if(flaglist[i].id ==flagcode){             
           return flaglist[i].colorCode
         }      
       }
@@ -35,20 +26,24 @@ const CommonFunctions = {
     async  getAuthHeader()
     {
       const token = sessionStorage.getItem('Token');
-     // const LoggedInTime = sessionStorage.getItem('LoggedInTime');
       const tokenExpTime=sessionStorage.getItem('TokenExpTime');
+      const userData=sessionStorage.getItem("UserData");
       var newdate=new Date(tokenExpTime);
       newdate.setMinutes(newdate.getMinutes() - 1);
-     // var expTime=LoggedInTime.set
+     
       var currentDate=new Date();
-      console.log("currentDate",currentDate);
-      console.log("exp date",tokenExpTime);
+      //console.log("currentDate",currentDate);
+      //console.log("exp date",tokenExpTime);
       if(currentDate >= newdate)
       {
         try {
           const response = await fetch(CommonFunctions.getWebApiUrl() + "Token", {
-            method: 'POST',
-           // headers:{ Authorization: 'Bearer ' + token, 'app-origin': 'http://localhost:3000' },
+            method: 'POST',    
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: userData,       
           });
     
           if (response.ok) {
