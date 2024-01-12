@@ -727,7 +727,11 @@ function HistoricalData() {
         // Create a link element and trigger a click on it to download the file
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-       link.download = Date.now()+".xlsx"; // Set the desired filename
+        if(filetype=='excel'){
+       link.download = Date.now()+".xlsx";
+        }else{
+          link.download = Date.now()+".csv";
+        }
         link.click();
       })
       .catch(error => console.error('Error:', error));

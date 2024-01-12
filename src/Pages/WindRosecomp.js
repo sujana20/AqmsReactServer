@@ -4,12 +4,15 @@ import { toast } from 'react-toastify';
 import * as echarts from 'echarts';
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf'
 
 function WindRosecomp() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [Stations, setListStations] = useState([]);
-  
+  const chartRef = useRef();
+  const [Isdownlaod, setIsdownlaod] = useState(false);
   //const $ = window.jQuery;
   useEffect(() => {
     GetStation();
@@ -27,7 +30,7 @@ function WindRosecomp() {
         }
       }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
   }
-  const ReportValidations = function (Station, Pollutent, UnitID,Fromdate, Todate, Interval) {
+  const ReportValidations = function (Station, Fromdate, Todate) {
     let isvalid = true;
     if (Station == "") {
       toast.error('Please select station', {
@@ -69,6 +72,7 @@ function WindRosecomp() {
     return isvalid;
   }
   const GenarateReport= async function(){
+    setIsdownlaod(false);
     let StationID = document.getElementById("stationid").value;
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
@@ -119,7 +123,7 @@ function WindRosecomp() {
              
               counter += 10;
               counter1 += 10;
-              console.log(filteredData);
+             // console.log(filteredData);
           }
          // setrange1(finalrange1);
          // setrange2(finalrange2);
@@ -235,12 +239,48 @@ function WindRosecomp() {
   };
 
   option && myChart.setOption(option);
-
+  setIsdownlaod(true);
   // Clean up the chart when the component unmounts
   return () => {
     myChart.dispose();
   };
  }
+
+ const DownloadPng=function() {
+  const chartElement = chartRef.current;
+  html2canvas(chartElement, {
+    backgroundColor: 'white', // Set null to preserve the original chart background color
+  }).then((canvas) => {
+    const image = canvas.toDataURL('image/png');
+
+    // Create a download link and trigger click event
+    const downloadLink = document.createElement('a');
+    downloadLink.href = image;
+    downloadLink.download = 'windrosechart.png';
+    downloadLink.click();
+  });
+  /* var a = document.createElement('a');
+  a.href = chartRef.current.toBase64Image();
+  a.download = 'chart.png';
+  a.click(); */
+  return;
+}
+
+const DownloadPdf = () => {
+const chartElement = chartRef.current;
+  html2canvas(chartElement, {
+    backgroundColor: 'white', // Set null to preserve the original chart background color
+  }).then((canvas) => {
+  const chartImage = canvas.toDataURL('image/png');
+
+  // Create a PDF using jsPDF
+  const pdf = new jsPDF();
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+  pdf.save('windrosechart.pdf');
+});
+};
  
   return (
     <main id="main" className="main" >
@@ -284,8 +324,14 @@ function WindRosecomp() {
                       <div id="loader" className="loader"></div>
                     </div>
                   </div>
-          <div id="radar" style={{ width: '100%', height: '400px' }}>
+          <div ref={chartRef} id="radar" style={{ width: '100%', height: '400px' }}>
             </div>;
+            {Isdownlaod &&(
+            <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                </div>
+                )}
             </div>
           </div>
 
