@@ -76,6 +76,7 @@ function WindRosecomp() {
     if (!valid) {
       return false;
     }
+    document.getElementById('loader').style.display = "block";
     let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate});
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/getWindRose?"+params, {
@@ -125,9 +126,12 @@ function WindRosecomp() {
          // setrange3(finalrange3);
          // setrange4(finalrange4);
           showwindrose(finalrange1,finalrange2,finalrange3,finalrange4);
-          
+          document.getElementById('loader').style.display = "none";
         }
-      }).catch((error) => console.log(error));
+      }).catch((error) => {
+        document.getElementById('loader').style.display = "none";
+        console.log("error: ", error);
+      });
   }
  const showwindrose = function(finalrange1,finalrange2,finalrange3,finalrange4){
   const chartDom = document.getElementById('radar');
@@ -270,10 +274,19 @@ function WindRosecomp() {
 
                   
                   </div>
+                 
                 </div>
               </div>
             </div>
-          <div id="radar" style={{ width: '100%', height: '500px' }}></div>;
+            <div className="mt-5"> 
+              <div className="col-md-4">
+                    <div className="row">
+                      <div id="loader" className="loader"></div>
+                    </div>
+                  </div>
+          <div id="radar" style={{ width: '100%', height: '400px' }}>
+            </div>;
+            </div>
           </div>
 
         </section>
