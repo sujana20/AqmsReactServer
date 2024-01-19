@@ -1634,7 +1634,7 @@ function DataProcessing() {
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     if (finaldata.length > 0) {
       let finalinterval = [];
-      let intervalarr = finaldata[0].avgInterval.split(',');
+      let intervalarr = finaldata[0].serverAvgInterval.split(',');
       for (let i = 0; i < intervalarr.length; i++) {
         let intervalsplitarr = intervalarr[i].split('-');
         finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
@@ -1807,12 +1807,7 @@ function DataProcessing() {
 
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
-    /* if (chartRef.current != null) {
-      chartRef.current.data = {};
-    } */
-
-    /*  setChartData({ labels: [], datasets: [] });*/
-    // setChartOptions({});
+    
     let visibleRecords = Visiblerecords();
     let datasets = [];
     let chartdata = [];
@@ -1887,25 +1882,7 @@ function DataProcessing() {
         }
       }
     };
-    /*   setChartOptions({
-        responsive: true,
-        dragData: true,
-        onDragStart: function (e) {
-          console.log(e)
-        },
-        onDrag: function (e, datasetIndex, index, value) {
-          console.log(datasetIndex, index, value)
-        },
-      
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-          },
-        },
-      }); */
+    
     let Finaloptions = {
       responsive: true,
       scales: Scaleslist,
@@ -1995,7 +1972,7 @@ function DataProcessing() {
       },
     };
 
-    // ChartOptionsRef.current=Finaloptions;
+    
     setChartOptions(Finaloptions);
     //setTimeout(() => {
     setChartData({

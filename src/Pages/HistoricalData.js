@@ -1562,7 +1562,7 @@ const DownloadPdf = () => {
             {ListReportData.length == 0 && LoadjsGridData && (
               <div class="nodatamessage" id="nodatamessage">No data found</div>
             )}
-            {ListReportData.length > 0 && ChartData && (
+            {ListReportData.length > 0 && ChartData && jspreadRef.current != null && (
               <div className="card p-2" >
                 <div className="card-body">
                   <Line ref={chartRef} options={ChartOptions} data={ChartData} plugins={[dragger]} height={100} />
