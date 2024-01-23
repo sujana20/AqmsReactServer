@@ -66,21 +66,40 @@ const DynamicTable = ({ jsonData }) => {
       <thead>
         <tr>
           {headers.map((header, index) => (
+            header !="" && (
             <th key={index}>{header}</th>
+            )
           ))}
         </tr>
       </thead>
       <tbody>
         {jsonData.map((dataItem, rowIndex) => (
           <tr key={rowIndex}>
-             {headers.map((header, colIndex) => (
+            {jsonData.length == 1 && (
+             headers.map((header, colIndex) => (
+              (dataItem[header] == null || dataItem[header] == "") && (
+                  <td key={colIndex}>No Data Found</td>
+                  )
+                ))
+                )}
+                {jsonData.length == 1 && (
+             headers.map((header, colIndex) => (
+              (dataItem[header] != null && dataItem[header] != "") &&(
                   <td key={colIndex}>{formatCellValue(dataItem[header])}</td>
-                ))}
+              )
+                ))
+                )}
+                {jsonData.length > 1 && (
+             headers.map((header, colIndex) => (
+                  <td key={colIndex}>{formatCellValue(dataItem[header])}</td>
+                ))
+                )}
           </tr>
         ))}
       </tbody>
     </table>
-    ))}
+    )
+    )}
     {isArrayOfObjectsRes && (
     jsonData.length==0 && (
     <div>No Data found</div>
