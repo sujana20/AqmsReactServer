@@ -42,7 +42,9 @@ const PagenotFound=lazy(() => import("./Pages/PagenotFound"));
 const AddLicence=lazy(() => import("./Pages/AddLicense"));
 const ExceedenceReport=lazy(() => import("./Pages/ExceedenceReport"));
 const WindRose=lazy(() => import("./Pages/WindRosecomp"));
-const License =lazy(() => import("./Pages/License"));
+const License = lazy(() => import("./Pages/License"));
+const AIReport = lazy(() => import("./Pages/AIReport"));
+
 function App() {   
     const location = useLocation();
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
@@ -92,7 +94,8 @@ function App() {
           <Route   path="/AddLicence" exact element={currentUser !=null && permissions.indexOf("Licence")>=0 ? <AddLicence /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/ExceedenceReport" exact element={currentUser !=null &&  permissions.indexOf("Exceedence Report")>=0 ? <ExceedenceReport /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/WindRose" exact element={currentUser !=null &&  permissions.indexOf("WindRose")>=0 ? <WindRose /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
-          <Route path="/License" exact element=<License /> />
+          <Route   path="/AIReport" exact element={currentUser !=null &&  permissions.indexOf("AI Report")>=0 ? <AIReport /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
+          <Route path="/License" exact element={<License />} />
         </Routes>
       </Suspense>
   

@@ -1,0 +1,62 @@
+/*chatgpt start*/
+body{
+  overflow: hidden;
+}
+.chatbox_main{
+  position: relative;
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+.questionInputContainer {
+  height: 60px;
+  position: absolute;
+  width: 96%;
+  margin: 0rem 1.75rem;
+  bottom: 1rem;
+  /*background: #FFFFFF;*/
+  border-radius: 8px;
+  overflow: hidden;
+}
+.questionInputContainer .questionInputrow{
+  align-items: center;
+  height: 100%;
+  margin: 0px;
+}
+.questionInputTextArea {
+  margin: 1rem 0rem;
+}
+
+  .chat_messages_main {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+  scrollbar-color: rgb(30 64 175) transparent;
+  }
+  .chat_messages_main::-webkit-scrollbar {
+    width: 5px; /* Set the width of the scrollbar */
+  }
+  
+  .chat_messages_main::-webkit-scrollbar-thumb {
+    background-color: inherit; /* Set the color of the thumb */
+    border-radius: 6px; /* Set the border-radius of the thumb */
+  }
+  
+  .chat_messages_main::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Set the color of the track */
+    border-radius: 6px; /* Set the border-radius of the track */
+  }
+  .chat-messages {
+    width: 100%;
+    padding: 1rem 1.75rem; /* Adjusted padding */
+    box-sizing: border-box; /* Ensure padding is included in width */
+  }
+  
+  .chat-messages > div {
+    margin-bottom: 10px; /* Adjust as needed for spacing between messages */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+/*chatgpt end*/

@@ -72,6 +72,7 @@ var nodes = [{
         { value: 'Data Validation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
         { value: 'Livedata', label: 'Live Data', url:'/LiveData', icon:'bi bi-circle' },
         { value: 'Data Browsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
+        { value: 'AI Report', label: 'AI Report', url:'/AIReport', icon:'bi bi-circle'},
     ],
 }];
 
