@@ -57,29 +57,44 @@ const formatCellValue = function (value) {
 };
 const DynamicTable = ({ jsonData }) => {
   const headers = jsonData.length>0?Object.keys(jsonData[0]):[];
+  let chartunit = "day";
+  let charttype = "line";
   const isArrayOfObjects = (obj) => {
     return Array.isArray(obj) && obj.length > 0 && typeof obj[0] === 'object' && obj[0] !== null;
   };
   const isArrayOfObjectsRes=isArrayOfObjects(jsonData);
-
-  //for chart start
-
-  const options = {
-    response: true,
-    scales: {
-      x: {
-        type: "time",
-        time: {
-          unit: "day"
-        }
-      }
-    }
-  };
-  
+//for chart start
   // Helper function to check if a string is a valid date
 const isValidDate = (dateString) => {
   const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}$/;
-  return regex.test(dateString);
+  let iscorrect = regex.test(dateString);
+  if(!iscorrect){
+    const regex1 = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+    iscorrect = regex1.test(dateString);
+  } 
+  if(!iscorrect){
+    const regex2 = /^\d{4}-\d{2}-\d{2}$/;
+    iscorrect = regex2.test(dateString);
+  } 
+  if(!iscorrect){
+    const regex3 = /^\d{4}-\d{2}$/;
+    iscorrect = regex3.test(dateString);
+    if(iscorrect)
+    chartunit ="month"
+  }
+  if(!iscorrect){
+    const regex3 = /^\d{4}-\d{1}$/;
+    iscorrect = regex3.test(dateString);
+    if(iscorrect)
+    chartunit ="month"
+  }
+   if(!iscorrect){
+    const regex4 = /^\d{4}$/;
+    iscorrect = regex4.test(dateString);
+    if(iscorrect)
+    chartunit ="year"
+  }
+  return iscorrect;
 };
 
   // Function to prepare datasets dynamically from JSON data
@@ -97,13 +112,15 @@ const prepareDatasets = (jsonData) => {
   }
 
   const yAxisKey = Object.keys(item).find(key =>key !== xAxisKey && (typeof item[key] === 'number' || item[key] === null || item[key] === ''));
-
+  
   if (!yAxisKey) {
     // If no suitable Y-axis column is found, skip this item
     return;
   }
     const label = item?.StationName != undefined?`${item?.StationName}-${item?.ParameterName}`:item?.ParameterName != undefined?`${item?.ParameterName}`:`${yAxisKey}`;
     
+    charttype = item?.ChartType != undefined?`${item?.ChartType?.toLowerCase()}`:"line";
+
     if (!datasetsMap.has(label)) {
       datasetsMap.set(label, []);
     }
@@ -120,28 +137,55 @@ const prepareDatasets = (jsonData) => {
     dataset.sort((a, b) => a.x - b.x);
 });
   // Convert Map to an array of datasets
-  
+  if(charttype == "bar"){
+  return Array.from(datasetsMap).map(([label, data], index) => ({
+    label,
+    data,
+    borderColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`,
+    backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.2)`,
+    borderWidth: 2, 
+    borderRadius: 2
+  }));
+}
+if(charttype == "line"){
   return Array.from(datasetsMap).map(([label, data], index) => ({
     label,
     data,
     borderColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`,
     backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.2)`,
     borderWidth: 1.75,
-    pointRadius: 2
   }));
+}
   
 };
 
  const data = {
   datasets: isArrayOfObjectsRes?prepareDatasets(jsonData):[],
 };
+
+const options = {
+  response: true,
+  scales: {
+    x: {
+      type: "time",
+      time: {
+        unit: chartunit
+      }
+    }
+  }
+};
   //for chart end
 
   return (
     <div>
       {isArrayOfObjectsRes && (
-        data.datasets.length > 0 && (
+        data.datasets.length > 0 && charttype == "line" && (
           <Line options={options} data={data} height={100} />
+          )
+      )}
+      {isArrayOfObjectsRes && (
+        data.datasets.length > 0 && charttype == "bar" && (
+          <Bar options={options} data={data} height={100} />
           )
       )}
       {isArrayOfObjectsRes && (
@@ -151,7 +195,7 @@ const prepareDatasets = (jsonData) => {
       <thead>
         <tr>
           {headers.map((header, index) => (
-            header !="" && (
+            header !="" &&  header !="ChartType" && (
             <th scope="col" key={index}>{header=="StationName"?"Station Name":header=="ParameterName"?"Parameter Name":header=="MeanValue"?"Mean Value":header=="AverageValue"?"Average Value":header}</th>
             )
           ))}
@@ -169,14 +213,16 @@ const prepareDatasets = (jsonData) => {
                 )}
                 {jsonData.length == 1 && (
              headers.map((header, colIndex) => (
-              (dataItem[header] != null && dataItem[header] != "") &&(
+              (dataItem[header] != null && dataItem[header] != "" && header !="ChartType") &&(
                   <td key={colIndex}>{formatCellValue(dataItem[header])}</td>
               )
                 ))
                 )}
                 {jsonData.length > 1 && (
              headers.map((header, colIndex) => (
+              (header !="ChartType") &&(
                   <td key={colIndex}>{formatCellValue(dataItem[header])}</td>
+              )
                 ))
                 )}
           </tr>

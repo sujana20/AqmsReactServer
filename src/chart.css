@@ -63,6 +63,8 @@ body{
   }
   table.table tr td {
 width: 10%;
-padding: 7px 12px;
+  }
+table.table tr th, table.table tr td {
+  padding: 7px 12px;
   }
 /*chatgpt end*/
