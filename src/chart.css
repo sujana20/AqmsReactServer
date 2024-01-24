@@ -6,6 +6,8 @@ body{
   position: relative;
   height: calc(100vh - 80px);
   overflow-y: auto;
+  width: 75%;
+  margin: auto;
 }
 .questionInputContainer {
   height: 60px;
@@ -58,5 +60,9 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+  }
+  table.table tr td {
+width: 10%;
+padding: 7px 12px;
   }
 /*chatgpt end*/

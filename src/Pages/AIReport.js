@@ -5,8 +5,10 @@ import DatePicker from "react-datepicker";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import CommonFunctions from "../utils/CommonFunctions";
+import "chartjs-adapter-moment";
 import {
   Chart as ChartJS,
+  TimeScale,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -20,6 +22,7 @@ import {
 } from 'chart.js';
 import { Chart, Bar, Line, Scatter } from 'react-chartjs-2';
 ChartJS.register(
+  TimeScale,
   CategoryScale,
   LinearScale,
   BarElement,
@@ -58,16 +61,98 @@ const DynamicTable = ({ jsonData }) => {
     return Array.isArray(obj) && obj.length > 0 && typeof obj[0] === 'object' && obj[0] !== null;
   };
   const isArrayOfObjectsRes=isArrayOfObjects(jsonData);
+
+  //for chart start
+
+  const options = {
+    response: true,
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "day"
+        }
+      }
+    }
+  };
+  
+  // Helper function to check if a string is a valid date
+const isValidDate = (dateString) => {
+  const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}$/;
+  return regex.test(dateString);
+};
+
+  // Function to prepare datasets dynamically from JSON data
+const prepareDatasets = (jsonData) => {
+  const datasetsMap = new Map();
+  // Group data by StationName and ParameterName
+  //if(){
+  jsonData.forEach(item => {
+    // Identify the column with a Date type for the X-axis
+    const xAxisKey = Object.keys(item).find(key => isValidDate(item[key]));
+
+  if (!xAxisKey) {
+    // If no suitable Date type column is found, skip this item
+    return;
+  }
+
+  const yAxisKey = Object.keys(item).find(key =>key !== xAxisKey && (typeof item[key] === 'number' || item[key] === null || item[key] === ''));
+
+  if (!yAxisKey) {
+    // If no suitable Y-axis column is found, skip this item
+    return;
+  }
+    const label = item?.StationName != undefined?`${item?.StationName}-${item?.ParameterName}`:item?.ParameterName != undefined?`${item?.ParameterName}`:`${yAxisKey}`;
+    
+    if (!datasetsMap.has(label)) {
+      datasetsMap.set(label, []);
+    }
+    if (xAxisKey && yAxisKey) {
+    datasetsMap.get(label).push({
+      x: new Date(item[xAxisKey]),
+      y: item[yAxisKey],
+    });
+  }
+  });
+
+  // sort order asc by x-axis
+  datasetsMap.forEach(dataset => {
+    dataset.sort((a, b) => a.x - b.x);
+});
+  // Convert Map to an array of datasets
+  
+  return Array.from(datasetsMap).map(([label, data], index) => ({
+    label,
+    data,
+    borderColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`,
+    backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.2)`,
+    borderWidth: 1,
+    pointRadius: 2
+  }));
+  
+};
+
+ const data = {
+  datasets: isArrayOfObjectsRes?prepareDatasets(jsonData):[],
+};
+  //for chart end
+
   return (
     <div>
       {isArrayOfObjectsRes && (
+        data.datasets.length > 0 && (
+          <Line options={options} data={data} height={100} />
+          )
+      )}
+      {isArrayOfObjectsRes && (
       jsonData.length>0 && (
-    <table className="table table-bordered">
+      <div className="table-responsive">
+    <table className="table table-bordered table-striped">
       <thead>
         <tr>
           {headers.map((header, index) => (
             header !="" && (
-            <th key={index}>{header}</th>
+            <th scope="col" key={index}>{header=="StationName"?"Station Name":header=="ParameterName"?"Parameter Name":header=="MeanValue"?"Mean Value":header=="AverageValue"?"Average Value":header}</th>
             )
           ))}
         </tr>
@@ -78,7 +163,7 @@ const DynamicTable = ({ jsonData }) => {
             {jsonData.length == 1 && (
              headers.map((header, colIndex) => (
               (dataItem[header] == null || dataItem[header] == "") && (
-                  <td key={colIndex}>No Data Found</td>
+                  <td key={colIndex}><b>No Data found</b></td>
                   )
                 ))
                 )}
@@ -98,15 +183,16 @@ const DynamicTable = ({ jsonData }) => {
         ))}
       </tbody>
     </table>
+    </div>
     )
     )}
     {isArrayOfObjectsRes && (
     jsonData.length==0 && (
-    <div>No Data found</div>
+    <div><b>No Data found</b></div>
     )
     )}
     {!isArrayOfObjectsRes && (
-      <div>{jsonData?.error}</div>
+      <div><b>{jsonData?.error}</b></div>
     )}
     </div> 
   );
