@@ -126,7 +126,7 @@ const prepareDatasets = (jsonData) => {
     data,
     borderColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},1)`,
     backgroundColor: `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.2)`,
-    borderWidth: 1,
+    borderWidth: 1.75,
     pointRadius: 2
   }));
   
@@ -146,7 +146,7 @@ const prepareDatasets = (jsonData) => {
       )}
       {isArrayOfObjectsRes && (
       jsonData.length>0 && (
-      <div className="table-responsive">
+      <div className="table-responsive mt-3">
     <table className="table table-bordered table-striped">
       <thead>
         <tr>
