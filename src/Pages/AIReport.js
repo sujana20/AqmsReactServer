@@ -83,6 +83,12 @@ const isValidDate = (dateString) => {
     chartunit ="month"
   }
   if(!iscorrect){
+    const regex3 = /^\d{2}-\d{4}$/;
+    iscorrect = regex3.test(dateString);
+    if(iscorrect)
+    chartunit ="month"
+  }
+  if(!iscorrect){
     const regex3 = /^\d{4}-\d{1}$/;
     iscorrect = regex3.test(dateString);
     if(iscorrect)
@@ -94,6 +100,12 @@ const isValidDate = (dateString) => {
     if(iscorrect)
     chartunit ="year"
   }
+  return iscorrect;
+};
+
+const isValidYear = (dateString) => {
+  const regex = /^\d{4}$/;
+  let iscorrect = regex.test(dateString);
   return iscorrect;
 };
 
@@ -126,7 +138,7 @@ const prepareDatasets = (jsonData) => {
     }
     if (xAxisKey && yAxisKey) {
     datasetsMap.get(label).push({
-      x: new Date(item[xAxisKey]),
+      x: isValidYear(item[xAxisKey])?new Date(item[xAxisKey],0,1):new Date(item[xAxisKey]),
       y: item[yAxisKey],
     });
   }
