@@ -123,25 +123,29 @@ const prepareDatasets = (jsonData) => {
     return;
   }
 
-  const yAxisKey = Object.keys(item).find(key =>key !== xAxisKey && (typeof item[key] === 'number' || item[key] === null || item[key] === ''));
-  
-  if (!yAxisKey) {
-    // If no suitable Y-axis column is found, skip this item
-    return;
-  }
-    const label = item?.StationName != undefined?`${item?.StationName}-${item?.ParameterName}`:item?.ParameterName != undefined?`${item?.ParameterName}`:`${yAxisKey}`;
+  let label="";
+// Iterate through each numerical property in the item
+Object.keys(item).forEach(key => {
+  if (key !== xAxisKey && typeof item[key] === 'number' || item[key] === null || item[key] === '') {
+       label = item?.StationName != undefined?`${item?.StationName} - ${key}`:`${key}`;
     
     charttype = item?.ChartType != undefined?`${item?.ChartType?.toLowerCase()}`:"line";
 
-    if (!datasetsMap.has(label)) {
-      datasetsMap.set(label, []);
+      // If the label doesn't exist in datasetsMap, create a new array for it
+      if (!datasetsMap.has(label)) {
+          datasetsMap.set(label, []);
+      }
+
+      // Push data to the appropriate dataset array
+      if (xAxisKey && key) {
+      datasetsMap.get(label).push({
+          x: isValidYear(item[xAxisKey]) ? new Date(item[xAxisKey], 0, 1) : new Date(item[xAxisKey]),
+          y: item[key],
+      });
     }
-    if (xAxisKey && yAxisKey) {
-    datasetsMap.get(label).push({
-      x: isValidYear(item[xAxisKey])?new Date(item[xAxisKey],0,1):new Date(item[xAxisKey]),
-      y: item[yAxisKey],
-    });
   }
+});
+
   });
 
   // sort order asc by x-axis
