@@ -152,6 +152,7 @@ Object.keys(item).forEach(key => {
   datasetsMap.forEach(dataset => {
     dataset.sort((a, b) => a.x - b.x);
 });
+
   // Convert Map to an array of datasets
   if(charttype == "bar"){
   return Array.from(datasetsMap).map(([label, data], index) => ({
@@ -175,9 +176,12 @@ if(charttype == "line"){
   
 };
 
+const finaldatasets = isArrayOfObjectsRes ? prepareDatasets(jsonData) : [];
+
  const data = {
-  datasets: isArrayOfObjectsRes?prepareDatasets(jsonData):[],
+  datasets: finaldatasets,
 };
+
 
 const options = {
   response: true,
@@ -187,7 +191,8 @@ const options = {
       time: {
         unit: chartunit
       }
-    }
+    },
+    
   }
 };
   //for chart end
