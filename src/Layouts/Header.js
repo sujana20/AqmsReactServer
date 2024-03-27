@@ -99,7 +99,7 @@ function Header() {
       {!sessionStorage.getItem('UserData') ? window.location.href = "/" : ""}
       <div className="d-flex align-items-center justify-content-between">
       <NavLink to="/Dashboard" className="logo d-flex align-items-center">
-          <img src="images/AI_airquality.png" alt="" />
+          <img src="images/AI_airquality.svg" alt="" />
           </NavLink>
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
         

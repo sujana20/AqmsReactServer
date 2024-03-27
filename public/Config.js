@@ -32,7 +32,16 @@ var nodes = [{
     icon:'bi bi-grid',
     expandicon:'',
     children:false,
-},{
+},
+/* {
+    value: 'Dashboard1',
+    label: 'Dashboard1',
+    url:'/Dashboard1',
+    icon:'bi bi-grid',
+    expandicon:'',
+    children:false,
+}, */
+{
     value: 'Configuration',
     label: 'Configuration',
     url:'#',

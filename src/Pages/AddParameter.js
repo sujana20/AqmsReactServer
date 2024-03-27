@@ -99,6 +99,7 @@ function AddParameter() {
   const Insertparameter= async function(param){
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
+    let deviceID = ListDevices.find(x=>x.id==param.deviceID)?.deviceId;
     let authHeader = await CommonFunctions.getAuthHeader();
     authHeader.Accept='application/json';
     authHeader["Content-Type"]='application/json';
@@ -106,7 +107,7 @@ function AddParameter() {
     await fetch(CommonFunctions.getWebApiUrl()+ 'api/ParameterInsertConversionfactor', {
       method: 'POST',
       headers: authHeader ,
-      body: JSON.stringify({ StationID: param.stationID, DeviceID: param.deviceID, DriverID: param.driverID, ParameterName: param.parameterName, PollingInterval: param.pollingInterval, AvgInterval: param.avgInterval, CoefA:param.coefA, CoefB:param.coefB, UnitID: param.unitID, ScaleFactor: param.scaleFactor,Status:param.status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy, ParameterID:param.parameterID,Alarm:param.alarm,ParameterValue:param.parameterValue,IsEnable:param.isEnable,Flag:param.flag,IsCalculated:param.isCalculated,ServerAvgInterval:param.serverAvgInterval }),
+      body: JSON.stringify({ StationID: param.stationID, DeviceID: deviceID, DriverID: param.driverID, ParameterName: param.parameterName, PollingInterval: param.pollingInterval, AvgInterval: param.avgInterval, CoefA:param.coefA, CoefB:param.coefB, UnitID: param.unitID, ScaleFactor: param.scaleFactor,Status:param.status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy, ParameterID:param.parameterID,Alarm:param.alarm,ParameterValue:param.parameterValue,IsEnable:param.isEnable,Flag:param.flag,IsCalculated:param.isCalculated,ServerAvgInterval:param.serverAvgInterval }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -160,7 +161,16 @@ function AddParameter() {
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
 
-  
+  const Orderparameter = function(paramdata,devicedata){
+    let result = paramdata.map(x => {
+      let item = devicedata.find(item => item.stationID === x.stationID && item.deviceId == x.deviceID);
+      if (item) { 
+        x.deviceID=item.id;
+        return x;
+      }      
+    }).filter(item => item !== undefined);
+    console.log(result);
+  }
 
   const Getparameters = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -170,6 +180,7 @@ function AddParameter() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
+          Orderparameter(data,ListDevices);
           setListparameters(data);
         }
       }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'));
@@ -183,6 +194,7 @@ function AddParameter() {
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
+          Orderparameter(data.listParameters,data.listDevices);
           setListDevices(data.listDevices);
           setListStations(data.listStations);
           setListparameters(data.listParameters);
