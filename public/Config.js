@@ -32,7 +32,16 @@ var nodes = [{
     icon:'bi bi-grid',
     expandicon:'',
     children:false,
-},{
+},
+/* {
+    value: 'Dashboard1',
+    label: 'Dashboard1',
+    url:'/Dashboard1',
+    icon:'bi bi-grid',
+    expandicon:'',
+    children:false,
+}, */
+{
     value: 'Configuration',
     label: 'Configuration',
     url:'#',
@@ -68,7 +77,8 @@ var nodes = [{
         { value: 'Predefined Charts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },
         { value: 'Detailed Analysis Report', label: 'Detailed Analysis Report', url:'/DetailedAnalysisReports', icon:'bi bi-circle'},
         { value: 'Exceedence Report', label: 'Exceedence Report', url:'/ExceedenceReport', icon:'bi bi-circle'},
-         { value: 'WindRose', label: 'WindRose', url:'/WindRose', icon:'bi bi-circle'}, 
+        { value: 'WindRose', label: 'WindRose', url:'/WindRose', icon:'bi bi-circle'}, 
+        { value: 'PollutionRose', label: 'PollutionRose', url:'/PollutionRose', icon:'bi bi-circle'}, 
         { value: 'Data Validation', label: 'Data Validation', url:'/DataProcessing', icon:'bi bi-circle' },
         { value: 'Livedata', label: 'Live Data', url:'/LiveData', icon:'bi bi-circle' },
         { value: 'Data Browsing', label: 'Data Browsing', url:'/HistoricalData', icon:'bi bi-circle'},
