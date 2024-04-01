@@ -8,11 +8,18 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf'
 
 function PollutionRose() {
+  const $ = window.jQuery;
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [Stations, setListStations] = useState([]);
+  const [Pollutents, setPollutents] = useState([]);
+  const [Units, setListUnits] = useState([]);
+  const [PollutionRoseConfig, setPollutionRoseConfig] = useState([]);
+  const [AllLookpdata, setAllLookpdata] = useState(null);
   const chartRef = useRef();
   const [Isdownlaod, setIsdownlaod] = useState(false);
+  let configparam = [];
+  let datalabels = [];
   //const $ = window.jQuery;
   useEffect(() => {
     GetStation();
@@ -20,20 +27,43 @@ function PollutionRose() {
   }, []); // Empty dependency array ensures this effect runs once when the component mounts
   const GetStation = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/Stations", {
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/getPollutionRoseLookup", {
       method: 'GET',
       headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-          setListStations(data);
+          setAllLookpdata(data);
+          setListStations(data.listStations);
+          setPollutionRoseConfig(JSON.parse(data.pollutionRoseConfig));
+          setListUnits(data.listReportedUnits);
         }
-      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the lookup data. Please contact adminstrator'));
   }
-  const ReportValidations = function (Station, Fromdate, Todate) {
+
+  const ChangeStation = function (e) {
+    setPollutents([]);
+    let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
+   // setselectedStations(e.target.value);
+    setPollutents(finaldata);
+  }
+
+  const ReportValidations = function (Station,Pollutent, Fromdate, Todate) {
     let isvalid = true;
     if (Station == "") {
       toast.error('Please select station', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+      isvalid = false;
+    } else if (Pollutent == "") {
+      toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -71,65 +101,86 @@ function PollutionRose() {
     }
     return isvalid;
   }
+
+  const filterData=function(param,filteredData){
+    let Paramsplit=param?.split("-");
+    return filteredData?.filter(obj => obj.sp > parseInt(Paramsplit[0]) && obj.sp <= (Paramsplit[1]));
+  }
+
   const GenarateReport= async function(){
     setIsdownlaod(false);
     let StationID = document.getElementById("stationid").value;
+    let PollutentName = document.getElementById("pollutentid").value;
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
-    let valid = ReportValidations(StationID,Fromdate, Todate);
+    let valid = ReportValidations(StationID,PollutentName,Fromdate, Todate);
     if (!valid) {
       return false;
     }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate});
+    let params = new URLSearchParams({StationID: StationID,PollutentName:PollutentName, FromDate: Fromdate, ToDate: Todate});
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/getWindRose?"+params, {
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/getPollutionRose?"+params, {
       method: 'GET',
       headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
           let count = 0;
-          let counter = 0;
-          let counter1 = 10;
-          let finalrange1=[];
-          let finalrange2=[];
-          let finalrange3=[];
-          let finalrange4=[];
-          while (counter1 <= 360) {
+          let finalData=[];
+           configparam=PollutionRoseConfig?.ConfigList?.filter(x=>x.parametername?.toLowerCase()==PollutentName?.toLowerCase());
+           let Paramsplit=configparam[0]?.ranges?.split(",");
+          for(let i=0;i<Paramsplit.length;i++){
+            let finalrange1=[];
+            let counter = 0;
+            let counter1 = 10;
+            while (counter1 <= 360) {
 
-             let filteredData =  data?.filter(obj => obj.wd > counter && obj.wd <=counter1);
-             let filteredData1,filteredData2,  filteredData3,  filteredData4;
-             let Percentage1, Percentage2, Percentage3, Percentage4;
-                if(filteredData?.length > 0){
-                  filteredData1 =  filteredData?.filter(obj => obj.ws > 0 && obj.ws <= 2.0);  
-                  filteredData2 =  filteredData?.filter(obj => obj.ws > 2.1 && obj.ws <= 4.0);
-                  filteredData3 =  filteredData?.filter(obj => obj.ws > 4.1 && obj.ws <= 6.0);
-                  filteredData4 =  filteredData?.filter(obj => obj.ws > 6.1 && obj.ws <= 30);
-                  Percentage1=filteredData1?.length>0?((filteredData1.length / data.length) * 100).toFixed(2):0;
-                  Percentage2=filteredData2?.length>0?((filteredData2.length / data.length) * 100).toFixed(2):0;
-                  Percentage3=filteredData3?.length>0?((filteredData3.length / data.length) * 100).toFixed(2):0;
-                  Percentage4=filteredData4?.length>0?((filteredData4.length / data.length) * 100).toFixed(2):0;
-                }else{
-                  Percentage1=0;
-                  Percentage2=0;
-                  Percentage3=0;
-                  Percentage4=0;
-                }
-                finalrange1.push(Percentage1);
-                finalrange2.push(Percentage2);
-                finalrange3.push(Percentage3);
-                finalrange4.push(Percentage4);
-             
-              counter += 10;
-              counter1 += 10;
-             // console.log(filteredData);
+              let filteredData =  data?.filter(obj => obj.wd > counter && obj.wd <=counter1);
+              let filteredData1;
+              let Percentage1;
+                 if(filteredData?.length > 0){
+                   filteredData1 =  filterData(Paramsplit[i],filteredData);  
+               //    filteredData2 =  filterData(configparam[0],1,filteredData);
+               //    filteredData3 =  filterData(configparam[0],2,filteredData);
+               //    filteredData4 =  filterData(configparam[0],3,filteredData);
+                   Percentage1=filteredData1?.length>0?((filteredData1.length / data.length) * 100).toFixed(2):0;
+                //   Percentage2=filteredData2?.length>0?((filteredData2.length / data.length) * 100).toFixed(2):0;
+                //   Percentage3=filteredData3?.length>0?((filteredData3.length / data.length) * 100).toFixed(2):0;
+                 //  Percentage4=filteredData4?.length>0?((filteredData4.length / data.length) * 100).toFixed(2):0;
+                 }else{
+                   Percentage1=0;
+                  // Percentage2=0;
+                 //  Percentage3=0;
+                  // Percentage4=0;
+                 }
+                 finalrange1.push(Percentage1);
+                 //finalrange2.push(Percentage2);
+                // finalrange3.push(Percentage3);
+                // finalrange4.push(Percentage4);
+              
+               counter += 10;
+               counter1 += 10;
+              // console.log(filteredData);
+           }
+           finalData.push({
+            type: 'bar',
+            data: finalrange1,
+            coordinateSystem: 'polar',
+            name: Paramsplit[i]+" "+configparam[0]?.unit?.toLowerCase(),
+            stack: 'a',
+            emphasis: {
+              focus: 'series',
+            },
+          });
+          datalabels.push(Paramsplit[i]+" "+configparam[0]?.unit?.toLowerCase());
           }
+          
          // setrange1(finalrange1);
          // setrange2(finalrange2);
          // setrange3(finalrange3);
          // setrange4(finalrange4);
-          showwindrose(finalrange1,finalrange2,finalrange3,finalrange4);
+          showwindrose(finalData,datalabels);
           document.getElementById('loader').style.display = "none";
         }
       }).catch((error) => {
@@ -137,7 +188,8 @@ function PollutionRose() {
         console.log("error: ", error);
       });
   }
- const showwindrose = function(finalrange1,finalrange2,finalrange3,finalrange4){
+
+ const showwindrose = function(finalData,datalabels){
   const chartDom = document.getElementById('radar');
   const myChart = echarts.init(chartDom);
 
@@ -181,10 +233,10 @@ function PollutionRose() {
       show: true,
       formatter: function(params) {
         // Use {a} to display the legend name, and {b} to display the axis label
-        return params.name + '<br> wind speed ' + params.seriesName + "<br> percentage : " +params.value;
+        return params.name + '<br> '+configparam[0].parametername+" : " + params.seriesName + "<br> percentage : " +params.value;
       },
     },
-    series: [
+   /*  series: [
       {
         type: 'bar',
         data: finalrange1,
@@ -225,7 +277,8 @@ function PollutionRose() {
           focus: 'series',
         },
       },
-    ],
+    ], */
+    series:finalData,
     legend: {
       show: true,
       /*right: 10, // Adjust the right property to move the legend closer or further from the right edge
@@ -234,7 +287,7 @@ function PollutionRose() {
       itemStyle: {
         borderRadius: 0,
       },*/
-      data: ['0-2.0 m/s', '2.1-4 m/s', '4.1-6 m/s','6.1-30 m/s'],
+      data: datalabels,
     },
   };
 
@@ -292,10 +345,19 @@ const chartElement = chartRef.current;
                 <div className="row filtergroup">
                   <div className="col">
                     <label className="form-label">Station Name</label>
-                    <select className="form-select stationid" id="stationid">
-                    <option selected> Select Station Name</option>
+                    <select className="form-select stationid" id="stationid" onChange={ChangeStation}>
+                    <option value="" selected> Select Station Name</option>
                       {Stations.map((x, y) =>
                         <option value={x.id} key={y}>{x.stationName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col">
+                    <label className="form-label">Parameters</label>
+                    <select className="form-select pollutentid" id="pollutentid">
+                      {/* <option selected> Select Pollutents</option> */}
+                      {Pollutents.map((x, y) =>
+                        <option value={x.parameterName} key={y} >{x.parameterName}</option>
                       )}
                     </select>
                   </div>

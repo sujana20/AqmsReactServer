@@ -293,7 +293,7 @@ const chartElement = chartRef.current;
                   <div className="col">
                     <label className="form-label">Station Name</label>
                     <select className="form-select stationid" id="stationid">
-                    <option selected> Select Station Name</option>
+                    <option value="" selected> Select Station Name</option>
                       {Stations.map((x, y) =>
                         <option value={x.id} key={y}>{x.stationName}</option>
                       )}

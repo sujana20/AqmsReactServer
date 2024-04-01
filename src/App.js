@@ -44,6 +44,7 @@ const ExceedenceReport=lazy(() => import("./Pages/ExceedenceReport"));
 const WindRose=lazy(() => import("./Pages/WindRosecomp"));
 const License = lazy(() => import("./Pages/License"));
 const AIReport = lazy(() => import("./Pages/AIReport"));
+const PollutionRose = lazy(() => import("./Pages/PollutionRose"));
 
 function App() {   
     const location = useLocation();
@@ -94,6 +95,7 @@ function App() {
           <Route   path="/AddLicence" exact element={currentUser !=null && permissions.indexOf("Licence")>=0 ? <AddLicence /> : currentUser !=null ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/ExceedenceReport" exact element={currentUser !=null &&  permissions.indexOf("Exceedence Report")>=0 ? <ExceedenceReport /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/WindRose" exact element={currentUser !=null &&  permissions.indexOf("WindRose")>=0 ? <WindRose /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
+          <Route   path="/PollutionRose" exact element={currentUser !=null &&  permissions.indexOf("PollutionRose")>=0 ? <PollutionRose /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route   path="/AIReport" exact element={currentUser !=null &&  permissions.indexOf("AI Report")>=0 ? <AIReport /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
           <Route path="/License" exact element={<License />} />
           <Route   path="/Dashboard1" exact element={currentUser !=null && permissions.indexOf("Dashboard1")>=0 ? <Dashboard1 /> : currentUser !=null  ? <PagenotFound/> : (<Navigate to="/" />)} />
