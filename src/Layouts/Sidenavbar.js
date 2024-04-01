@@ -9,8 +9,6 @@ function Sidenavbar() {
 
 
   const getUserRole = function () {
-
-
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
     if (currentUser.role.toUpperCase() == window.UserRoles[0].ADMIN.toUpperCase()) {
