@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
 
-function AddDevice() {
+function AddDevice() { 
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const [ListStations, setListStations] = useState([]);
