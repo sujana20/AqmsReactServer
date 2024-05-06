@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import CommonFunctions from "../utils/CommonFunctions";
 
 const AddLicense = ({ handleAuthentication }) => {
-  const $ = window.jQuery;
+  const $ = window.jQuery;   
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const Licenceadd = async(event) => {   
     let form = document.querySelectorAll('#Lisenceform')[0];
