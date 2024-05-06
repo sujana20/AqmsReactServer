@@ -24,7 +24,7 @@ const AddLicense = ({ handleAuthentication }) => {
           jsonData.StartDate=jsonData.StartDate.split("T")[0] + " 00:00:00";
           jsonData.EndDate=jsonData.EndDate.split("T")[0] + " 00:00:00";;
           var EncryptData=jsonData.LicenseKey+','+jsonData.StartDate+','+jsonData.EndDate+','+jsonData.NumberofDevices+','+jsonData.NumberofParameters+','+jsonData.MachineID+','+jsonData.Version+','+jsonData.Edition+','+jsonData.NumberofUsers+','+jsonData.IsActive;
-          var DataKey=await handleEncrypt(EncryptData);
+          var DataKey=await handleEncrypt(EncryptData); 
 
           jsonData.LicenseKey=DataKey;
           let isvalid=ValaidatelicenceFile(jsonData);
