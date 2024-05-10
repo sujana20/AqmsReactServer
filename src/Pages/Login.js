@@ -85,7 +85,7 @@ import CommonFunctions from "../utils/CommonFunctions";
                   </a>
                 </div>
               </div>
-              <div className="card col-lg-7 col-11 col-md-12  gray-boxShadow">
+              <div className="card col-lg-7 col-11 col-md-11  gray-boxShadow">
                 <div className="col-lg-6 col-md-6 m-auto">
                   <div className=" mb-3">
                     <div className="card-body">

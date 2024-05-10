@@ -48,43 +48,46 @@ function ForgotPassword() {
     
   return (
     <main>
-      <div className="container">
+      <div className="col-sm-12 login-bg">
 
-        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center">
           <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-
-                <div className="d-flex justify-content-center py-3">
-                  <a href="index.html" className="logo d-flex align-items-center w-auto">
-                    <img src="images/logo.png" alt="" />
+            <div className="row d-flex align-items-center justify-content-center">
+            <div className="col-sm-12">
+                <div className="d-flex justify-content-center pb-3">
+                  <a href="index.html" className="d-flex align-items-center w-auto">
+                    <img src="images/bluelogo.png" alt="" className="loginLogo" />
                     {/*  <span className="d-none d-lg-block">NiceAdmin</span> */}
                   </a>
                 </div>
+            </div>
+              <div className="card col-lg-6 col-11 col-md-11  gray-boxShadow">
 
-                <div className="card mb-3">
+                
+
+                <div className="col-lg-6 col-md-6 m-auto">
 
                   <div className="card-body">
 
-                    <div className="pt-4 pb-2">
-                      <h5 className="card-title text-center pb-0 fs-4">Forgot Password</h5>
+                    <div className="pt-4 pb-2 login-header-title">
+                      <h5 className="text-center pb-0 fs-3">Forgot Password</h5>
                       {/* <p className="text-center small">Enter your username & password to login</p> */}
                     </div>
 
-                    <form className="row g-3" autoComplete="false" id="ForgotPWD" novalidate>
+                    <form className="row g-3 mt-3 mb-3" autoComplete="false" id="ForgotPWD" novalidate>
 
                       <div className="col-12">
-                        <label htmlFor="yourUsername" className="form-label">User Name</label>
+                        <label htmlFor="yourUsername" className="form-label login-label">User Name</label>
                         <div className="input-group has-validation">
-                          <span className="input-group-text" id="inputGroupPrepend">@</span>
-                          <input type="text" name="username" className="form-control required" id="UserName" required />
+                          <span className="input-group-text d-none" id="inputGroupPrepend">@</span>
+                          <input type="text" name="username" className="form-control border-50 required" id="UserName" required />
                           <div className="invalid-feedback">Please enter your username.</div>
                         </div>
                       </div>
 
                     
-                      <div className="col-6">
-                        <button className="btn btn-primary w-100" onClick={handleSubmit} type="button">Submit</button>
+                      <div className="col-12">
+                        <button className="btn btn-primary w-100 filter-btn" onClick={handleSubmit} type="button">Submit</button>
                       </div>
                     </form>
 
