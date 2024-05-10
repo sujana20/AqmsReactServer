@@ -54,7 +54,7 @@ function UserGroups(){
           controller: {
             data: ListUserGroup,
             loadData: function (filter) {
-              $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+              $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg station-width-control");
               $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
               return $.grep(this.data, function (item) {  
                 return ((!filter.groupName || item.groupName.toString() === filter.groupName)
@@ -65,8 +65,14 @@ function UserGroups(){
             }
           },
           fields: [
-            { name: "groupName", title: "User Name", type: "text", width:"30px" },
-            { name: "permissions", title: "Permission", type: "text", width:"100px",
+            { name: "serialNumber", title: "S. No.", width: 30, align: "center", sorting: false, 
+              itemTemplate: function(_, item, index) { 
+                var index = ListUserGroup.indexOf(item);
+                return index + 1; 
+              } 
+            },
+            { name: "groupName", title: "User Name", type: "text"},
+            { name: "permissions", title: "Permission", type: "text",
             itemTemplate: function(value) {
               // Split values by comma and join with line breaks
               var valuesArray = value.split(",");
@@ -75,7 +81,7 @@ function UserGroups(){
               }
             },            
             {
-              type: "control", width: 10, editButton: false, deleteButton: false,
+              type: "control", width: 100, editButton: false, deleteButton: false,
               itemTemplate: function (value, item) {
                 var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
                   .click(function (e) {
@@ -287,17 +293,17 @@ function UserGroups(){
                     )}
                 </div>
                 <section className="section">
-                    <div className="container">
-                        <div className="me-2 mb-2 float-end">
+                    <div className="container common-table-pd stationList-filter-bg ">
+                        <div className="me-2 mb-2 col-sm-12 text-right">
                             {GroupList && (
-                                <span className="operation_class mx-2" onClick={() => Addusergroupchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Group</span></span>
+                                <span className="operation_class mx-2" onClick={() => Addusergroupchange()}><img src="images/full-plusicon.png" width="25" height="25" /> <span>Create New Group</span></span>
                             )}
                             {!GroupList && (
-                                <span className="operation_class mx-2" onClick={() => Addusergroupchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Groups</span></span>
+                                <span className="operation_class mx-2" onClick={() => Addusergroupchange('gridlist')}><img src="images/listingicon.png" width="25" height="25" /> <span>View All Groups</span></span>
                             )}
                         </div>
                         {!GroupList && (
-                            <form id="UserGroupform" className="row">
+                            <form id="UserGroupform" className="row field-props">
                                 <div className="col-md-12 mb-3">
                                     <label for="usergroupname" className="form-label">User Group Name:</label>
                                     <input type="text" className="form-control" id="usergroupname" placeholder="Enter user group name" required />
@@ -318,10 +324,10 @@ function UserGroups(){
                                 </div>
                                 <div className="col-md-12 text-center">
                                     {!GroupList && GroupId==0 && (
-                                        <button className="btn btn-primary" onClick={addusergroup} type="button">Add User Group</button>
+                                        <button className="btn btn-primary download-btn" onClick={addusergroup} type="button">Add User Group</button>
                                     )}
                                     {!GroupList && GroupId!=0 && (
-                                        <button className="btn btn-primary" onClick={UpdateGroup} type="button">Update User Group</button>
+                                        <button className="btn btn-primary download-btn" onClick={UpdateGroup} type="button">Update User Group</button>
                                     )}
                                 </div>
                             </form>

@@ -374,10 +374,10 @@ function StasticsReport() {
       if (criteria != 'MeanTimeseries') {
         if (charttype == 'bar') {
           if (criteria == 'Percentile') {
-            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], borderWidth: 1, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
+            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], borderWidth: 1, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           } else {
-            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
+            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           }
         } else if (charttype == 'line') {
           if (criteria == 'Percentile') {
@@ -403,15 +403,25 @@ function StasticsReport() {
         intersect: false,
       }, */
       //   maintainAspectRatio: true,
-      plugins: {
+      plugins: { 
         legend: {
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'circle',
+            boxWidth: 8,
+            boxHeight: 8,
+            
+          },
           position: 'top',
+          align: 'start',
+          
         },
         title: {
           display: true,
           //text: 'Chart.js Bar Chart',
         },
       },
+      
     });
     if (criteria == 'MeanTimeseries') {
       labels = xAxislabel;
@@ -426,6 +436,16 @@ function StasticsReport() {
 
   /* Barchart End */
 
+  // const legendMargin = {
+  //   id: 'legendMargin',
+  //   beforeInit(chart, legend, options) {
+  //     const originalFit = legend.fit;
+  //     legend.fit = function() {
+  //       originalFit.call(this); // Ensuring correct binding
+  //       this.height += 150; // Add your desired margin here
+  //     };
+  //   }
+  // };
   const DownloadPng=function() {
     let ChartCriteria = document.getElementById("criteriaid").value;
     const chartElement = chartRef.current.canvas;
@@ -493,17 +513,19 @@ const DownloadPdf = () => {
                       )}
                     </select>
                   </div>
-                  <div className="col">
+                  <div className="col position-relative">
                     <label className="form-label">From Date</label>
-                    <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                    <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                    <DatePicker className="form-control border-50" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
                   </div>
-                  <div className="col">
+                  <div className="col position-relative">
                     <label className="form-label">To Date</label>
-                    <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                    <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                    <DatePicker className="form-control border-50" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
                   </div>
                   <div className="col">
                     <label className="form-label">Type of Chart</label>
-                    <select className="form-select" id="charttypeid">
+                    <select className="form-select border-50" id="charttypeid">
                       <option value="bar">Bar Chart</option>
                       <option value="line">Line Chart</option>
                       <option value="area">Area Chart</option>
@@ -512,7 +534,7 @@ const DownloadPdf = () => {
                   </div>
                   <div className="col">
                     <label className="form-label">Criteria</label>
-                    <select className="form-select" id="criteriaid">
+                    <select className="form-select border-50" id="criteriaid">
                       <option value="Mean">Mean by Station</option>
                       <option value="MeanTimeseries">Mean by Timeseries</option>
                       <option value="Raw">Raw</option>
@@ -525,7 +547,7 @@ const DownloadPdf = () => {
                   </div>
                   <div className="col">
                     <label className="form-label">Interval</label>
-                    <select className="form-select" id="intervalid">
+                    <select className="form-select border-50" id="intervalid">
                       <option value="" selected>Select Interval</option>
                       <option value="15M">15-M</option>
                       {Criteria.map((x, y) =>
@@ -535,7 +557,7 @@ const DownloadPdf = () => {
                   </div>
 
                   <div className="col-md-12  mt-4">
-                    <button type="button" className="btn btn-primary" onClick={GenarateChart}>Generate Chart</button>
+                    <button type="button" className="btn btn-primary filter-btn" onClick={GenarateChart}>Generate Chart</button>
                   </div>
                 </div>
               </div>
@@ -545,9 +567,9 @@ const DownloadPdf = () => {
                 <div className="card">
                   <div className="card-body p-2">
                     <Bar ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
-                  <div className="text-center">
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                  <div className="text-right mt-4 pb-4">
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
                   </div>
                 </div>
@@ -558,9 +580,9 @@ const DownloadPdf = () => {
                 <div className="card">
                   <div className="card-body p-2">
                     <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
-                    <div className="text-center">
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                    <div className="text-right mt-4 pb-4">
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
                   </div>
                 </div>
@@ -571,9 +593,9 @@ const DownloadPdf = () => {
                 <div className="card">
                   <div className="card-body p-2">
                     <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
-                    <div className="text-center">
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                    <div className="text-right mt-4 pb-4">
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1 filter-btn"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
                   </div>
                 </div>

@@ -193,8 +193,8 @@ function AddDevice() {
       controller: {
         data: ListDevices,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg border-50 ps-3");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm device-select-control");
           return $.grep(this.data, function (item) {
             return ((!filter.stationName || item.stationName.toUpperCase().indexOf(filter.stationName.toUpperCase()) >= 0)
               && (!filter.stationID || item.stationID === filter.stationID)
@@ -209,12 +209,18 @@ function AddDevice() {
         }
       },
       fields: [
+        { name: "serialNumber", title: "S. No.", width: 50, align: "center", sorting: false, 
+        itemTemplate: function(_, item, index) { 
+          var index = ListDevices.indexOf(item);
+          return index + 1; 
+        } 
+        },
         { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
-        { name: "deviceName", title: "Device Name", type: "text" },
+        { name: "deviceName", title: "Device Name", type: "text", align: "center" },
         { name: "deviceModel", title: "Device Model", type: "select", items: ListDeviceModels, valueField: "id", textField: "deviceModelName", width: 200 },
-        { name: "ipAddress", title: "IP Address", type: "text" },
-        { name: "port", title: "Port", type: "text" },
-        { name: "type", title: "Type", type: "text" },
+        { name: "ipAddress", title: "IP Address", type: "text", align: "center" },
+        { name: "port", title: "Port", type: "text", align: "center" },
+        { name: "type", title: "Type", type: "text", align: "center" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
          /*  itemTemplate: function (value, item) {
@@ -281,7 +287,7 @@ function AddDevice() {
           )}
         </div>
         <section className="section">
-          <div className="container mt-3">
+          <div className="container common-table-pd stationList-filter-bg">
             {!DeviceList && (
               <form id="AddDeviceform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
@@ -444,8 +450,8 @@ function AddDevice() {
         </section>
         <br></br>
         <div align="center"> {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('csv')} >Download Csv</button>
         </div>
       </div>
     </main>

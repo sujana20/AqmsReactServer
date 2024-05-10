@@ -1,0 +1,786 @@
+/*--------------------------------------------------------------
+# General
+--------------------------------------------------------------*/
+@font-face {
+  font-family: 'Roboto Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Regular'), url('/public/fonts/Roboto-Regular.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Italic'), url('/public/fonts/Roboto-Italic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Bold'), url('/public/fonts/Roboto-Bold.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Bold Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Bold Italic'), url('/public/fonts/Roboto-BoldItalic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Thin';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Thin'), url('/public/fonts/Roboto-Thin.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Thin Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Thin Italic'), url('/public/fonts/Roboto-ThinItalic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Light';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Light'), url('/public/fonts/Roboto-Light.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Light Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Light Italic'), url('/public/fonts/Roboto-LightItalic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Medium';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Medium'), url('/public/fonts/Roboto-Medium.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Medium Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Medium Italic'), url('/public/fonts/Roboto-MediumItalic.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Black';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Black'), url('/public/fonts/Roboto-Black.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Roboto Black Italic';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Roboto Black Italic'), url('/public/fonts/Roboto-BlackItalic.woff') format('woff');
+}
+
+:root {
+  scroll-behavior: smooth;
+  --blue:#2663AC;
+  --lightgreen: #eef6f4;
+  --palegreen: #D1FED0;
+  --darkgreen: #026D00;
+  --lightred: #FFE5E5;
+}
+
+html,body {
+  /*background: #f6f9ff;*/
+  background:#F2EFFB;
+  color: #444444;
+  line-height: 1.25rem;
+  font-family: 'Roboto Light';
+  font-style: normal;
+  font-weight: normal;
+  height: 100%;
+  font-size: 0.875rem;
+}
+
+.h100 {
+  height: 100%;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.ag-theme-alpine {
+  height: 80vh;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #717ff5;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto Light';
+}
+.text-right{
+  text-align: right;
+}
+.border-50{
+  border-radius: 50px;
+}
+.form-select:focus{
+  border-color: #ced4da; box-shadow: 0 0 0 0rem #ced4da;
+}
+.font-15{
+  font-size: 15px;
+}
+.gray-boxShadow{
+  box-shadow: 0px 0 30px rgb(60 61 63 / 22%)!important;
+}
+.fnt-600{
+  font-weight: 600;
+  text-decoration: underline;
+}
+/*--------------------------------------------------------------
+# Main
+--------------------------------------------------------------*/
+#main {
+  margin-top: 60px;
+  padding: 40px 15px;
+  transition: all 0.3s;
+  /* width: calc(100% - 300px); */
+  /* height: 80vh;
+  max-height: 100vh; */
+}
+
+.pagenation_header {
+  margin-top: -2rem;
+  z-index: 10;
+  position: absolute;
+  font-size: 0.75rem;
+  margin-left: 10px;
+  font-weight: 600;
+}
+
+@media (max-width: 1199px) {
+  #main {
+    padding: 20px;
+  }
+}
+
+/*--------------------------------------------------------------
+# Page Title
+--------------------------------------------------------------*/
+.pagetitle {
+  margin-bottom: 10px;
+}
+
+.pagetitle h1 {
+  font-size: 22px;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: var(--blue);
+  padding-left: 10px;
+  font-family: 'Roboto Bold';
+}
+
+/*--------------------------------------------------------------
+# Back to top button
+--------------------------------------------------------------*/
+.back-to-top {
+  position: fixed;
+  visibility: hidden;
+  opacity: 0;
+  right: 15px;
+  bottom: 15px;
+  z-index: 99999;
+  background: #4154f1;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  transition: all 0.4s;
+}
+
+.back-to-top i {
+  font-size: 24px;
+  color: #fff;
+  line-height: 0;
+}
+
+.back-to-top:hover {
+  background: #6776f4;
+  color: #fff;
+}
+
+.back-to-top.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+/*--------------------------------------------------------------
+# Override some default Bootstrap stylings
+--------------------------------------------------------------*/
+/* Dropdown menus */
+.dropdown-menu {
+  border-radius: 4px;
+  padding: 10px 0;
+  -webkit-animation-name: dropdown-animate;
+  animation-name: dropdown-animate;
+  -webkit-animation-duration: 0.2s;
+  animation-duration: 0.2s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  border: 0;
+  box-shadow: 0 5px 30px 0 rgba(82, 63, 105, 0.2);
+}
+
+.dropdown-menu .dropdown-header,
+.dropdown-menu .dropdown-footer {
+  text-align: center;
+  font-size: 15px;
+  padding: 10px 25px;
+}
+
+.dropdown-menu .dropdown-footer a {
+  color: #444444;
+  text-decoration: underline;
+}
+
+.dropdown-menu .dropdown-footer a:hover {
+  text-decoration: none;
+}
+
+.dropdown-menu .dropdown-divider {
+  color: #a5c5fe;
+  margin: 0;
+}
+
+.dropdown-menu .dropdown-item {
+  font-size: 14px;
+  padding: 10px 15px;
+  transition: 0.3s;
+}
+
+.dropdown-menu .dropdown-item i {
+  margin-right: 10px;
+  font-size: 18px;
+  line-height: 0;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #f6f9ff;
+}
+
+@media (min-width: 768px) {
+  .dropdown-menu-arrow::before {
+    content: "";
+    width: 13px;
+    height: 13px;
+    background: #fff;
+    position: absolute;
+    top: -7px;
+    right: 20px;
+    transform: rotate(45deg);
+    border-top: 1px solid #eaedf1;
+    border-left: 1px solid #eaedf1;
+  }
+}
+
+@-webkit-keyframes dropdown-animate {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+  0% {
+    opacity: 0;
+  }
+}
+
+@keyframes dropdown-animate {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+  0% {
+    opacity: 0;
+  }
+}
+
+/* Light Backgrounds */
+.bg-primary-light {
+  background-color: #cfe2ff;
+  border-color: #cfe2ff;
+}
+
+.bg-secondary-light {
+  background-color: #e2e3e5;
+  border-color: #e2e3e5;
+}
+
+.bg-success-light {
+  background-color: #d1e7dd;
+  border-color: #d1e7dd;
+}
+
+.bg-danger-light {
+  background-color: #f8d7da;
+  border-color: #f8d7da;
+}
+
+.bg-warning-light {
+  background-color: #fff3cd;
+  border-color: #fff3cd;
+}
+
+.bg-info-light {
+  background-color: #cff4fc;
+  border-color: #cff4fc;
+}
+
+.bg-dark-light {
+  background-color: #d3d3d4;
+  border-color: #d3d3d4;
+}
+
+.ag-root.ag-layout-normal {
+  height: 100%;
+  font-family: 'Roboto Light';
+  font-style: normal;
+  font-weight: normal;
+}
+
+.ag-theme-alpine .ag-row,
+.ag-theme-alpine-dark .ag-row {
+  font-size: calc(0.75rem) !important;
+  font-weight: 600;
+}
+
+/* .ag-header-cell-label {
+  justify-content: center;
+} */
+/* Card */
+.card {
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+
+.card-header,
+.card-footer {
+  border-color: #ebeef4;
+  background-color: #fff;
+  color: #798eb3;
+  padding: 15px;
+}
+
+.card-title {
+  padding: 20px 0 15px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.card-title span {
+  color: #899bbd;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* .card-body {
+  padding: 0 20px 20px 20px;
+} */
+
+.card-img-overlay {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Alerts */
+.alert-heading {
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+}
+
+/* Close Button */
+.btn-close {
+  background-size: 40%;
+}
+
+.btn-close:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+/* Accordion */
+.accordion-item {
+  border: 1px solid #ebeef4;
+}
+.accordion-button{
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-family: 'Roboto Medium';
+  font-weight: normal;
+}
+.accordion-button:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+  color: #012970;
+  background-color: #f6f9ff;
+}
+
+.accordion-flush .accordion-button {
+  padding: 15px 0;
+  background: none;
+  border: 0;
+}
+
+.accordion-flush .accordion-button:not(.collapsed) {
+  box-shadow: none;
+  color: #4154f1;
+}
+
+.accordion-flush .accordion-body {
+  padding: 0 0 15px 0;
+  color: #3e4f6f;
+  font-size: 15px;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  font-size: 14px;
+  font-family: "Nunito", sans-serif;
+  color: #899bbd;
+  font-weight: 600;
+}
+
+.breadcrumb a {
+  color: #899bbd;
+  transition: 0.3s;
+}
+
+.breadcrumb a:hover {
+  color: #51678f;
+}
+
+.breadcrumb .breadcrumb-item::before {
+  color: #899bbd;
+}
+
+.breadcrumb .active {
+  color: #51678f;
+  font-weight: 600;
+}
+
+/* Bordered Tabs */
+.nav-tabs-bordered {
+  border-bottom: 2px solid #ebeef4;
+}
+
+.nav-tabs-bordered .nav-link {
+  margin-bottom: -2px;
+  border: none;
+  color: #2c384e;
+}
+
+.nav-tabs-bordered .nav-link:hover,
+.nav-tabs-bordered .nav-link:focus {
+  color: #4154f1;
+}
+
+.nav-tabs-bordered .nav-link.active {
+  background-color: #fff;
+  color: #4154f1;
+  border-bottom: 2px solid #4154f1;
+}
+
+/* For Table active css------------*/
+.active-success{
+  background-color: #8cd784!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-primary{
+  background-color: #83d3ec!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-Darkprimary{
+  background-color: #139ec6!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-Lightprimary{
+  background-color: #5bcaeb!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-warning{
+  background-color: #ead576!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-danger{
+  background-color: #e97c3d!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-lightdanger{
+  background-color: #f1af71!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-Lightred{
+  background-color: #d9685c!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+.active-red{
+  background-color: #cd3322!important;
+  color: #fff!important;
+  font-weight: 600;
+  border-radius: 4px 
+}
+/* For Table active css End------------*/
+
+/* For Table------------*/
+.custom-table {
+  margin: 0 -15px; 
+  /* display: block; */
+  border-spacing: 20px 10px;
+  caption-side: unset;
+  border-collapse: separate;
+  font-size: 12px;
+ 
+}
+.custom-table thead tr th{
+  font-family: 'Roboto Bold';
+}
+.custom-table tbody tr td{
+  text-align: center;
+  font-weight: 700;
+  padding: 0.2rem 0.2rem;
+}
+
+/* For TableEnd ------------*/
+
+
+.text-left{
+  text-align: left!important;
+}
+.bottom-bottom-1{
+  border-bottom: 1px solid #bebdbd!important;
+}
+.common-table-pd{
+  background: #fff;
+  padding: 11px;
+  border-radius: 11px;
+  margin: 8px;
+}
+.table-status-bg table .text-success{
+  background-color: var(--palegreen);
+  padding: 7px 20px;
+  border-radius: 5px;
+}
+
+.table-status-bg table .text-danger{
+  background-color: var(--lightred);
+  padding: 7px 20px;
+  border-radius: 5px;
+}
+.table-status-bg .jsgrid-grid-body{
+  overflow-y: auto;
+}
+
+.station-width-control{
+  width: 50%!important; border-radius: 50px;padding-left: 13px !important;
+}
+.device-select-control{
+  border-radius: 50px; width: 70%!important; padding: 6px 10px!important; margin: auto; text-align: left!important;
+}
+.download-btn{
+  background: var(--blue);
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ebebeb;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #aab7cf; 
+}
+
+.stationList-filter-bg .jsgrid-clear-filter-button{
+  /* background-color: red; */
+  background-image: url('/public/images/newfilter.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--lightgreen);
+  border-radius: 50px;
+  width: 36px;
+  height: 35px;
+  /* padding: 10px 10px; */
+  background-size: 13px 16px;
+}
+.stationList-filter-bg .jsgrid-search-button{
+  background-image: url('/public/images/searchicon.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--lightgreen);
+  border-radius: 50px;
+  width: 36px;
+  height: 35px;
+  background-size: 20px 20px;
+  margin-right: 7px;
+}
+
+.stationList-filter-bg .jsgrid-insert-button{
+  background-image: url('/public/images/plusicon.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--palegreen);
+  border-radius: 50px;
+  width: 30px;
+  height: 30px;
+  background-size: 13px 14px;
+}
+
+.stationList-filter-bg .jsgrid-edit-button{
+  background-image: url('/public/images/editicon.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--palegreen);
+  border-radius: 50px;
+  width: 30px;
+  height: 30px;
+  background-size: 13px 14px;
+  margin-right: 7px;
+}
+.stationList-filter-bg .jsgrid-delete-button{
+  background-image: url('/public/images/deleteicon.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--lightred);
+  border-radius: 50px;
+  width: 30px;
+  height: 30px;
+  background-size: 13px 14px;
+  margin-right: 7px;
+}
+
+.field-props input, .field-props select{
+  border-color: #CCE8DF;
+  border-radius: 50px;
+}
+.field-props input::placeholder{
+  font-family: 'Roboto Bold';
+  color:#9c9d9d;
+}
+
+.form-check-input:checked{
+  border-color: var(--blue);
+  background-color: var(--blue);
+}
+.calender-icon-bg{
+  right: 22px;
+    bottom: 8px;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    z-index: 1;
+}
+.filter-btn{
+  background: var(--blue);
+  padding: 7px 15px;
+  border: none;
+  text-transform: uppercase;
+  border-radius: 10px;
+}
+.filter-btn:hover{
+  opacity: .8;
+    transition: opacity 200ms linear;
+    background: var(--blue);
+}
+.reset-btn{
+  background: #fff;
+  padding: 7px 15px;
+  border: 1px solid var(--blue);
+  text-transform: uppercase;
+  border-radius: 10px;
+  color: var(--blue);
+}
+.reset-btn:hover{
+  opacity: .8;
+    transition: opacity 200ms linear;
+    background: #fff;
+    color: var(--blue);
+}
+.jsgrid-nodata-row td{
+  font-size: 21px;
+    font-family: 'Roboto Bold';
+    color: #111;
+}
+.login-label{
+  color: #111!important;
+  font-family: 'Roboto Bold';
+}
+.input-group>:not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback){
+  margin-left: auto;
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}

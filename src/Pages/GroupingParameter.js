@@ -78,7 +78,7 @@ function Grouping() {
             data: dataForGrid,
             loadData: function (filter) {              
               
-              $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+              $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg station-width-control");
               $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
               return $.grep(this.data, function (item) {                
                 
@@ -307,24 +307,24 @@ function Grouping() {
                 )}
             </div>
             <section className="section">
-              <div className="container mt-3">
-                <div className="me-2 mb-2 float-end">
+              <div className="container common-table-pd stationList-filter-bg grouplist-pd-10">
+                <div className="me-2 mb-2 col-sm-12 text-right">
                     {GroupList && (
-                        <span className="operation_class mx-2" onClick={() => AddGroupchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                        <span className="operation_class mx-2" onClick={() => AddGroupchange()}><img src="images/full-plusicon.png" width="25" height="25" /><span>Add</span></span>
                     )}
                     {!GroupList && (
-                        <span className="operation_class mx-2" onClick={() => AddGroupchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                        <span className="operation_class mx-2" onClick={() => AddGroupchange('gridlist')}><img src="images/listingicon.png" width="25" height="25" /> <span>List</span></span>
                     )}
                 </div>
                 {!GroupList && (
-                  <form id="Groupingform" className="row">
+                  <form id="Groupingform" className="row field-props">
                     <div className="col-md-12 mb-3">
                       <label for="groupname" className="form-label">Group Name:</label>
                       <input type="text" className="form-control" id="groupnamevalue" placeholder="Enter Group name" required />
                       <div class="invalid-feedback">Please enter Group name</div>
                     </div> 
                     <div>                        
-                        <label for="stationparameterlist" className="form-label">Station Parameter List :</label>
+                        <label for="stationparameterlist" className="form-label mb-3 mt-3">Station Parameter List :</label>
                             <CheckboxTree 
                                 nodes={parentvalues}
                                 //nodes={nodes}
@@ -349,10 +349,10 @@ function Grouping() {
                     )} */}
                     <div className="col-md-12 text-center">
                         {!GroupList && GroupId==0 && (
-                            <button className="btn btn-primary" onClick={Groupadd} type="button">Add Group</button>
+                            <button className="btn btn-primary download-btn" onClick={Groupadd} type="button">Add Group</button>
                         )}
                         {!GroupList && GroupId!=0 && (
-                           <button className="btn btn-primary" onClick={UpdateGroup}  type="button">Update Group</button>
+                           <button className="btn btn-primary download-btn" onClick={UpdateGroup}  type="button">Update Group</button>
                         )}
                     </div>                  
                   </form>               

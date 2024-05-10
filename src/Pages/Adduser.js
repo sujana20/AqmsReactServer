@@ -243,7 +243,7 @@ function Adduser() {
       controller: {
         data: ListUsers,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg station-width-control");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return ((!filter.userName || item.userName.toUpperCase().indexOf(filter.userName.toUpperCase()) >= 0)
@@ -255,6 +255,12 @@ function Adduser() {
         }
       },
       fields: [
+        { name: "serialNumber", title: "S. No.", width: 30, align: "center", sorting: false, 
+          itemTemplate: function(_, item, index) { 
+            var index = ListUsers.indexOf(item);
+            return index + 1; 
+          } 
+        },
         { name: "userName", title: "User Name", type: "text" },
         { name: "userEmail", title: "User Email", type: "text" },
         // { name: "password", title: "Password", type: "text" },
@@ -311,17 +317,17 @@ function Adduser() {
           )}
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
+          <div className="container common-table-pd stationList-filter-bg ">
+            <div className="me-2 mb-2 col-sm-12 text-right">
               {UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New User</span></span>
+                <span className="operation_class mx-2" onClick={() => Adduserchange()}><img src="images/full-plusicon.png" width="25" height="25" /> <span>Create New User</span></span>
               )}
               {!UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Users</span></span>
+                <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><img src="images/listingicon.png" width="25" height="25" /> <span>View All Users</span></span>
               )}
             </div>
             {!UserList && (
-              <form id="AddUserform" className="row">
+              <form id="AddUserform" className="row field-props">
                 {!UserList && UserId==0 && (
                 <div className="col-md-12 mb-3">
                     <label for="username" className="form-label">User Name:</label>
@@ -366,8 +372,8 @@ function Adduser() {
                 {!UserList && UserId==0 && (
                   <div className="col-md-12 mb-3">
                     <label for="Notification" className="form-label">Notification: </label>
-                    <div className="form-check d-inline-block form-switch ms-2">
-                      <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
+                    <div className="form-check d-inline-block form-switch ms-3">
+                      <input className="form-check-input font-15" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
                       {Notification && (
                         <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
                       )}
@@ -379,10 +385,10 @@ function Adduser() {
                 )}
                 <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
-                  <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
+                  <button className="btn btn-primary download-btn" onClick={Useradd} type="button">Add User</button>
                   )}
                   {!UserList && UserId!=0 && (
-                      <button className="btn btn-primary" onClick={UpdateUser} type="button">Update User</button>
+                      <button className="btn btn-primary download-btn" onClick={UpdateUser} type="button">Update User</button>
                   )}
                 </div>
               </form>

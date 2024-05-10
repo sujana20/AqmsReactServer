@@ -124,7 +124,7 @@ function AddStation() {
       controller: {
         data: ListStations,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg station-width-control");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return ((!filter.stationName || item.stationName.toUpperCase().indexOf(filter.stationName.toUpperCase()) >= 0)
@@ -134,6 +134,12 @@ function AddStation() {
         }
       },
       fields: [
+        { name: "Sno", title: "S.No.", width: 30, align: "center", sorting: false,
+        itemTemplate: function(value, item) {
+          var index = ListStations.indexOf(item);
+          return index + 1;
+        }
+      },
         { name: "stationName", title: "Station Name", type: "text" },
         { name: "description", title: "Description", type: "text" },
         {
@@ -197,7 +203,7 @@ function AddStation() {
           )}
         </div>
         <section className="section">
-          <div className="container mt-3">
+          <div className="container common-table-pd table-status-bg stationList-filter-bg">
             {!StationList && (
               <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">
@@ -241,8 +247,8 @@ function AddStation() {
         </section>
         <br></br>
         <div align="center"> {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('csv')} >Download Csv</button>
         </div>
 
       </div>

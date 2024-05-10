@@ -224,8 +224,8 @@ function AddParameter() {
       controller: {
         data: Listparameters,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg border-50 ps-3");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm device-select-control");
           return $.grep(this.data, function (item) {
             return ((!filter.stationID || item.stationID === filter.stationID)
               && (!filter.deviceID || item.deviceID === filter.deviceID)
@@ -240,12 +240,18 @@ function AddParameter() {
         }
       },
       fields: [
+        { name: "serialNumber", title: "S. No.", width: 50, align: "center", sorting: false, 
+        itemTemplate: function(_, item, index) { 
+          var index = Listparameters.indexOf(item);
+          return index + 1; 
+        } 
+        },
         // { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
         { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
         { name: "deviceID", title: "Device Name", type: "select", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
         { name: "driverID", title: "Driver Name", type: "select", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
         { name: "parameterName", title: "parameter Name", type: "text" },
-        { name: "unitID", title: "Units", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 100 },
+        { name: "unitID", title: "Units", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 150 },
         { name: "pollingInterval", title: "Polling Interval", type: "text" },
         { name: "avgInterval", title: "Average Interval", type: "text" },
         {
@@ -318,7 +324,7 @@ function AddParameter() {
           )}
         </div>
         <section className="section">
-          <div className="container mt-3">
+          <div className="container common-table-pd stationList-filter-bg">
             
             {!parameterList && (
               <form id="AddParametersform" className="row" noValidate>
@@ -423,8 +429,8 @@ function AddParameter() {
 
         <br></br>
         <div align="center"> {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
-        <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
+        <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel('csv')} >Download Csv</button>
         </div>
       </div>
     </main>

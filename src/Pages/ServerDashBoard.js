@@ -80,6 +80,12 @@ function ServerDashBoard() {
         }
       },
       fields: [
+        { name: "Sno", title: "S.No.", type: "number", width: 50, align: "center", sorting: false,
+        itemTemplate: function(value, item) {
+          var index = ListStations.indexOf(item);
+          return index + 1;
+        }
+      },
         { name: "StationName", title: "Measurement Site", type: "text" },
         { name: "Description", title: "Station Label", type: "text" },
         { name: "lastData", title: "Communication", type: "text" },
@@ -104,7 +110,7 @@ function ServerDashBoard() {
           )}
         </div>
         <section className="section">
-          <div className="container mt-3">
+          <div className="container common-table-pd table-status-bg">
             {StationList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}

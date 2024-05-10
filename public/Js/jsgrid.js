@@ -90,7 +90,7 @@
         },
         rowDoubleClick: $.noop,
 
-        noDataContent: "Not found",
+        noDataContent: "No Data Found",
         noDataRowClass: "jsgrid-nodata-row",
 
         heading: true,

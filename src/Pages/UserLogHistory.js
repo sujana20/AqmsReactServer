@@ -82,8 +82,8 @@ function UserLogHistory() {
       controller: {
         data: ListUsersLog,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg border-50");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm device-select-control");
           return $.grep(this.data, function (item) {
             return ((!filter.ipAddress || item.ipAddress.toUpperCase().indexOf(filter.ipAddress.toUpperCase()) >= 0)
             && (!filter.userID || item.userID === filter.userID)
@@ -94,10 +94,16 @@ function UserLogHistory() {
         }
       },
       fields: [
-        { name: "userID", title: "User Name", type: "select", items: ListUsers, valueField: "id", textField: "userName", width: 200},
-        { name: "ipAddress", title: "IP Address", type: "text" },
-        { name: "logInTime", title: "Login Time", type: "text", },
-        { name: "logOutTime", title: "Logout Time", type: "text", },
+        { name: "serialNumber", title: "S. No.", width: 30, align: "center", sorting: false, 
+          itemTemplate: function(_, item, index) { 
+            var index = ListUsersLog.indexOf(item);
+            return index + 1; 
+          } 
+        },
+        { name: "userID", title: "User Name", type: "select", items: ListUsers, valueField: "id", textField: "userName", width: 150},
+        { name: "ipAddress", title: "IP Address", type: "text", align: "center" },
+        { name: "logInTime", title: "Login Time", type: "text", align: "center" },
+        { name: "logOutTime", title: "Logout Time", type: "text", align: "center"},
         { type: "control", width: 100, editButton: false, deleteButton: false},
       ]
     });
@@ -111,8 +117,8 @@ function UserLogHistory() {
         </div>
         <section className="section">
           <div className="container">
-            <div className="row my-4">
-          <div className="col-md-3">
+            <div className="row mt-4">
+              <div className="col-sm-12 col-md-3 col-lg-2">
                 <label className="form-label">User Name</label>
                 <select className="form-select userid" id="userid" multiple="multiple">
 
@@ -121,19 +127,26 @@ function UserLogHistory() {
                   )}
                 </select>
               </div>
-              <div className="col-md-3">
+              <div className="col-sm-12 col-md-3 col-lg-2 position-relative">
+              
                 <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                <DatePicker className="form-control border-50" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                
               </div>
-              <div className="col-md-3">
+              <div className="col-sm-12 col-md-3 col-lg-2 position-relative">
                 <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                <DatePicker className="form-control border-50" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
               </div>
-              <div className="col-md-3 mt-4">
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog()}>Filter</button>
-                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
+              <div className="col-sm-12 col-md-3 col-lg-6 mt-4 text-right pe-0">
+                <button type="button" className="btn btn-primary mx-1 filter-btn" onClick={() => GetUserLog()}>Filter</button>
+                <button type="button" className="btn btn-secondary mx-1 reset-btn" onClick={() => GetUserLog('reset')}>Reset</button>
               </div>
-              </div>
+            </div>
+          </div>
+          <div className="container common-table-pd stationList-filter-bg">
+            
               <div className="jsGrid" ref={gridRefjsgridreport} />
           </div>
         </section>

@@ -5,7 +5,12 @@ import  'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './bootstrap-icons/bootstrap-icons.css'
 import 'font-awesome/css/font-awesome.min.css';
-import './style.css';
+//import './style.css';
+import './common.css';
+import './headerstyle.css';
+import './sidebar.css';
+import './stylenew.css';
+import './responsive.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';

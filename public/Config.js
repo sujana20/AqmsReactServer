@@ -27,9 +27,10 @@ var ExcludeFlags=[9,10,11,12,13,16,18];
 var spreadsheetrowHeight=22.6;
 var nodes = [{
     value: 'Dashboard',
-    label: 'Dashboard',
+    label: 'Measurement Site',
     url:'/Dashboard',
-    icon:'bi bi-grid',
+    //icon:'bi bi-grid',
+    img: 'images/measurment-icon.png',
     expandicon:'',
     children:false,
 },
@@ -46,7 +47,8 @@ var nodes = [{
     label: 'Configuration',
     url:'#',
     expandicon:'bi bi-chevron-down ms-auto',
-    icon:'bi bi-menu-button-wide',
+    //icon:'bi bi-menu-button-wide',
+    img: 'images/configuration-icon.png',
     children: [
         { value: 'Station', label: 'Station', url:'/AddStation', icon:'bi bi-circle' },
         { value: 'Device', label: 'Device', url:'/AddDevice', icon:'bi bi-circle' },
@@ -58,7 +60,8 @@ var nodes = [{
     label: 'Admin',
     url:'#',
     expandicon:'bi bi-chevron-down ms-auto',
-    icon:'bi bi-menu-button-wide',
+    //icon:'bi bi-menu-button-wide',
+    img: 'images/admin-icon.png',
     children: [
         { value: 'Licence', label: 'Licence', url:'/AddLicence', icon:'bi bi-circle' },
         { value: 'Users', label: 'Users', url:'/Adduser', icon:'bi bi-circle' },
@@ -71,7 +74,8 @@ var nodes = [{
     label: 'Reports',
     url:'#',
     expandicon:'bi bi-chevron-down ms-auto',
-    icon:'bi bi-bar-chart',
+    //icon:'bi bi-bar-chart',
+    img: 'images/report-icon.png',
     children: [
         { value: 'Statistical Reports', label: 'Statistical Reports', url:'/StatisticalReport', icon:'bi bi-circle' },
         { value: 'Predefined Charts', label: 'Predefined Charts', url:'/PredefinedCharts', icon:'bi bi-circle' },

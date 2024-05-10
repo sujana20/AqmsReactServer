@@ -348,7 +348,7 @@ h6 {
 }
 
 .form-switch .form-check-label {
-  margin-left: 10px;
+  /* margin-left: 10px; */
   margin-top: 6px;
   font-weight: 600;
 }
@@ -809,7 +809,7 @@ table.jexcel colgroup col:nth-child(1) {
 
 .react-datepicker-popper[data-placement^=bottom] {
   padding-top: 10px;
-  z-index: 9999;
+  /* z-index: 9999; */
 }
 
 

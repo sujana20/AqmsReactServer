@@ -79,7 +79,7 @@ function AppLogHistory() {
       controller: {
         data: ListAppLog,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-lg border-50");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return (!filter.logID || item.logID === filter.logID)
@@ -91,10 +91,16 @@ function AppLogHistory() {
         }
       },
       fields: [
-        { name: "logID", title: "App ID", type: "text" },
-        { name: "logDescription", title: "Description", type: "text" },
-        { name: "logSource", title: "Source", type: "text", },
-        { name: "logTime", title: "Log Inserted Time", type: "text", },
+        { name: "serialNumber", title: "S. No.", width: 30, align: "center", sorting: false, 
+          itemTemplate: function(_, item, index) { 
+            var index = ListAppLog.indexOf(item);
+            return index + 1; 
+          } 
+        },
+        { name: "logID", title: "App ID", type: "text", align: "center" },
+        { name: "logDescription", title: "Description", type: "text", align: "center" },
+        { name: "logSource", title: "Source", type: "text", align: "center" },
+        { name: "logTime", title: "Log Inserted Time", type: "text", align: "center" },
         { type: "control", width: 100, editButton: false, deleteButton: false},
       ]
     });
@@ -108,21 +114,25 @@ function AppLogHistory() {
         </div>
         <section className="section">
           <div className="container">
-            <div className="row my-4">
-          
-              <div className="col-md-3">
+            <div className="row mt-4">
+              <div className="col-sm-12 col-md-3 col-lg-2 position-relative">
                 <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                <DatePicker className="form-control border-50" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
               </div>
-              <div className="col-md-3">
+              <div className="col-sm-12 col-md-3 col-lg-2 position-relative">
                 <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                <img src="images/calendar-icon.png" className="calender-icon-bg" alt="calenderIcon" />
+                <DatePicker className="form-control border-50" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
               </div>
-              <div className="col-md-3 mt-4">
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetAppLog()}>Filter</button>
-                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetAppLog('reset')}>Reset</button>
+              <div className="col-sm-12 col-md-6 col-lg-8 mt-4 text-right pe-0">
+                <button type="button" className="btn btn-primary mx-1 filter-btn" onClick={() => GetAppLog()}>Filter</button>
+                <button type="button" className="btn btn-secondary mx-1 reset-btn" onClick={() => GetAppLog('reset')}>Reset</button>
               </div>
-              </div>
+            </div>
+          </div>
+          <div className="container common-table-pd stationList-filter-bg">
+            
               <div className="jsGrid" ref={gridRefLogHistoryreport} />
           </div>
         </section>

@@ -72,63 +72,64 @@ import CommonFunctions from "../utils/CommonFunctions";
   };
   return (
     <main>
-      <div className="container">
+      <div className="col-sm-12 login-bg">
 
-        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center">
           <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-
-                <div className="d-flex justify-content-center py-3">
-                  <a href="index.html" className="logo d-flex align-items-center w-auto">
-                    <img src="images/logo.png" alt="" />
+            <div className="row d-flex align-items-center  justify-content-center">
+              <div className="col-sm-12">
+                <div className="d-flex justify-content-center pb-3">
+                  <a href="index.html" className="d-flex align-items-center w-auto">
+                    <img src="images/bluelogo.png" alt="" className="loginLogo"/>
                     {/*  <span className="d-none d-lg-block">NiceAdmin</span> */}
                   </a>
                 </div>
+              </div>
+              <div className="card col-lg-7 col-11 col-md-12  gray-boxShadow">
+                <div className="col-lg-6 col-md-6 m-auto">
+                  <div className=" mb-3">
+                    <div className="card-body">
 
-                <div className="card mb-3">
+                      <div className="pt-4 pb-2 login-header-title">
+                        <h5 className="text-center pb-0 fs-3">Login to Your Account</h5>
+                        <p className="text-center small">Enter your username & password to login</p>
+                      </div>
 
-                  <div className="card-body">
+                      <form className="row g-3 mt-3 mb-3" autoComplete="false" id="Loginform" novalidate>
 
-                    <div className="pt-4 pb-2">
-                      <h5 className="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                      <p className="text-center small">Enter your username & password to login</p>
+                        <div className="col-12">
+                          <label htmlFor="yourUsername" className="form-label login-label">Username</label>
+                          <div className="input-group has-validation">
+                            <span className="input-group-text d-none" id="inputGroupPrepend">@</span>
+                            <input type="text" name="username" className="form-control border-50 required" id="UserName" required />
+                            <div className="invalid-feedback">Please enter your username.</div>
+                          </div>
+                        </div>
+
+                        <div className="col-12">
+                          <label htmlFor="yourPassword" className="form-label login-label">Password</label>
+                          <input type="password" name="password" className="form-control border-50" id="Password" required />
+                          <div className="invalid-feedback">Please enter your password!</div>
+                        </div>
+
+                        <div className="col-6">
+                          <div className="form-check login-checkbox">
+                            <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
+                            <label className="form-check-label" for="rememberMe">Remember me</label>
+                          </div>
+                        </div>
+                        <div className="col-6 text-right">
+                          <a className="form-check-label fnt-600" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
+                        </div>
+                        <div className="col-12">
+                          <button className="btn btn-primary w-100 filter-btn" onClick={handleLogin} type="button">Login</button>
+                        </div>
+                        <div className="col-12 text-center">
+                          <a className="form-check-label fnt-600" style={{cursor:"pointer"}} onClick={forgotPassword}>Forgot Password?</a>
+                        </div>
+                      </form>
+
                     </div>
-
-                    <form className="row g-3" autoComplete="false" id="Loginform" novalidate>
-
-                      <div className="col-12">
-                        <label htmlFor="yourUsername" className="form-label">Username</label>
-                        <div className="input-group has-validation">
-                          <span className="input-group-text" id="inputGroupPrepend">@</span>
-                          <input type="text" name="username" className="form-control required" id="UserName" required />
-                          <div className="invalid-feedback">Please enter your username.</div>
-                        </div>
-                      </div>
-
-                      <div className="col-12">
-                        <label htmlFor="yourPassword" className="form-label">Password</label>
-                        <input type="password" name="password" className="form-control" id="Password" required />
-                        <div className="invalid-feedback">Please enter your password!</div>
-                      </div>
-
-                      <div className="col-6">
-                        <div className="form-check">
-                          <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
-                          <label className="form-check-label" for="rememberMe">Remember me</label>
-                        </div>
-                      </div>
-                      <div className="col-6" style={{textAlign:"right"}}>
-                        <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
-                      </div>
-                      <div className="col-6">
-                        <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
-                      </div>
-                      <div className="col-6">
-                         <a className="form-check-label" style={{cursor:"pointer"}} onClick={forgotPassword}>Forgot Password?</a>
-                      </div>
-                    </form>
-
                   </div>
                 </div>
               </div>
