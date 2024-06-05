@@ -59,7 +59,7 @@ function Dashboard1() {
       let content=(<div key={i} className="gauge">
                   <div className="gauge__body">
                     <div className="gauge__fill" style={{ transform: rotation }}></div>
-                    <div className="gauge__cover">{avgValue}</div>
+                    <div className="gauge__cover">{avgValue.toFixed(1)}</div>
                     <div className="gauge_text">{parameterNames[i]?.name} ({parameterNames[i]?.unit})</div>
                   </div>
                 </div>);
