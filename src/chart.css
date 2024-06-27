@@ -4,19 +4,23 @@ body{
 }
 .chatbox_main{
   position: relative;
-  height: calc(100vh - 80px);
+  height: calc(100vh - 122px);
   overflow-y: auto;
-  width: 75%;
+  width: 100%;
   margin: auto;
+  background: #fff;
+  border-radius: 11px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1)
 }
 .questionInputContainer {
-  height: 60px;
+  /* height: 60px; */
   position: absolute;
-  width: 96%;
-  margin: 0rem 1.75rem;
-  bottom: 1rem;
+  width: 100%;
+  /* margin: 0rem 1.75rem;
+  bottom: 1rem; */
   /*background: #FFFFFF;*/
-  border-radius: 8px;
+  padding: 0 10px;
+    border-top: 1px solid #ededed;
   overflow: hidden;
 }
 .questionInputContainer .questionInputrow{
@@ -26,18 +30,19 @@ body{
 }
 .questionInputTextArea {
   margin: 1rem 0rem;
+  position: relative;
 }
 
   .chat_messages_main {
-    height: calc(100% - 80px);
+    height: calc(100% - 105px);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     scrollbar-width: thin;
-  scrollbar-color: rgb(30 64 175) transparent;
+    scrollbar-color: #aab7cf transparent;
   }
   .chat_messages_main::-webkit-scrollbar {
-    width: 5px; /* Set the width of the scrollbar */
+    width: 3px; /* Set the width of the scrollbar */
   }
   
   .chat_messages_main::-webkit-scrollbar-thumb {
@@ -66,5 +71,64 @@ width: 10%;
   }
 table.table tr th, table.table tr td {
   padding: 7px 12px;
+  }
+
+  .chat_button{
+    position: absolute;
+    top: 2px;
+    right: 13px;
+    background: var(--blue);
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ai_title_name{
+    text-transform: uppercase;
+    background:linear-gradient(0deg, #2663ac, #75a5df);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Roboto Bold';
+    font-size: 35px;
+  }
+
+  .ai_help_title{
+    text-align: center;
+    font-weight: 600;
+    color: #c4c7c5;
+    /* height: 100%; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .additional-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .additional-box .chat-ai-box1{
+    background: #f0f4f9;
+    height: 60px;
+    border-radius: 11px;
+    width: 200px;
+    padding: 10px;
+    text-align: center;
+    margin: 15px 10px;
+    box-shadow: 0 0 2px 0 rgba(0,0,0,.05),0 4px 6px 0 rgba(0,0,0,.02);
+  }
+  .additional-box .chat-ai-box1 label{
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .helping-title-center{
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 /*chatgpt end*/

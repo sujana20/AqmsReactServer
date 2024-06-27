@@ -10,6 +10,12 @@
   }
 }
 
+@media (min-width:320px) and (max-width: 576px) {
+  .Smart_head{display: none;}
+}
+@media (min-width:320px) and (max-width: 690px) {
+  .additional-box{display: none!important;}
+}
 @media (min-width:320px) and (max-width: 767px) {
   .logo{width: auto;height: auto;justify-content: flex-start;}
   .logo img{height: 66px;  width: 69px;  object-fit: cover;margin-left: 8px;}
@@ -18,14 +24,26 @@
   .jsgrid-header-row>.jsgrid-header-cell{
     font-size: 11px!important;
   }
+  .statics-col-div .col{
+    width: 100%;
+      flex-shrink: 0;
+      flex: auto;
+  }
+  .project-modal .sidebar-modal{width: 100%;}
 }
 
 @media (min-width:768px) and (max-width: 991px) {
-  .logo{height: auto;}
+  .logo{height: auto;width: auto;}
   .logo img{height: 66px;  width: 69px;  object-fit: cover;margin-left: 8px;}
   /* .header-nav{padding: 9px 7px;} */
   .toggle-sidebar .sidebar{top: 75px;}
   .login-bg{background-size: 100% 100%;}
+  .statics-col-div .col{
+    width: 50%;
+      flex-shrink: 0;
+      flex: auto;
+  }
+  .project-modal .sidebar-modal{width: 65%;}
 }
 
 @media (min-width:992px) and (max-width: 1199px) {

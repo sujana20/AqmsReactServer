@@ -11,9 +11,8 @@ function Sidenavbar() {
   console.log(Params);
   const [permissions, setpermisssions] = useState([]);
 
-  const NavbarActive = function(){ 
-    
- 
+  const NavbarActive = function(id){ 
+   //alert('hi');onClick={() => NavbarActive(x.value + "-SubPanel")}
   }
 
   const getUserRole = function () {
@@ -76,7 +75,7 @@ function Sidenavbar() {
                {ispermission(x) && (
               x.children.length > 0 && (
                 <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target={"#" + x.label + "-nav"} data-bs-toggle="collapse" href="#">
-                  <i className={x.icon}></i>
+                  {/* <i className={x.icon}></i> */}
                   <img src={x.img} className="sideIcon-img"></img>
                   <span>{x.label}</span><i className={x.expandicon}></i>
                 </a>
@@ -88,7 +87,7 @@ function Sidenavbar() {
                 <ul id={x.label + "-nav"} className="nav-content collapse" data-bs-parent="#sidebar-nav">
                   {x.children.map((x, y) =>
                     permissions.indexOf(x.value) >= 0 && (
-                      <li id={x.value + "-SubPanel"}>
+                      <li id={x.value + "-SubPanel"} >
                         <NavLink to={x.url} className="animation-forwards animate-delay-1" >
                           <i className={x.icon}></i>
                           <span>{x.label}</span>
