@@ -283,7 +283,7 @@ function AddDevice() {
       <div className="container">
         <div className="pagetitle">
           {DeviceList && (
-            <h1>Devices List</h1>
+            <h1>Devices List1</h1>
           )}
         </div>
         <section className="section">
